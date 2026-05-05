@@ -1,0 +1,200 @@
+package com.numtory.application.features.market.presenter
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.AboutScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.numtory.application.R
+import com.numtory.application.composeUI.ShowBottomSheet
+import com.numtory.application.features.base.ViewState
+import com.numtory.application.features.market.domain.entities.MarketPrice
+import com.numtory.application.features.market.domain.usecase.FilterParams
+import com.numtory.application.features.market.domain.usecase.SortParams
+import com.numtory.application.features.market.presenter.components.AssetOptionsBottomSheetScreen
+import com.numtory.application.features.market.presenter.components.CryptoPriceItem
+import com.numtory.application.features.market.presenter.components.GetMarketAverage
+import com.numtory.application.features.market.presenter.components.MarketPriceHeader
+import com.numtory.application.features.market.presenter.components.TimerProgressBar
+import com.numtory.application.features.market.presenter.components.printLogs
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.androidx.compose.koinViewModel
+
+@Destination<RootGraph>(start = true)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
+@Composable
+fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = koinViewModel()) {
+
+    val priceList by viewModel.priceState.collectAsStateWithLifecycle()
+
+    val pullToRefreshState = rememberPullToRefreshState()
+    var sortParam by remember { mutableStateOf(SortParams()) }
+    var filterParam by remember { mutableStateOf(FilterParams()) }
+    var showSheet by remember { mutableStateOf(false) }
+
+    printLogs(priceList)
+
+    LaunchedEffect( sortParam, filterParam) {
+        viewModel.getPrices()
+        viewModel.startTimer()
+    }
+
+
+    if (showSheet)
+        ShowBottomSheet(onDismiss = { showSheet = false }) { modalBottomSheetState, hide ->
+            AssetOptionsBottomSheetScreen(
+                viewModel.getEnableExchanges(),
+                viewModel.getAddFee(),
+                hide
+            ) { exchanges, addFee ->
+                val checkedExchanges = exchanges.filter { it.value }.keys.toList()
+                viewModel.saveExchanges(checkedExchanges)
+                viewModel.saveAddFee(addFee)
+                showSheet = false
+            }
+        }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                modifier = Modifier.height(85.dp),
+                title = { Text("Num Tory") },
+                actions = {
+                    IconButton(onClick = {
+                        navigator.navigate(AboutScreenDestination)
+                    }) {
+                        Icon(
+                            modifier = Modifier.padding(7.dp),
+                            painter = painterResource(id = R.drawable.ic_about),
+                            contentDescription = "Menu"
+                        )
+                    }
+                    IconButton(onClick = {
+                        showSheet = true
+                    }) {
+                        Icon(
+                            modifier = Modifier.padding(7.dp),
+                            painter = painterResource(id = R.drawable.ic_setting),
+                            contentDescription = "Menu"
+                        )
+                    }
+
+                }
+            )
+        },
+        modifier = Modifier.fillMaxSize()
+    ) { innerPadding ->
+
+        Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+            PullToRefreshBox(
+                isRefreshing = priceList is ViewState.Loading,
+                onRefresh = { viewModel.getPrices() },
+                state = pullToRefreshState,
+                modifier = Modifier
+                    .weight(1f)
+
+            ) {
+                LazyColumn {
+
+                    stickyHeader {
+                        Column {
+                            MarketPriceHeader(
+                                sortField = sortParam.sortField,
+                                sortOrder = sortParam.sortOrder,
+                                sortParam = sortParam,
+                            ) {
+                                viewModel.sort(it.sortField, it.sortOrder)
+                            }
+                            TimerProgressBar(viewModel.timer)
+                        }
+
+                    }
+
+                    when (priceList) {
+                        is ViewState.Init -> {
+                            item {
+                                Text("Initializing...")
+                            }
+                        }
+
+                        is ViewState.Loading -> {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillParentMaxSize()  // Takes full parent size
+                                        .wrapContentSize(), // Centers content
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            }
+                        }
+
+                        is ViewState.Success -> {
+                            itemsIndexed((priceList as ViewState.Success<List<MarketPrice>>).data) { index, itemState ->
+                                CryptoPriceItem(
+                                    itemState,
+//                                modifier = Modifier.background(if (index % 2 == 0) Gray0 else Color.White)
+                                )
+                            }
+                        }
+
+                        is ViewState.Failure -> {
+                            item {
+                                Text("Error: ${(priceList as ViewState.Failure).error.message}")
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            if (priceList is ViewState.Success<List<MarketPrice>>) {
+
+                val (avgBuy, avgSell) = viewModel.getMarketAverage()
+
+                Box(modifier = Modifier) {
+                    GetMarketAverage(avgBuy, avgSell)
+                }
+            }
+        }
+
+    }
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+//    MyApplicationTheme {
+//        MarketList()
+//    }
+}

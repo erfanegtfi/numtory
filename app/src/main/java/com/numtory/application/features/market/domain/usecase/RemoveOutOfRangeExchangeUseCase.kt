@@ -1,5 +1,6 @@
 package com.numtory.application.features.market.domain.usecase
 
+import com.numtory.application.features.market.domain.entities.ExchangeStatus
 import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.ui.theme.PERCENT
 
@@ -9,10 +10,11 @@ class RemoveOutOfRangeExchangeUseCase constructor(val getMarketAvgUseCase: GetMa
     fun action(params: RemoveOutOfRangeExchangesParams): List<MarketPrice> {
 
         return params.markets
+//            .filter {
+//                ((it.sellPrice != null && it.sellPrice?.toFloat() != 0f) && (it.buyPrice != null && it.buyPrice?.toFloat() != 0f))
+//                        || it.marketPrice != null && it.marketPrice?.toFloat() != 0f
+//            }
             .filter {
-                ((it.sellPrice != null && it.sellPrice?.toFloat() != 0f) && (it.buyPrice != null && it.buyPrice?.toFloat() != 0f))
-                        || it.marketPrice != null && it.marketPrice?.toFloat() != 0f
-            }.filter {
                 if(params.avgBuy == 0f) true
 //                var buy = (it.marketPrice ?: it.buyPrice ?: "0").toFloat() - avgBuy
 //                var sell = (it.marketPrice ?: it.sellPrice ?: "0").toFloat() - avgSell
@@ -32,7 +34,6 @@ class RemoveOutOfRangeExchangeUseCase constructor(val getMarketAvgUseCase: GetMa
 }
 
 data class RemoveOutOfRangeExchangesParams(
-//    val exchange: Exchanges? = null,
     val avgBuy: Float,
     val avgSell: Float,
     var markets: List<MarketPrice>

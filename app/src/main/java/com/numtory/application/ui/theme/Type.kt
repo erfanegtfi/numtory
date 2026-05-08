@@ -37,21 +37,21 @@ private val defaultTypography = Typography()
 val lightTypography = Typography(
     titleLarge = TextStyle(
         fontFamily = CustomFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Bold,
         fontSize = 18.sp,
         fontStyle = FontStyle.Normal,
         color = textBlack,
     ),
     titleMedium = TextStyle(
         fontFamily = CustomFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
         fontStyle = FontStyle.Normal,
         color = textBlack,
     ),
     titleSmall = TextStyle(
         fontFamily = CustomFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
         fontStyle = FontStyle.Normal,
         color = textBlack,

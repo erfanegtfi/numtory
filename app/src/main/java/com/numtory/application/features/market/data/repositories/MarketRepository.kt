@@ -3,7 +3,9 @@ package com.numtory.application.features.market.data.repositories
 import com.numtory.application.data.remote.getResult
 import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.market.data.dataSource.MarketRemoteDataSource
+import com.numtory.application.features.market.data.local.ExchangesLocalDataSource
 import com.numtory.application.features.market.domain.entities.AbanTether
+import com.numtory.application.features.market.domain.entities.ExchangeStatus
 import com.numtory.application.features.market.domain.entities.ArzplusMarketItem
 import com.numtory.application.features.market.domain.entities.ArzplusSwap
 import com.numtory.application.features.market.domain.entities.Bit24
@@ -29,6 +31,8 @@ import kotlinx.coroutines.flow.flowOn
 
 
 interface MarketRepository {
+    fun getExchanges(): Flow<ApiCallResult<List<ExchangeStatus>>>
+    fun getSavedExchanges(): List<ExchangeStatus>?
     fun getBitPin(marketId: Int): Flow<ApiCallResult<BitPin>>
     fun getTetherLand(): Flow<ApiCallResult<List<TetherLand>>>
     fun getAbanTether(): Flow<ApiCallResult<List<AbanTether>>>
@@ -67,8 +71,26 @@ interface MarketRepository {
 
 class MarketRepositoryImpl(
     private val marketRemoteDataSource: MarketRemoteDataSource,
+    private val exchangesLocalDataSource: ExchangesLocalDataSource,
     private val dispatcher: CoroutineDispatcher
 ) : MarketRepository {
+
+    override fun getExchanges(): Flow<ApiCallResult<List<ExchangeStatus>>> = flow {
+        val response = getResult {
+            marketRemoteDataSource.getExchanges()
+        }
+        if (response is ApiCallResult.Success) {
+            exchangesLocalDataSource.saveExchanges(response.result)
+            emit(ApiCallResult.Success(response.result.map { it.toEntity() }))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }.flowOn(dispatcher)
+
+    override fun getSavedExchanges(): List<ExchangeStatus>?  {
+
+          return  exchangesLocalDataSource.getExchanges()
+
+    }
 
     override fun getBitPin(marketId: Int): Flow<ApiCallResult<BitPin>> = flow {
         val response = getResult {

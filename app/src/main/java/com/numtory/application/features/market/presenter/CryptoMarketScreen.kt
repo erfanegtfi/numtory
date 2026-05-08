@@ -1,10 +1,12 @@
 package com.numtory.application.features.market.presenter
 
+import android.content.res.Resources
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -12,12 +14,14 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +32,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -54,18 +61,39 @@ import org.koin.androidx.compose.koinViewModel
 fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = koinViewModel()) {
 
     val priceList by viewModel.priceState.collectAsStateWithLifecycle()
-
+    val lifecycleOwner = LocalLifecycleOwner.current
     val pullToRefreshState = rememberPullToRefreshState()
     var sortParam by remember { mutableStateOf(SortParams()) }
     var filterParam by remember { mutableStateOf(FilterParams()) }
     var showSheet by remember { mutableStateOf(false) }
 
-    printLogs(priceList)
+//    printLogs(priceList)
 
-    LaunchedEffect( sortParam, filterParam) {
-        viewModel.getPrices()
-        viewModel.startTimer()
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> {
+                    viewModel.startTimer()
+                }
+
+                Lifecycle.Event.ON_PAUSE -> {
+                    viewModel.stopTimer()
+                }
+
+                else -> {}
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
+
+//    LaunchedEffect( 12) {
+//            viewModel.getPrices()
+//    }
 
 
     if (showSheet)
@@ -85,8 +113,23 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.height(85.dp),
-                title = { Text("Num Tory") },
+                modifier = Modifier.height(90.dp),
+                title = {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Text(
+                            text = "USDT",
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(end = 18.dp),
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text(
+                            text = "Num Tory",
+                            modifier = Modifier.align(Alignment.CenterStart),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = {
                         navigator.navigate(AboutScreenDestination)
@@ -113,7 +156,11 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
         modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
 
-        Column(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
             PullToRefreshBox(
                 isRefreshing = priceList is ViewState.Loading,
                 onRefresh = { viewModel.getPrices() },
@@ -141,8 +188,15 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                     when (priceList) {
                         is ViewState.Init -> {
                             item {
-                                Text("Initializing...")
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .height(100.dp)
+                                ) {
+                                    Text("")
+                                }
                             }
+
                         }
 
                         is ViewState.Loading -> {
@@ -159,17 +213,28 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                         }
 
                         is ViewState.Success -> {
-                            itemsIndexed((priceList as ViewState.Success<List<MarketPrice>>).data) { index, itemState ->
-                                CryptoPriceItem(
-                                    itemState,
+                            val items = (priceList as ViewState.Success<List<MarketPrice>>).data
+                            if (items.isEmpty())
+                                item {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize().height(300.dp)
+                                    ){
+                                        Text("موردی پیدا نشد", modifier = Modifier.align(alignment = Alignment.Center))
+                                    }
+                                }
+                            else
+                                itemsIndexed(items) { index, itemState ->
+                                    CryptoPriceItem(
+                                        itemState
 //                                modifier = Modifier.background(if (index % 2 == 0) Gray0 else Color.White)
-                                )
-                            }
+                                    )
+                                }
                         }
 
                         is ViewState.Failure -> {
                             item {
-                                Text("Error: ${(priceList as ViewState.Failure).error.message}")
+                                Text("خطایی رخ داد!")
+//                                Text("Error: ${(priceList as ViewState.Failure).error.message}")
                             }
                         }
 

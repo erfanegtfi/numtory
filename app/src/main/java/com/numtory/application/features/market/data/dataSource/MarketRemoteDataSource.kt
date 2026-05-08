@@ -20,12 +20,15 @@ import com.numtory.application.features.market.data.models.TetherLandListDataMod
 import com.numtory.application.features.market.data.models.TwoxDataModel
 import com.numtory.application.features.market.data.models.WallexResultDataModel
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.numtory.application.features.market.data.models.ExchangeStatusDataModel
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
 
 interface MarketRemoteDataSource {
+    suspend fun getExchanges(): List<ExchangeStatusDataModel>
     suspend fun getBitPinPrice(marketId: Int): BitPinDataModel
     suspend fun getTetherLandPrice(): TetherLandListDataModel
     suspend fun getAbanTetherPrice(): AbanTetherListDataModel
@@ -63,6 +66,13 @@ class MarketRemoteDataSourceImpl constructor(
     private val httpClient: HttpClient,
     private val gson: Gson
 ) : MarketRemoteDataSource {
+
+    override suspend fun getExchanges(): List<ExchangeStatusDataModel> {
+        val response = httpClient.get("http://10.0.2.2:8000/api/exchanges/")
+        val json = response.bodyAsText()
+        val type = object : TypeToken<List<ExchangeStatusDataModel>>() {}.type
+        return gson.fromJson(json, type)
+    }
 
     override suspend fun getBitPinPrice(marketId: Int): BitPinDataModel {
         val response = httpClient.get("https://api.bitpin.ir/v1/otc/price/?market_id=$marketId")

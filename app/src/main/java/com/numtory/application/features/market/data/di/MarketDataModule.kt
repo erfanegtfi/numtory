@@ -2,6 +2,8 @@ package com.numtory.application.features.market.data.di
 
 import com.numtory.application.features.market.data.dataSource.MarketRemoteDataSource
 import com.numtory.application.features.market.data.dataSource.MarketRemoteDataSourceImpl
+import com.numtory.application.features.market.data.local.ExchangesLocalDataSource
+import com.numtory.application.features.market.data.local.ExchangesLocalDataSourceImpl
 import com.numtory.application.features.market.data.local.LocalDataRepository
 import com.numtory.application.features.market.data.local.LocalDataRepositoryImp
 import com.numtory.application.features.market.data.repositories.MarketRepository
@@ -11,11 +13,15 @@ import org.koin.dsl.module
 
 val marketDataModule = module {
     single<MarketRemoteDataSource> { MarketRemoteDataSourceImpl(get(), get()) }
-    single<MarketRepository> { MarketRepositoryImpl(get(), get(qualifier = named("IO"))) }
+    single<MarketRepository> { MarketRepositoryImpl(get(), get(), get(qualifier = named("IO"))) }
 
 
     factory<LocalDataRepository> {
         LocalDataRepositoryImp(get())
+    }
+
+    factory<ExchangesLocalDataSource> {
+        ExchangesLocalDataSourceImpl(get())
     }
 
 }

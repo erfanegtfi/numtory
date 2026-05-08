@@ -9,14 +9,14 @@ class GetMarketAvgUseCase constructor() {
         var averageSellPrice = 0f
         var size = 0
 
-        val filteredList = priceList.filter {
-            ((it.sellPrice != null && it.sellPrice?.toFloat() != 0f) &&
-                    (it.buyPrice != null && it.buyPrice?.toFloat() != 0f)) ||
-                    (it.marketPrice != null && it.marketPrice?.toFloat() != 0f)
-        }
+//        val filteredList = priceList.filter {
+//            ((it.sellPrice != null && it.sellPrice?.toFloat() != 0f) &&
+//                    (it.buyPrice != null && it.buyPrice?.toFloat() != 0f)) ||
+//                    (it.marketPrice != null && it.marketPrice?.toFloat() != 0f)
+//        }
 
 
-        filteredList.forEach { item ->
+        priceList.forEach { item ->
             if (item.exchange?.bothTypes == true) {
                 // if has quick swap and market we prefer market and skip quick swap
                 if (item.marketPrice != null && item.marketPrice?.toFloat() != 0f) {

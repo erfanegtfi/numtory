@@ -3,6 +3,7 @@ package com.numtory.application.features.market.presenter.di
 import com.numtory.application.features.market.data.repositories.MarketRepository
 import com.numtory.application.features.market.domain.usecase.FilterMarketUseCase
 import com.numtory.application.features.market.domain.usecase.GetAbanTetherPriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetAppExchangesUseCase
 import com.numtory.application.features.market.domain.usecase.GetArzplusPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBit24PriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBitPinPriceUseCase
@@ -17,6 +18,7 @@ import com.numtory.application.features.market.domain.usecase.GetTabtealPriceUse
 import com.numtory.application.features.market.domain.usecase.GetTetherLandPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetTwoxPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetWallexPriceUseCase
+import com.numtory.application.features.market.domain.usecase.RemoveInvalidExchangeUseCase
 import com.numtory.application.features.market.domain.usecase.RemoveOutOfRangeExchangeUseCase
 import com.numtory.application.features.market.domain.usecase.SortMarketUseCase
 import com.numtory.application.features.market.presenter.MarketsViewModel
@@ -42,10 +44,14 @@ val marketPresenterModule = module {
     factory { FilterMarketUseCase() }
     factory { RemoveOutOfRangeExchangeUseCase(get()) }
     factory { GetMarketAvgUseCase() }
+    factory { GetAppExchangesUseCase(get()) }
+    factory { RemoveInvalidExchangeUseCase() }
 
 //    viewModel<MarketsViewModel>{ MarketsViewModel(get<GetBitPinPriceUseCase>()) }
     viewModel {
         MarketsViewModel(
+            get(),
+            get(),
             get(),
             get(),
             get(),

@@ -8,8 +8,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.20" apply false
+//    id(libs.plugins.kotlin.serialization)
 //    id("kotlin-kapt")
-    id("com.google.devtools.ksp")
+    id("com.google.devtools.ksp") version ("2.2.20-2.0.3")
+//    id(libs.plugins.devtools.ksp)
 }
 
 android {
@@ -62,6 +65,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material.icons)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.kotlinx.serialization.json)
 
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)

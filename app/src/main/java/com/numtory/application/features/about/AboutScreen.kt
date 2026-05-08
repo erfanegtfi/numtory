@@ -74,7 +74,7 @@ fun AboutScreen(navigator: DestinationsNavigator,) {
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = MaterialTheme.shapes.medium,
-                color = MaterialTheme.colorScheme.primaryContainer
+                color = MaterialTheme.colorScheme.primary
             ) {
                 Column(
                     modifier = Modifier.padding(20.dp),
@@ -103,18 +103,18 @@ fun AboutScreen(navigator: DestinationsNavigator,) {
             CopyableContactItem(
                 icon = "📧",
                 label = "Email",
-                value = "numtory@gmail.com",
+                value = "tokenchand@gmail.com",
                 onCopy = {
-                    copyToClipboard(context, "numtory@gmail.com")
+                    copyToClipboard(context, "tokenchand@gmail.com")
                 }
             )
 
             CopyableContactItem(
                 icon = "💬",
                 label = "Telegram",
-                value = "@numtory",
+                value = "@tokenchand",
                 onCopy = {
-                    copyToClipboard(context, "@numtory")
+                    copyToClipboard(context, "@tokenchand")
                 }
             )
 

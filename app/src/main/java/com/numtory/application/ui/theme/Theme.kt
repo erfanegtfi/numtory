@@ -14,6 +14,7 @@ import com.eterex.designsystem.theme.lightTypography
 
 private val DarkColorScheme = darkColorScheme(
     primary = Primary,
+    onPrimary = White,
     secondary = Secondary,
     onSecondary = Color.White,
     onTertiary = Color.White,
@@ -22,6 +23,7 @@ private val DarkColorScheme = darkColorScheme(
 
 private val LightColorScheme = lightColorScheme(
     primary = Primary,
+    onPrimary = White,
     secondary = Secondary,
     onSecondary = Color.White,
     onTertiary = Color.White,

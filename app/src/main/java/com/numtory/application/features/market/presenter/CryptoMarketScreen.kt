@@ -1,12 +1,11 @@
 package com.numtory.application.features.market.presenter
 
-import android.content.res.Resources
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -18,11 +17,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,7 +50,7 @@ import com.numtory.application.features.market.presenter.components.CryptoPriceI
 import com.numtory.application.features.market.presenter.components.GetMarketAverage
 import com.numtory.application.features.market.presenter.components.MarketPriceHeader
 import com.numtory.application.features.market.presenter.components.TimerProgressBar
-import com.numtory.application.features.market.presenter.components.printLogs
+import com.numtory.application.ui.theme.Primary
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
 
@@ -99,12 +98,12 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
     if (showSheet)
         ShowBottomSheet(onDismiss = { showSheet = false }) { modalBottomSheetState, hide ->
             AssetOptionsBottomSheetScreen(
-                viewModel.getEnableExchanges(),
+                viewModel.getDisplayExchanges(),
                 viewModel.getAddFee(),
                 hide
             ) { exchanges, addFee ->
                 val checkedExchanges = exchanges.filter { it.value }.keys.toList()
-                viewModel.saveExchanges(checkedExchanges)
+                viewModel.saveDisplayExchanges(checkedExchanges)
                 viewModel.saveAddFee(addFee)
                 showSheet = false
             }
@@ -113,20 +112,25 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.height(90.dp),
+                modifier = Modifier.height(90.dp).background(Primary),
+                colors = TopAppBarDefaults.topAppBarColors(// Use 'surface' instead of 'primary' for the app bar background
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                ),
                 title = {
                     Box(modifier = Modifier.fillMaxSize()) {
+//                        Text(
+//                            text = "USDT",
+//                            modifier = Modifier
+//                                .align(Alignment.CenterEnd)
+//                                .padding(end = 18.dp),
+//                            style = MaterialTheme.typography.titleLarge
+//                        )
                         Text(
-                            text = "USDT",
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .padding(end = 18.dp),
-                            style = MaterialTheme.typography.titleLarge
-                        )
-                        Text(
-                            text = "Num Tory",
+                            text = "توکن چند",
                             modifier = Modifier.align(Alignment.CenterStart),
-                            style = MaterialTheme.typography.bodyLarge
+                            style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onPrimary)
                         )
                     }
                 },
@@ -173,6 +177,14 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
 
                     stickyHeader {
                         Column {
+                            if (priceList is ViewState.Success<List<MarketPrice>>) {
+
+                                val (avgBuy, avgSell) = viewModel.getMarketAverage()
+
+                                Box(modifier = Modifier) {
+                                    GetMarketAverage(avgBuy, avgSell)
+                                }
+                            }
                             MarketPriceHeader(
                                 sortField = sortParam.sortField,
                                 sortOrder = sortParam.sortOrder,
@@ -242,14 +254,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                 }
             }
 
-            if (priceList is ViewState.Success<List<MarketPrice>>) {
 
-                val (avgBuy, avgSell) = viewModel.getMarketAverage()
-
-                Box(modifier = Modifier) {
-                    GetMarketAverage(avgBuy, avgSell)
-                }
-            }
         }
 
     }

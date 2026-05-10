@@ -32,7 +32,7 @@ fun MarketPriceHeader(sortField: SortField, sortOrder: SortOrder, sortParam: Sor
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.LightGray)
+            .background(Color(0xFFEEEEEE))
             .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

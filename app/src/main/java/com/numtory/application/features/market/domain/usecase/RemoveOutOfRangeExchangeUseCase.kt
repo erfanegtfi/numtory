@@ -1,19 +1,14 @@
 package com.numtory.application.features.market.domain.usecase
 
-import com.numtory.application.features.market.domain.entities.ExchangeStatus
 import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.ui.theme.PERCENT
 
-class RemoveOutOfRangeExchangeUseCase constructor(val getMarketAvgUseCase: GetMarketAvgUseCase) {
+class RemoveOutOfRangeExchangeUseCase constructor() {
 
 
     fun action(params: RemoveOutOfRangeExchangesParams): List<MarketPrice> {
 
         return params.markets
-//            .filter {
-//                ((it.sellPrice != null && it.sellPrice?.toFloat() != 0f) && (it.buyPrice != null && it.buyPrice?.toFloat() != 0f))
-//                        || it.marketPrice != null && it.marketPrice?.toFloat() != 0f
-//            }
             .filter {
                 if(params.avgBuy == 0f) true
 //                var buy = (it.marketPrice ?: it.buyPrice ?: "0").toFloat() - avgBuy

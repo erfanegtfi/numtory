@@ -1,14 +1,14 @@
 package com.numtory.application.features.market.presenter;
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.numtory.application.features.market.data.local.LocalDataRepository
 import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.base.ViewState
+import com.numtory.application.features.market.data.local.ExchangesLocalDataSource
+import com.numtory.application.features.market.data.local.ExchangesLocalDataSourceImpl
 import com.numtory.application.features.market.domain.entities.ExchangeStatus
 import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.features.market.domain.enums.Exchanges
@@ -27,10 +27,12 @@ import com.numtory.application.features.market.domain.usecase.GetMarketAvgUseCas
 import com.numtory.application.features.market.domain.usecase.GetNobitexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetPingiPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetPoolenoPriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetSarafPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetSarmayexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetTabtealPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetTetherLandPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetTwoxPriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetUbitexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetWallexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.RemoveInvalidExchangeUseCase
 import com.numtory.application.features.market.domain.usecase.RemoveInvalidExchangesParams
@@ -43,15 +45,12 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.encodeToString
 
 @ExperimentalCoroutinesApi
 @SuppressLint("CheckResult")
@@ -71,11 +70,13 @@ constructor(
     private val getSarmayexPriceUseCase: GetSarmayexPriceUseCase,
     private val getPingiPriceUseCase: GetPingiPriceUseCase,
     private val getWallexPriceUseCase: GetWallexPriceUseCase,
+    private val getSarafPriceUseCase: GetSarafPriceUseCase,
+    private val getUbitexPriceUseCase: GetUbitexPriceUseCase,
     private val sortMarketUseCase: SortMarketUseCase,
     private val filterMarketUseCase: FilterMarketUseCase,
     private val removeOutOfRangeExchangesUseCase: RemoveOutOfRangeExchangeUseCase,
     private val getMarketAvgUseCase: GetMarketAvgUseCase,
-    private val localDataRepository: LocalDataRepository,
+    private val exchangesLocalDataSource: ExchangesLocalDataSource,
     private val getAppExchangesUseCase: GetAppExchangesUseCase,
     private val removeInvalidExchangeUseCase: RemoveInvalidExchangeUseCase,
 ) : ViewModel() {
@@ -95,7 +96,7 @@ constructor(
     val priceState: StateFlow<ViewState<List<MarketPrice>>> get() = _priceState.asStateFlow()
 
     init {
-        getExchanges()
+//        getExchanges()
         getPrices()
         startTimer()
     }
@@ -124,8 +125,8 @@ constructor(
         if (_priceState.value is ViewState.Init)
             _priceState.value = ViewState.Loading
 
-        val ae = getEnableExchanges()
-        filterParams.addFee = localDataRepository.addFee()
+        val displayExchanges = getDisplayExchanges()
+        filterParams.addFee = exchangesLocalDataSource.addFee()
 
         val mergedFlow = merge(
             getBitPinPriceUseCase.action(5),
@@ -141,7 +142,9 @@ constructor(
             getEterexPriceUseCase.action("USDT"),
             getSarmayexPriceUseCase.action("USDT", "USDT_IRT"),
             getPingiPriceUseCase.action("USDT_IRT"),
-            getWallexPriceUseCase.action("USDT","TMN"),
+            getWallexPriceUseCase.action("USDT", "TMN"),
+            getSarafPriceUseCase.action("USDT"),
+            getUbitexPriceUseCase.action("USDT", "TMN"),
         )
 
 //        val mergedFlow = mutableListOf<Flow<ApiCallResult<MarketPrice>>>().apply {
@@ -173,6 +176,10 @@ constructor(
 //                add(getAbanTetherPriceUseCase.action("USDT"))
 //            if (exchangesStatus?.firstOrNull { it.exchange == Exchanges.sarmayex }?.active == true)
 //                add(getSarmayexPriceUseCase.action("USDT", "USDT_IRT"))
+//            if (exchangesStatus?.firstOrNull { it.exchange == Exchanges.saraf }?.active == true)
+//                add(getSarafPriceUseCase.action("USDT"))
+//            if (exchangesStatus?.firstOrNull { it.exchange == Exchanges.ubitex }?.active == true)
+//                add(getUbitexPriceUseCase.action("USDT", "TMN"))
 //        }
 
         viewModelScope.launch {
@@ -189,13 +196,15 @@ constructor(
                         // we do not use add exchanges in avg,
                         // if first exchange price was out of range, avg will be invalid and broke other prices
                         allMarkets.add(response.result)
-                        val (avgBuy, avgSell) = getMarketAvgUseCase.action(allMarkets)
+                        val (avgBuy, avgSell) = getMarketAvgUseCase.action(
+                            allMarkets,
+                            displayExchanges
+                        )
 //                        allMarkets.add(response.result) // its better to be after  getting avg
 
-                        allMarkets = removeInvalidExchangeUseCase.action(
+                        validMarkets = removeInvalidExchangeUseCase.action(
                             RemoveInvalidExchangesParams(
                                 exchangesStatus = exchangesStatus,
-//                            removeExchange = response.result.exchange,
                                 markets = allMarkets
                             )
                         ).toMutableList()
@@ -210,7 +219,7 @@ constructor(
                         )
 
                         filterParams.markets = validMarkets
-                        filterParams.activeExchanges = ae
+                        filterParams.activeExchanges = displayExchanges
                         validMarkets = filterMarketUseCase.action(filterParams)
                         sortParams.markets = validMarkets
 
@@ -250,23 +259,24 @@ constructor(
     }
 
     fun getMarketAverage(): Pair<Float, Float> {
-        return getMarketAvgUseCase.action(validMarkets)
+        val activeExchanges = getDisplayExchanges()
+        return getMarketAvgUseCase.action(validMarkets, activeExchanges)
     }
 
     fun saveAddFee(addFee: Boolean) {
-        localDataRepository.saveAddFee(addFee)
+        exchangesLocalDataSource.saveAddFee(addFee)
     }
 
     fun getAddFee(): Boolean {
-        return localDataRepository.addFee()
+        return exchangesLocalDataSource.addFee()
     }
 
-    fun saveExchanges(exchanges: List<Exchanges>) {
-        localDataRepository.saveEnableExchanges(exchanges)
+    fun saveDisplayExchanges(exchanges: List<Exchanges>) {
+        exchangesLocalDataSource.saveDisplayExchanges(exchanges)
     }
 
-    fun getEnableExchanges(): List<Exchanges> {
-        return localDataRepository.getEnableExchanges() ?: Exchanges.entries
+    fun getDisplayExchanges(): List<Exchanges> {
+        return exchangesLocalDataSource.getDisplayExchanges() ?: Exchanges.entries
     }
 
     private var isRunning = false

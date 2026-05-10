@@ -4,8 +4,6 @@ import com.numtory.application.features.market.data.dataSource.MarketRemoteDataS
 import com.numtory.application.features.market.data.dataSource.MarketRemoteDataSourceImpl
 import com.numtory.application.features.market.data.local.ExchangesLocalDataSource
 import com.numtory.application.features.market.data.local.ExchangesLocalDataSourceImpl
-import com.numtory.application.features.market.data.local.LocalDataRepository
-import com.numtory.application.features.market.data.local.LocalDataRepositoryImp
 import com.numtory.application.features.market.data.repositories.MarketRepository
 import com.numtory.application.features.market.data.repositories.MarketRepositoryImpl
 import org.koin.core.qualifier.named
@@ -15,10 +13,6 @@ val marketDataModule = module {
     single<MarketRemoteDataSource> { MarketRemoteDataSourceImpl(get(), get()) }
     single<MarketRepository> { MarketRepositoryImpl(get(), get(), get(qualifier = named("IO"))) }
 
-
-    factory<LocalDataRepository> {
-        LocalDataRepositoryImp(get())
-    }
 
     factory<ExchangesLocalDataSource> {
         ExchangesLocalDataSourceImpl(get())

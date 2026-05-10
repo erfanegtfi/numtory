@@ -21,11 +21,19 @@ import com.numtory.application.features.market.data.models.TwoxDataModel
 import com.numtory.application.features.market.data.models.WallexResultDataModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.numtory.application.features.market.data.models.Arz3PriceDataModel
+import com.numtory.application.features.market.data.models.Arz3coinsDataModel
 import com.numtory.application.features.market.data.models.ExchangeStatusDataModel
+import com.numtory.application.features.market.data.models.SarafPriceDataModel
+import com.numtory.application.features.market.data.models.UbitexDataModel
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
 import io.ktor.client.statement.bodyAsText
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 interface MarketRemoteDataSource {
     suspend fun getExchanges(): List<ExchangeStatusDataModel>
@@ -59,7 +67,10 @@ interface MarketRemoteDataSource {
     suspend fun getSarmayexSwapPrice(market: String): SarmayexSwapDataModel
 
     suspend fun getPingiSwapPrice(): PingiDataModel
-    suspend fun getWalletSwapPrice(market: String): WallexResultDataModel
+    suspend fun getWallexSwapPrice(market: String): WallexResultDataModel
+    suspend fun getSarafSwapPrice(): SarafPriceDataModel
+    suspend fun getArz3SwapPrice(): Arz3coinsDataModel
+    suspend fun getUbitexSwapPrice(baseCurrency: String, quoteCurrency: String): UbitexDataModel
 }
 
 class MarketRemoteDataSourceImpl constructor(
@@ -244,13 +255,46 @@ class MarketRemoteDataSourceImpl constructor(
         return gson.fromJson(json, PingiDataModel::class.java)
     }
 
-    override suspend fun getWalletSwapPrice(market: String): WallexResultDataModel {
+    override suspend fun getWallexSwapPrice(market: String): WallexResultDataModel {
         val response = httpClient.get("https://api.wallex.ir/v1/coin-market-list")
         {
             parameter("keys", market)
         }
         val json = response.bodyAsText()
         return gson.fromJson(json, WallexResultDataModel::class.java)
+    }
+
+    override suspend fun getSarafSwapPrice(): SarafPriceDataModel {
+        val response = httpClient.get("https://api.sarafapp.com/v3/prices/crypto")
+
+        val json = response.bodyAsText()
+        return gson.fromJson(json, SarafPriceDataModel::class.java)
+    }
+
+    @OptIn(ExperimentalTime::class)
+    override suspend fun getArz3SwapPrice(): Arz3coinsDataModel {
+        val timestamp = Clock.System.now().toEpochMilliseconds() / 1000
+        val response = httpClient.post("https://app.arz3.com/api/v3/order/get-info") {
+            header("X-Timestamp", timestamp.toString())
+            header(
+                "X-signature",
+                "17682194f5c86a98341d7c5c429faf6f531b55deac96d7f7192eabf08cbc9198"
+            )
+        }
+
+        val json = response.bodyAsText()
+        return gson.fromJson(json, Arz3coinsDataModel::class.java)
+    }
+
+    override suspend fun getUbitexSwapPrice(
+        baseCurrency: String,
+        quoteCurrency: String
+    ): UbitexDataModel {
+        val response =
+            httpClient.get("https://api.ubitex.io/api/pair/topprice/$baseCurrency$quoteCurrency")
+
+        val json = response.bodyAsText()
+        return gson.fromJson(json, UbitexDataModel::class.java)
     }
 
 }

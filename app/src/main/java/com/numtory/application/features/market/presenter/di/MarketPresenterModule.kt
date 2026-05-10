@@ -4,6 +4,7 @@ import com.numtory.application.features.market.data.repositories.MarketRepositor
 import com.numtory.application.features.market.domain.usecase.FilterMarketUseCase
 import com.numtory.application.features.market.domain.usecase.GetAbanTetherPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetAppExchangesUseCase
+import com.numtory.application.features.market.domain.usecase.GetArz3PriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetArzplusPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBit24PriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBitPinPriceUseCase
@@ -13,10 +14,12 @@ import com.numtory.application.features.market.domain.usecase.GetMarketAvgUseCas
 import com.numtory.application.features.market.domain.usecase.GetNobitexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetPingiPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetPoolenoPriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetSarafPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetSarmayexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetTabtealPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetTetherLandPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetTwoxPriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetUbitexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetWallexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.RemoveInvalidExchangeUseCase
 import com.numtory.application.features.market.domain.usecase.RemoveOutOfRangeExchangeUseCase
@@ -40,9 +43,12 @@ val marketPresenterModule = module {
     factory { GetSarmayexPriceUseCase(get<MarketRepository>()) }
     factory { GetPingiPriceUseCase(get<MarketRepository>()) }
     factory { GetWallexPriceUseCase(get<MarketRepository>()) }
+    factory { GetSarafPriceUseCase(get<MarketRepository>()) }
+    factory { GetArz3PriceUseCase(get<MarketRepository>()) }
+    factory { GetUbitexPriceUseCase(get<MarketRepository>()) }
     factory { SortMarketUseCase() }
     factory { FilterMarketUseCase() }
-    factory { RemoveOutOfRangeExchangeUseCase(get()) }
+    factory { RemoveOutOfRangeExchangeUseCase() }
     factory { GetMarketAvgUseCase() }
     factory { GetAppExchangesUseCase(get()) }
     factory { RemoveInvalidExchangeUseCase() }
@@ -50,6 +56,8 @@ val marketPresenterModule = module {
 //    viewModel<MarketsViewModel>{ MarketsViewModel(get<GetBitPinPriceUseCase>()) }
     viewModel {
         MarketsViewModel(
+            get(),
+            get(),
             get(),
             get(),
             get(),

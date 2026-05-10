@@ -1,7 +1,6 @@
 package com.numtory.application.features.market.domain.enums
 
 import com.numtory.application.R
-import com.numtory.application.features.market.domain.entities.ExchangeStatus
 
 enum class Exchanges(val title: String, val logo: Int,val isMarket: Boolean, val bothTypes: Boolean, val fee: Float) {
     tetherland("تترلند", R.drawable.tetherland,false,false, 0.017f),
@@ -22,7 +21,10 @@ enum class Exchanges(val title: String, val logo: Int,val isMarket: Boolean, val
     sarmayex("سرمایکس (سریع)", R.drawable.sarmayex,false, true,0f),
     sarmayexMarket("سرمایکس (بازار)", R.drawable.sarmayex,true, true,0.0034f),
     pingi("پینگی", R.drawable.pingi, false,false,0.0035f),
-	wallex("والکس", R.drawable.wallex,false, false,0.003f);
+	wallex("والکس", R.drawable.wallex,false, false,0.003f),
+	saraf("صراف", R.drawable.saraf,false, false,0.0075f),
+	arz3("ارز 3", R.drawable.arz3,false, false,0.003f),
+	ubitex("یوبیتکس", R.drawable.ubitex,false, false,0.0025f);
 
 
     companion object {

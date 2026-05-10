@@ -10,8 +10,6 @@ class RemoveInvalidExchangeUseCase constructor() {
     fun action(params: RemoveInvalidExchangesParams): List<MarketPrice> {
 
         return params.markets
-//            .filterNot { it.exchange == params.removeExchange }
-
             .filter {
                 ((it.sellPrice != null && it.sellPrice?.toFloat() != 0f) && (it.buyPrice != null && it.buyPrice?.toFloat() != 0f))
                         || it.marketPrice != null && it.marketPrice?.toFloat() != 0f
@@ -28,6 +26,5 @@ class RemoveInvalidExchangeUseCase constructor() {
 
 data class RemoveInvalidExchangesParams(
     val exchangesStatus: List<ExchangeStatus>? = null,
-//    val removeExchange: Exchanges? = null,
     var markets: List<MarketPrice>
 )

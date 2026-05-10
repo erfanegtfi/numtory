@@ -7,22 +7,22 @@ import com.numtory.application.features.market.domain.enums.Exchanges
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class GetTetherLandPriceUseCase constructor(
+class GetArz3PriceUseCase constructor(
     private val marketRepository: MarketRepository,
 ) {
 
-    fun action(): Flow<ApiCallResult<MarketPrice>> {
-        return marketRepository.getTetherLand().map { response ->
+    fun action(base: String): Flow<ApiCallResult<MarketPrice>> {
+        return marketRepository.getArz3Price().map { response ->
             when (response) {
                 is ApiCallResult.Success -> {
                     val asset =
-                        response.result.firstOrNull { item -> item.symbol?.lowercase() == "usdt" }
+                        response.result?.firstOrNull { item -> item.symbol?.lowercase() == "usdt" }
 
                     ApiCallResult.Success(
                         MarketPrice(
-                            buyPrice = asset?.tomanAmount,
-                            sellPrice = asset?.tomanAmount,
-                            exchange = Exchanges.tetherland,
+                            buyPrice = asset?.price?.buy,
+                            sellPrice = asset?.price?.sell,
+                            exchange = Exchanges.arz3,
                             lastRefresh = System.currentTimeMillis()
                         )
                     )

@@ -88,7 +88,7 @@ fun AboutScreen(navigator: DestinationsNavigator,) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "Num Tory",
+                        "توکن چند",
                         fontSize = 24.sp,
                         style = MaterialTheme.typography.headlineSmall
                     )
@@ -120,7 +120,7 @@ fun AboutScreen(navigator: DestinationsNavigator,) {
 
             // Description
             DescriptionWithEditOption(
-                description = "اپلیکیشن Num Tory قیمت ارزهای دیجیتال در صرافی های ایرانی را مقایسه می کند. \nتمامی قیمت ها در اپلیکیشن به طور مستقیم از سایت صرافی ها دریافت و نمایش داده می شود. \nاپلیکیشن Num Tory هیچ گونه تغییری در قیمت های نمایش داده شده انجام نمی دهد."
+                description = "اپلیکیشن توکن چند قیمت ارزهای دیجیتال در صرافی های ایرانی را مقایسه می کند. \nتمامی قیمت ها در اپلیکیشن به طور مستقیم از سایت صرافی ها دریافت و نمایش داده می شود. \nاپلیکیشن توکن چند هیچ گونه تغییری در قیمت های نمایش داده شده انجام نمی دهد."
             )
         }
     }

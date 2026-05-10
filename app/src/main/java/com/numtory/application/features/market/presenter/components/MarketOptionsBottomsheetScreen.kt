@@ -71,14 +71,14 @@ fun AssetOptionsBottomSheetScreen(
         MyCheckbox("اعمال کارمزد در قیمت ها", addFeeChecked.value) {
             addFeeChecked.value = it
         }
-        Text(
-            "کارمزد روی قیمت بازار اعمال نمی شود",
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(start = 50.dp),
-            style = MaterialTheme.typography.labelMedium
-        )
-        Box(modifier = Modifier.height(6.dp))
+//        Text(
+//            "کارمزد روی قیمت بازار اعمال نمی شود",
+//            modifier = Modifier
+//                .align(Alignment.Start)
+//                .padding(start = 50.dp),
+//            style = MaterialTheme.typography.labelMedium
+//        )
+//        Box(modifier = Modifier.height(6.dp))
 
         MyCheckbox("نمایش بازارها", onlyMarketsChecked.value) {
             onlyMarketsChecked.value = it

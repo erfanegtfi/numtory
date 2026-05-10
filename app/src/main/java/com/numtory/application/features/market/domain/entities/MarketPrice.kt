@@ -12,51 +12,17 @@ data class MarketPrice constructor(
 
 ) {
 
-    val finalSellPrice: String
-        get(): String {
-
-            // no fee for market
-            if (marketPrice != null && marketPrice?.toFloat() != 0f)
-                return marketPrice.toString()
-
-            val p = if (sellPrice == null || sellPrice?.toFloat() == 0f)
-                0f
-            else
-                sellPrice?.toFloat() ?: 0f
-
-
-            return if (addFee == true) (p - (p * (exchange?.fee
-                ?: 0f))).toString() else p.toString()
-        }
-
-    val finalBuyPrice: String
-        get(): String {
-            // no fee for market
-            if (marketPrice != null && marketPrice?.toFloat() != 0f)
-                return marketPrice.toString()
-
-            val p: Float = if (buyPrice == null || buyPrice?.toFloat() == 0f)
-                0f
-            else
-                buyPrice?.toFloat() ?: 0f
-
-
-            return if (addFee == true) (p + (p * (exchange?.fee
-                ?: 0f))).toString() else p.toString()
-        }
-
 //    val finalSellPrice: String
 //        get(): String {
 //
-//            var p = 0f
-//            p = if (marketPrice != null && marketPrice?.toFloat() != 0f) {
-//                marketPrice?.toFloat() ?: 0f
-//            } else {
-//                if (sellPrice == null || sellPrice?.toFloat() == 0f)
-//                    0f
-//                else
-//                    sellPrice?.toFloat() ?: 0f
-//            }
+//            // no fee for market
+//            if (marketPrice != null && marketPrice?.toFloat() != 0f)
+//                return marketPrice.toString()
+//
+//            val p = if (sellPrice == null || sellPrice?.toFloat() == 0f)
+//                0f
+//            else
+//                sellPrice?.toFloat() ?: 0f
 //
 //
 //            return if (addFee == true) (p - (p * (exchange?.fee
@@ -65,20 +31,52 @@ data class MarketPrice constructor(
 
 //    val finalBuyPrice: String
 //        get(): String {
-//            var p = 0f
-//            p = if (marketPrice != null && marketPrice?.toFloat() != 0f) {
-//                marketPrice?.toFloat() ?: 0f
-//            } else {
-//                if (buyPrice == null || buyPrice?.toFloat() == 0f)
-//                    0f
-//                else
-//                    buyPrice?.toFloat() ?: 0f
-//            }
+//            // no fee for market
+//            if (marketPrice != null && marketPrice?.toFloat() != 0f)
+//                return marketPrice.toString()
+//
+//            val p: Float = if (buyPrice == null || buyPrice?.toFloat() == 0f)
+//                0f
+//            else
+//                buyPrice?.toFloat() ?: 0f
 //
 //
 //            return if (addFee == true) (p + (p * (exchange?.fee
 //                ?: 0f))).toString() else p.toString()
 //        }
+
+    val finalSellPrice: String
+        get(): String {
+
+            val p = if (marketPrice != null && marketPrice?.toFloat() != 0f) {
+                marketPrice?.toFloat() ?: 0f
+            } else {
+                if (sellPrice == null || sellPrice?.toFloat() == 0f)
+                    0f
+                else
+                    sellPrice?.toFloat() ?: 0f
+            }
+
+
+            return if (addFee == true) (p - (p * (exchange?.fee
+                ?: 0f))).toString() else p.toString()
+        }
+
+    val finalBuyPrice: String
+        get(): String {
+            val p = if (marketPrice != null && marketPrice?.toFloat() != 0f) {
+                marketPrice?.toFloat() ?: 0f
+            } else {
+                if (buyPrice == null || buyPrice?.toFloat() == 0f)
+                    0f
+                else
+                    buyPrice?.toFloat() ?: 0f
+            }
+
+
+            return if (addFee == true) (p + (p * (exchange?.fee
+                ?: 0f))).toString() else p.toString()
+        }
     val diff: String
         get(): String {
             return (finalBuyPrice.toFloat() - finalSellPrice.toFloat()).toInt().toString()

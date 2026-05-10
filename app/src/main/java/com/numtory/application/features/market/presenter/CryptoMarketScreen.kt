@@ -139,7 +139,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                         navigator.navigate(AboutScreenDestination)
                     }) {
                         Icon(
-                            modifier = Modifier.padding(7.dp),
+                            modifier = Modifier.padding(9.dp),
                             painter = painterResource(id = R.drawable.ic_about),
                             contentDescription = "Menu"
                         )
@@ -148,7 +148,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                         showSheet = true
                     }) {
                         Icon(
-                            modifier = Modifier.padding(7.dp),
+                            modifier = Modifier.padding(9.dp),
                             painter = painterResource(id = R.drawable.ic_setting),
                             contentDescription = "Menu"
                         )

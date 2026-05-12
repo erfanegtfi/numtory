@@ -3,17 +3,17 @@ package com.numtory.application.features.market.data.local
 import com.google.gson.Gson
 import com.numtory.application.data.local.preferences.PreferencesConstants
 import com.numtory.application.data.local.preferences.Session
-import com.numtory.application.features.market.data.models.ExchangeStatusDataModel
-import com.numtory.application.features.market.domain.entities.ExchangeStatus
+import com.numtory.application.features.market.data.models.ExchangeInfoDataModel
+import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.enums.Exchanges
 import kotlinx.serialization.json.Json
 
 interface ExchangesLocalDataSource {
-     fun getExchangesStatus(): List<ExchangeStatus>?
-     fun saveExchangesStatus(exchanges: List<ExchangeStatusDataModel>)
+     fun getExchangesInfo(): List<ExchangeInfo>?
+     fun saveExchangesInfo(exchanges: List<ExchangeInfoDataModel>)
 
-    fun saveDisplayExchanges(exchanges: List<Exchanges>?)
-    fun getDisplayExchanges(): List<Exchanges>?
+    fun saveUserExchanges(exchanges: List<Exchanges>?)
+    fun getUserExchanges(): List<Exchanges>?
 
     fun saveAddFee(addFee: Boolean?)
     fun addFee(): Boolean
@@ -22,28 +22,28 @@ interface ExchangesLocalDataSource {
 class ExchangesLocalDataSourceImpl constructor(
     private val session: Session,
 ) : ExchangesLocalDataSource {
-    override  fun getExchangesStatus(): List<ExchangeStatus>? {
+    override  fun getExchangesInfo(): List<ExchangeInfo>? {
         val exchangeStatus = session.getArrayObject(
             PreferencesConstants.EXCHANGES_STATUS,
-            Array<ExchangeStatusDataModel>::class.java
+            Array<ExchangeInfoDataModel>::class.java
         )
         return exchangeStatus?.map {
             it.toEntity()
         }
     }
 
-    override  fun saveExchangesStatus(exchanges: List<ExchangeStatusDataModel>) {
+    override  fun saveExchangesInfo(exchanges: List<ExchangeInfoDataModel>) {
         val json = Gson().toJson(exchanges)
         session.setPreferenceValue(PreferencesConstants.EXCHANGES_STATUS, json)
     }
 
 
-    override fun saveDisplayExchanges(exchanges: List<Exchanges>?) {
+    override fun saveUserExchanges(exchanges: List<Exchanges>?) {
         val json = Json.encodeToString(exchanges)
         session.setPreferenceValue(PreferencesConstants.ENABLE_EXCHANGES, json)
     }
 
-    override fun getDisplayExchanges(): List<Exchanges>? =
+    override fun getUserExchanges(): List<Exchanges>? =
         session.getArrayObject(PreferencesConstants.ENABLE_EXCHANGES, Array<Exchanges>::class.java)
 
     override fun saveAddFee(addFee: Boolean?) =

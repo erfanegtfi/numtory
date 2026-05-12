@@ -2,6 +2,7 @@ package com.numtory.application.features.market.domain.usecase
 
 import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.market.data.repositories.MarketRepository
+import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.features.market.domain.enums.Exchanges
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +14,7 @@ class GetSarmayexPriceUseCase constructor(
 ) {
 
     fun action(symbol: String, marketSymbol: String): Flow<ApiCallResult<MarketPrice>> {
+        val exchangesInfo = marketRepository.getSavedExchangesInfo()
 
         val flow1 = marketRepository.getSarmayex(symbol)
         val flow2 = marketRepository.getSarmayexMarket()
@@ -23,7 +25,11 @@ class GetSarmayexPriceUseCase constructor(
             when (swapResponse) {
                 is ApiCallResult.Success -> {
                     val swapPrice = MarketPrice(
-                        exchange = Exchanges.sarmayex,
+                        exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.sarmayex } ?: ExchangeInfo(
+                            exchange = Exchanges.sarmayex,
+                            active = true,
+                            display = true
+                        ),
                         buyPrice = ((swapResponse.result?.currency?.sell?.price ?: "0")), // sell should be hear
                         sellPrice = ((swapResponse.result?.currency?.buy?.price ?: "0")),
                         lastRefresh = System.currentTimeMillis()
@@ -39,8 +45,12 @@ class GetSarmayexPriceUseCase constructor(
             when (marketResponse) {
                 is ApiCallResult.Success -> {
                     val marketPrice = MarketPrice(
-                        exchange = Exchanges.sarmayexMarket,
-                        marketPrice = ((marketResponse.result[marketSymbol]?.price
+                        exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.sarmayexMarket } ?: ExchangeInfo(
+                            exchange = Exchanges.sarmayexMarket,
+                            active = true,
+                            display = true
+                        ),
+                        marketPrice = ((marketResponse.result?.get(marketSymbol)?.price
                             ?: "0")),
                         lastRefresh = System.currentTimeMillis()
                     )

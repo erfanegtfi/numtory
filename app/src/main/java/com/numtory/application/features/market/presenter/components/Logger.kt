@@ -63,7 +63,7 @@ fun printLogs(priceList: ViewState<List<MarketPrice>>) {
 //                    ),
                     priceFormatter(item.finalSellPrice.toFloat().toInt().toString()),
                     priceFormatter(item.finalBuyPrice.toFloat().toInt().toString()),
-                    item.exchange?.title ?: "",
+                    item.exchangeInfo?.exchange?.title ?: "",
                 )
             )
         }

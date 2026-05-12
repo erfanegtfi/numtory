@@ -2,6 +2,7 @@ package com.numtory.application.features.market.domain.usecase
 
 import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.market.data.repositories.MarketRepository
+import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.features.market.domain.enums.Exchanges
 import kotlinx.coroutines.flow.Flow
@@ -22,6 +23,8 @@ class GetTabtealPriceUseCase constructor(
         fromCurrency: String,
         toCurrency: String,
     ): Flow<ApiCallResult<MarketPrice>> {
+        val exchangesInfo = marketRepository.getSavedExchangesInfo()
+
 
 //        val flow1 = marketRepository.getTabdeal(fromCurrency, toCurrency)
 //            .map { MarketEvent.Buy(it) }
@@ -38,7 +41,11 @@ class GetTabtealPriceUseCase constructor(
         }.transform { (buyPriceResponse, sellPriceResponse, marketResponse) ->
 
             val swapPrice = MarketPrice(
-                exchange = Exchanges.tabdeal,
+                exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.tabdeal } ?: ExchangeInfo(
+                    exchange = Exchanges.tabdeal,
+                    active = true,
+                    display = true
+                ),
                 lastRefresh = System.currentTimeMillis(),
             )
 
@@ -65,7 +72,11 @@ class GetTabtealPriceUseCase constructor(
             when (marketResponse) {
                 is ApiCallResult.Success -> {
                     val marketPrice = MarketPrice(
-                        exchange = Exchanges.tabdealMarket,
+                        exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.tabdealMarket }?: ExchangeInfo(
+                            exchange = Exchanges.tabdealMarket,
+                            active = true,
+                            display = true
+                        ),
                         marketPrice = marketResponse.result?.get(toCurrency)?.get(fromCurrency)?.price,
                         lastRefresh = System.currentTimeMillis()
                     )

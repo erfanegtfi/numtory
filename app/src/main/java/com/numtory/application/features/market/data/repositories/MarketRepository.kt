@@ -6,7 +6,7 @@ import com.numtory.application.features.market.data.dataSource.MarketRemoteDataS
 import com.numtory.application.features.market.data.local.ExchangesLocalDataSource
 import com.numtory.application.features.market.domain.entities.AbanTether
 import com.numtory.application.features.market.domain.entities.Arz3CoinItem
-import com.numtory.application.features.market.domain.entities.ExchangeStatus
+import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.entities.ArzplusMarketItem
 import com.numtory.application.features.market.domain.entities.ArzplusSwap
 import com.numtory.application.features.market.domain.entities.Bit24
@@ -34,8 +34,8 @@ import kotlinx.coroutines.flow.flowOn
 
 
 interface MarketRepository {
-    fun getExchanges(): Flow<ApiCallResult<List<ExchangeStatus>>>
-    fun getSavedExchanges(): List<ExchangeStatus>?
+    fun getExchanges(): Flow<ApiCallResult<List<ExchangeInfo>>>
+    fun getSavedExchangesInfo(): List<ExchangeInfo>?
     fun getBitPin(marketId: Int): Flow<ApiCallResult<BitPin>>
     fun getTetherLand(): Flow<ApiCallResult<List<TetherLand>>>
     fun getAbanTether(): Flow<ApiCallResult<List<AbanTether>>>
@@ -67,7 +67,7 @@ interface MarketRepository {
     fun getEterexPrice(): Flow<ApiCallResult<List<EterexGroups>>>
 
     fun getSarmayex(market: String): Flow<ApiCallResult<SarmayexSwap?>>
-    fun getSarmayexMarket(): Flow<ApiCallResult<Map<String, SarmayexMarketItem>>>
+    fun getSarmayexMarket(): Flow<ApiCallResult<Map<String, SarmayexMarketItem>?>>
     fun getPingi(): Flow<ApiCallResult<Map<String, PingiItem>>>
     fun getWallex(market: String): Flow<ApiCallResult<WallexMarkets>>
     fun getSaraf(): Flow<ApiCallResult<SarafPrice>>
@@ -81,21 +81,19 @@ class MarketRepositoryImpl(
     private val dispatcher: CoroutineDispatcher
 ) : MarketRepository {
 
-    override fun getExchanges(): Flow<ApiCallResult<List<ExchangeStatus>>> = flow {
+    override fun getExchanges(): Flow<ApiCallResult<List<ExchangeInfo>>> = flow {
         val response = getResult {
             marketRemoteDataSource.getExchanges()
         }
         if (response is ApiCallResult.Success) {
-            exchangesLocalDataSource.saveExchangesStatus(response.result)
+            exchangesLocalDataSource.saveExchangesInfo(response.result)
             emit(ApiCallResult.Success(response.result.map { it.toEntity() }))
         } else if (response is ApiCallResult.Failure)
             emit(ApiCallResult.Failure(response.error))
     }.flowOn(dispatcher)
 
-    override fun getSavedExchanges(): List<ExchangeStatus>? {
-
-        return exchangesLocalDataSource.getExchangesStatus()
-
+    override fun getSavedExchangesInfo(): List<ExchangeInfo>? {
+        return exchangesLocalDataSource.getExchangesInfo()
     }
 
     override fun getBitPin(marketId: Int): Flow<ApiCallResult<BitPin>> = flow {
@@ -276,7 +274,7 @@ class MarketRepositoryImpl(
             emit(ApiCallResult.Failure(response.error))
     }
 
-    override fun getSarmayexMarket(): Flow<ApiCallResult<Map<String, SarmayexMarketItem>>> = flow {
+    override fun getSarmayexMarket(): Flow<ApiCallResult<Map<String, SarmayexMarketItem>?>> = flow {
         val response = getResult {
             marketRemoteDataSource.getSarmayexMarketPrice()
         }

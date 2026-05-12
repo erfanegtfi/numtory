@@ -10,7 +10,7 @@ class FilterMarketUseCase constructor() {
         return params.markets
             .let { markets ->
                 if (params.activeExchanges != null)
-                    markets.filter { params.activeExchanges?.contains(it.exchange) == true }
+                    markets.filter { params.activeExchanges?.contains(it.exchangeInfo?.exchange) == true }
                 else markets
             }
             .let { markets ->

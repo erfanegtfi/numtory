@@ -30,32 +30,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eterex.composeui.ButtonComponent
 import com.numtory.application.R
 import com.numtory.application.composeUI.MyCheckbox
+import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.enums.Exchanges
 import com.numtory.application.ui.theme.MyApplicationTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AssetOptionsBottomSheetScreen(
-    activeExchanges: List<Exchanges>,
+    userExchanges: List<Exchanges>,
+    allExchanges: List<ExchangeInfo>,
     addFee: Boolean,
     hide: () -> Unit,
     onSubmit: (exchanges: Map<Exchanges, Boolean>, addFee: Boolean) -> Unit
 ) {
 
-    val exchanges = Exchanges.entries
+//    val allExchanges = Exchanges.entries
     val checkedStates = remember { mutableStateMapOf<Exchanges, Boolean>() }
 
     // Initialize
     LaunchedEffect(Unit) {
-        exchanges.forEach { exchange ->
-            checkedStates[exchange] = activeExchanges.contains(exchange)
+        allExchanges.forEach { info ->
+            checkedStates[info.exchange] = userExchanges.contains(info.exchange) == true
         }
     }
 
@@ -82,10 +83,10 @@ fun AssetOptionsBottomSheetScreen(
 
         MyCheckbox("نمایش بازارها", onlyMarketsChecked.value) {
             onlyMarketsChecked.value = it
-            setMarkets(exchanges, checkedStates, it)
+            setMarkets(allExchanges, checkedStates, it)
 
             if (allChecked.value)
-                setAll(exchanges, checkedStates, true)
+                setAll(allExchanges, checkedStates, true)
 
         }
 //        Text(
@@ -98,18 +99,16 @@ fun AssetOptionsBottomSheetScreen(
 //        Box(modifier = Modifier.height(6.dp))
         MyCheckbox("نمایش همه", allChecked.value) {
             allChecked.value = it
-            setAll(exchanges, checkedStates, it)
+            setAll(allExchanges, checkedStates, it)
 
             if (onlyMarketsChecked.value)
-                setMarkets(exchanges, checkedStates, true)
+                setMarkets(allExchanges, checkedStates, true)
         }
         ExchangesListWithSelectAll(
             Modifier
                 .fillMaxWidth()
-                .weight(1f), exchanges, checkedStates
-        ) {
-
-        }
+                .weight(1f), allExchanges, checkedStates
+        ) {}
         Box(modifier = Modifier.height(16.dp))
 
         ButtonComponent(
@@ -123,22 +122,22 @@ fun AssetOptionsBottomSheetScreen(
 }
 
 fun setMarkets(
-    exchanges: List<Exchanges>,
+    allExchanges: List<ExchangeInfo>,
     checkedStates: MutableMap<Exchanges, Boolean>, check: Boolean
 ) {
-    exchanges.forEach { exchange ->
-        if (exchange.isMarket )
-            checkedStates[exchange] = check
-        else checkedStates[exchange] = false
+    allExchanges.forEach { info ->
+            if (info.isMarket == true)
+                checkedStates[info.exchange] = check
+            else checkedStates[info.exchange] = false
     }
 }
 
 fun setAll(
-    exchanges: List<Exchanges>,
+    allExchanges: List<ExchangeInfo>,
     checkedStates: MutableMap<Exchanges, Boolean>, check: Boolean
 ) {
-    exchanges.forEach { exchange ->
-        checkedStates[exchange] = check
+    allExchanges.forEach { info ->
+            checkedStates[info.exchange] = check
     }
 }
 
@@ -180,7 +179,7 @@ fun BottomSheetAppbar(hide: () -> Unit, title: String) {
 @Composable
 fun ExchangesListWithSelectAll(
     modifier: Modifier,
-    exchanges: List<Exchanges>,
+    allExchanges: List<ExchangeInfo>,
     checkedStates: MutableMap<Exchanges, Boolean>,
     onSelectedExchangesChanged: (List<Exchanges>) -> Unit
 ) {
@@ -188,13 +187,13 @@ fun ExchangesListWithSelectAll(
     LazyColumn(
         modifier = modifier
     ) {
-        items(exchanges) { exchange ->
+        items(allExchanges) { info ->
             ExchangeRow(
-                exchange = exchange,
-                isChecked = checkedStates[exchange] ?: false,
+                info = info,
+                isChecked = checkedStates[info.exchange] ?: false,
                 onCheckedChange = { isChecked ->
-                    checkedStates[exchange] = isChecked
-                    val selected = exchanges.filter { checkedStates[it] == true }
+                    checkedStates[info.exchange] = isChecked
+                    val selected: List<Exchanges> = allExchanges.filter { checkedStates[it.exchange] == true }.map { it.exchange }
                     onSelectedExchangesChanged(selected)
                 }
             )
@@ -205,7 +204,7 @@ fun ExchangesListWithSelectAll(
 
 @Composable
 fun ExchangeRow(
-    exchange: Exchanges,
+    info: ExchangeInfo,
     isChecked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
@@ -227,15 +226,15 @@ fun ExchangeRow(
             modifier = Modifier.width(16.dp)
         )
         Image(
-            painter = painterResource(id = exchange.logo),
-            contentDescription = exchange.title,
+            painter = painterResource(id = info.exchange.logo),
+            contentDescription = info.exchange.title,
             modifier = Modifier.size(26.dp)
         )
         Box(
             modifier = Modifier.width(16.dp)
         )
         Text(
-            text = exchange.title,
+            text = info.exchange.title,
         )
     }
 }
@@ -244,6 +243,6 @@ fun ExchangeRow(
 @Composable
 fun AssetOptionsBottomSheetScreenPreview() {
     MyApplicationTheme {
-        AssetOptionsBottomSheetScreen(emptyList(), false, hide = {}, onSubmit = { a, b -> })
+//        AssetOptionsBottomSheetScreen(emptyList(), false, hide = {}, onSubmit = { a, b -> })
     }
 }

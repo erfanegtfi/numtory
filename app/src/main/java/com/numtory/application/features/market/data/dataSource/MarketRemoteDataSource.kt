@@ -21,9 +21,8 @@ import com.numtory.application.features.market.data.models.TwoxDataModel
 import com.numtory.application.features.market.data.models.WallexResultDataModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.numtory.application.features.market.data.models.Arz3PriceDataModel
 import com.numtory.application.features.market.data.models.Arz3coinsDataModel
-import com.numtory.application.features.market.data.models.ExchangeStatusDataModel
+import com.numtory.application.features.market.data.models.ExchangeInfoDataModel
 import com.numtory.application.features.market.data.models.SarafPriceDataModel
 import com.numtory.application.features.market.data.models.UbitexDataModel
 import io.ktor.client.HttpClient
@@ -34,9 +33,10 @@ import io.ktor.client.request.post
 import io.ktor.client.statement.bodyAsText
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import com.numtory.application.BuildConfig
 
 interface MarketRemoteDataSource {
-    suspend fun getExchanges(): List<ExchangeStatusDataModel>
+    suspend fun getExchanges(): List<ExchangeInfoDataModel>
     suspend fun getBitPinPrice(marketId: Int): BitPinDataModel
     suspend fun getTetherLandPrice(): TetherLandListDataModel
     suspend fun getAbanTetherPrice(): AbanTetherListDataModel
@@ -78,34 +78,35 @@ class MarketRemoteDataSourceImpl constructor(
     private val gson: Gson
 ) : MarketRemoteDataSource {
 
-    override suspend fun getExchanges(): List<ExchangeStatusDataModel> {
-        val response = httpClient.get("http://10.0.2.2:8000/api/exchanges/")
+    override suspend fun getExchanges(): List<ExchangeInfoDataModel> {
+        val response = httpClient.get("http://192.168.1.105:8000/api/exchanges/")
+//        val response = httpClient.get("http://10.0.2.2:8000/api/exchanges/")
         val json = response.bodyAsText()
-        val type = object : TypeToken<List<ExchangeStatusDataModel>>() {}.type
+        val type = object : TypeToken<List<ExchangeInfoDataModel>>() {}.type
         return gson.fromJson(json, type)
     }
 
     override suspend fun getBitPinPrice(marketId: Int): BitPinDataModel {
-        val response = httpClient.get("https://api.bitpin.ir/v1/otc/price/?market_id=$marketId")
+        val response = httpClient.get("${BuildConfig.BITPIN_URL}$marketId")
         val json = response.bodyAsText()
         return gson.fromJson(json, BitPinDataModel::class.java)
     }
 
     override suspend fun getTetherLandPrice(): TetherLandListDataModel {
 //        val response = httpClient.get("https://service.tetherland.com/api/v4/currencies")
-        val response = httpClient.get("https://service.tetherland.com/api/v5/currencies")
+        val response = httpClient.get(BuildConfig.TETHERLAND_URL)
         val json = response.bodyAsText()
         return gson.fromJson(json, TetherLandListDataModel::class.java)
     }
 
     override suspend fun getAbanTetherPrice(): AbanTetherListDataModel {
-        val response = httpClient.get("https://api.abantether.com/api/v2/manager/coins")
+        val response = httpClient.get(BuildConfig.ABANTEHTER_URL)
         val json = response.bodyAsText()
         return gson.fromJson(json, AbanTetherListDataModel::class.java)
     }
 
     override suspend fun getNobitexSwapPrice(market: String): NobitexSwapDataModel {
-        val response = httpClient.get("https://apiv2.nobitex.ir/exchange/options") {
+        val response = httpClient.get(BuildConfig.NUBITEX_URL) {
             parameter("market", market)
         }
         val json = response.bodyAsText()
@@ -113,7 +114,7 @@ class MarketRemoteDataSourceImpl constructor(
     }
 
     override suspend fun getNobitexMarketPrice(): NobitexMarketListDataModel {
-        val response = httpClient.get("https://apiv2.nobitex.ir/market/stats")
+        val response = httpClient.get(BuildConfig.NUBITEX_MARKET_URL)
         val json = response.bodyAsText()
         return gson.fromJson(json, NobitexMarketListDataModel::class.java)
     }
@@ -124,7 +125,7 @@ class MarketRemoteDataSourceImpl constructor(
     ): TabdealDataModel {
         val response =
             httpClient.get(
-                "https://api-web.tabdeal.org/r/swap/prices_zero_commission_tier_based/"
+                BuildConfig.TABDEAL_URL
             ) {
                 parameter("from_currency", fromCurrency)
                 parameter("to_currency", toCurrency)
@@ -136,7 +137,7 @@ class MarketRemoteDataSourceImpl constructor(
     override suspend fun getTabdealMarketPrice(): TabdealMarketListDataModel {
         val response =
             httpClient.get(
-                "https://api-web.tabdeal.org/r/plots/currencies/dynamic-info/"
+                BuildConfig.TABDEAL_MARKET_URL
             )
         val json = response.bodyAsText()
         return gson.fromJson(json, TabdealMarketListDataModel::class.java)
@@ -148,7 +149,7 @@ class MarketRemoteDataSourceImpl constructor(
     ): Bit24SwapDataModel {
         val response =
             httpClient.get(
-                "https://otc-api.bit24.cash/api/v1/coins/convertor"
+                BuildConfig.BIT24_URL
             ) {
                 parameter("from_coin", fromCurrency)
                 parameter("to_coin", toCurrency)
@@ -162,7 +163,7 @@ class MarketRemoteDataSourceImpl constructor(
     override suspend fun getBit24MarketPrice(): Bit24MarketListDataModel {
         val response =
             httpClient.get(
-                "https://bit24.cash/api/v2/otc/v1/coins/list/all-in-one"
+                BuildConfig.BIT24_MARKET_URL
             )
         val json = response.bodyAsText()
         return gson.fromJson(json, Bit24MarketListDataModel::class.java)
@@ -174,7 +175,7 @@ class MarketRemoteDataSourceImpl constructor(
     ): ArzplusSwapDataModel {
         val response =
             httpClient.get(
-                "https://api.arzplus.net/api/v1/trade/otc/info/"
+                BuildConfig.ARZPLUS_URL
             ) {
                 parameter("from", fromCurrency)
                 parameter("to", toCurrency)
@@ -186,7 +187,7 @@ class MarketRemoteDataSourceImpl constructor(
     override suspend fun getArzplusMarketPrice(): ArzplusMarketListDataModel {
         val response =
             httpClient.get(
-                "https://api.arzplus.net/api/v1/asset/overview/"
+                BuildConfig.ARZPLUS_MARKET_URL
             )
         val json = response.bodyAsText()
         return gson.fromJson(json, ArzplusMarketListDataModel::class.java)
@@ -195,7 +196,7 @@ class MarketRemoteDataSourceImpl constructor(
     override suspend fun getCoinkadePrice(): CoinkadeDataModel {
         val response =
             httpClient.get(
-                "https://api.coinkade.biz/get-usdt-price"
+                BuildConfig.COINKADE_URL
             )
         val json = response.bodyAsText()
         return gson.fromJson(json, CoinkadeDataModel::class.java)
@@ -207,7 +208,7 @@ class MarketRemoteDataSourceImpl constructor(
     ): TwoxDataModel {
         val response =
             httpClient.get(
-                "https://api.prd.twox.info/api/currencies/prices/latest/$fromCurrency/$toCurrency"
+                "${BuildConfig.TWOX_URL}$fromCurrency/$toCurrency"
             )
         val json = response.bodyAsText()
         return gson.fromJson(json, TwoxDataModel::class.java)
@@ -221,7 +222,7 @@ class MarketRemoteDataSourceImpl constructor(
         val side = if (isBuy) "buy" else "sell"
         val response =
             httpClient.get(
-                "https://api-beta.pooleno.ir/api/v1/trade/public/conversion-rate/$baseCurrency-$quoteCurrency/$side"
+                "${BuildConfig.POOLENO_URL}$baseCurrency-$quoteCurrency/$side"
             )
         val json = response.bodyAsText()
         return gson.fromJson(json, PoolenoDataModel::class.java)
@@ -230,7 +231,7 @@ class MarketRemoteDataSourceImpl constructor(
     override suspend fun getEterexPrice(): EterexPriceGroupsDataModel {
         val response =
             httpClient.get(
-                "https://api.eterex.com/api/Configs/v2"
+                BuildConfig.ETEREX_URL
             )
         val json = response.bodyAsText()
         return gson.fromJson(json, EterexPriceGroupsDataModel::class.java)
@@ -238,25 +239,25 @@ class MarketRemoteDataSourceImpl constructor(
 
 
     override suspend fun getSarmayexMarketPrice(): SarmayexMarketListDataModel {
-        val response = httpClient.get("https://core.sarmayex.com/api/v1/pairs")
+        val response = httpClient.get(BuildConfig.SARMAYEX_MARKET_URL)
         val json = response.bodyAsText()
         return gson.fromJson(json, SarmayexMarketListDataModel::class.java)
     }
 
     override suspend fun getSarmayexSwapPrice(market: String): SarmayexSwapDataModel {
-        val response = httpClient.get("https://api.sarmayex.com/api/v2/currency/symbol/$market")
+        val response = httpClient.get("h${BuildConfig.SARMAYEX_URL}$market")
         val json = response.bodyAsText()
         return gson.fromJson(json, SarmayexSwapDataModel::class.java)
     }
 
     override suspend fun getPingiSwapPrice(): PingiDataModel {
-        val response = httpClient.get("https://api5.pingi.co/trading/market/prices/")
+        val response = httpClient.get(BuildConfig.PINGI_URL)
         val json = response.bodyAsText()
         return gson.fromJson(json, PingiDataModel::class.java)
     }
 
     override suspend fun getWallexSwapPrice(market: String): WallexResultDataModel {
-        val response = httpClient.get("https://api.wallex.ir/v1/coin-market-list")
+        val response = httpClient.get(BuildConfig.WALLEX_URL)
         {
             parameter("keys", market)
         }
@@ -265,7 +266,7 @@ class MarketRemoteDataSourceImpl constructor(
     }
 
     override suspend fun getSarafSwapPrice(): SarafPriceDataModel {
-        val response = httpClient.get("https://api.sarafapp.com/v3/prices/crypto")
+        val response = httpClient.get(BuildConfig.SARAF_URL)
 
         val json = response.bodyAsText()
         return gson.fromJson(json, SarafPriceDataModel::class.java)
@@ -278,7 +279,7 @@ class MarketRemoteDataSourceImpl constructor(
             header("X-Timestamp", timestamp.toString())
             header(
                 "X-signature",
-                "17682194f5c86a98341d7c5c429faf6f531b55deac96d7f7192eabf08cbc9198"
+                ""
             )
         }
 
@@ -291,7 +292,7 @@ class MarketRemoteDataSourceImpl constructor(
         quoteCurrency: String
     ): UbitexDataModel {
         val response =
-            httpClient.get("https://api.ubitex.io/api/pair/topprice/$baseCurrency$quoteCurrency")
+            httpClient.get("${BuildConfig.UBITEX_URL}$baseCurrency$quoteCurrency")
 
         val json = response.bodyAsText()
         return gson.fromJson(json, UbitexDataModel::class.java)

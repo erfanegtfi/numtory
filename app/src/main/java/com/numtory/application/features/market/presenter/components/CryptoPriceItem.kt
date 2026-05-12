@@ -38,7 +38,7 @@ fun CryptoPriceItem(item: MarketPrice, modifier: Modifier = Modifier) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
-            painter = painterResource(id = item.exchange?.logo ?: 0),
+            painter = painterResource(id = item.exchangeInfo.exchange.logo),
             contentDescription = "Description of image",
             modifier = Modifier
                 .padding(8.dp)
@@ -50,7 +50,7 @@ fun CryptoPriceItem(item: MarketPrice, modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                "${item.exchange?.title}",
+                item.exchangeInfo.exchange.title,
                 style = MaterialTheme.typography.bodyMedium
             )
 
@@ -87,9 +87,9 @@ fun CryptoPriceItem(item: MarketPrice, modifier: Modifier = Modifier) {
         ) {
             Text(
                 "${
-                    if ((item.exchange?.fee ?: 0f) == 0f) 0 else String.format(
+                    if ((item.exchangeInfo.fee ?: 0f) == 0f) "" else String.format(
                         "%.2f",
-                        (item.exchange?.fee ?: 0f) * 100
+                        (item.exchangeInfo.fee ?: 0f) * 100
                     )
                 }%",
                 style = MaterialTheme.typography.bodyMedium

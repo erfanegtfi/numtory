@@ -2,6 +2,7 @@ package com.numtory.application.features.market.domain.usecase
 
 import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.market.data.repositories.MarketRepository
+import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.features.market.domain.enums.Exchanges
 import kotlinx.coroutines.flow.Flow
@@ -12,6 +13,8 @@ class GetArz3PriceUseCase constructor(
 ) {
 
     fun action(base: String): Flow<ApiCallResult<MarketPrice>> {
+        val exchangesInfo = marketRepository.getSavedExchangesInfo()
+
         return marketRepository.getArz3Price().map { response ->
             when (response) {
                 is ApiCallResult.Success -> {
@@ -22,7 +25,11 @@ class GetArz3PriceUseCase constructor(
                         MarketPrice(
                             buyPrice = asset?.price?.buy,
                             sellPrice = asset?.price?.sell,
-                            exchange = Exchanges.arz3,
+                            exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.arz3 } ?: ExchangeInfo(
+                                exchange = Exchanges.arz3,
+                                active = true,
+                                display = true
+                            ),
                             lastRefresh = System.currentTimeMillis()
                         )
                     )

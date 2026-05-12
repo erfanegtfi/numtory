@@ -8,10 +8,10 @@ import com.google.gson.annotations.SerializedName
 
 data class SarmayexMarketListDataModel(
     @SerializedName("data")
-    val stats: Map<String, SarmayexMarketItemDataModel>
+    val stats: Map<String, SarmayexMarketItemDataModel>?
 ) {
-    fun toEntity(): Map<String, SarmayexMarketItem> =
-        stats.mapValues { (_, item) ->
+    fun toEntity(): Map<String, SarmayexMarketItem>? =
+        stats?.mapValues { (_, item) ->
             item.toEntity()
         }
 }

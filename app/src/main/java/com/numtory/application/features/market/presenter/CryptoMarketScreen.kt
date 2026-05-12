@@ -98,7 +98,8 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
     if (showSheet)
         ShowBottomSheet(onDismiss = { showSheet = false }) { modalBottomSheetState, hide ->
             AssetOptionsBottomSheetScreen(
-                viewModel.getDisplayExchanges(),
+                viewModel.getUserExchanges(),
+                viewModel.getActiveExchangesInfo(),
                 viewModel.getAddFee(),
                 hide
             ) { exchanges, addFee ->

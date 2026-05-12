@@ -1,9 +1,7 @@
 package com.numtory.application.features.market.domain.usecase
 
-import com.numtory.application.features.market.domain.entities.ExchangeStatus
+import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.entities.MarketPrice
-import com.numtory.application.features.market.domain.enums.Exchanges
-import okhttp3.internal.connection.Exchange
 
 class RemoveInvalidExchangeUseCase constructor() {
 
@@ -15,16 +13,18 @@ class RemoveInvalidExchangeUseCase constructor() {
                         || it.marketPrice != null && it.marketPrice?.toFloat() != 0f
             }
             .filter { marketPrice ->
-                if (params.exchangesStatus?.isNotEmpty() != true) true
-                params.exchangesStatus?.filter { it -> it.display }?.map { it ->
-                    it.exchange
-                }?.contains(marketPrice.exchange) == true
+                if (params.exchangesInfo?.isNotEmpty() != true) true
+                else {
+                    params.exchangesInfo.filter { it -> it.display }.map { it ->
+                        it.exchange
+                    }.contains(marketPrice.exchangeInfo?.exchange)
+                }
 
             }
     }
 }
 
 data class RemoveInvalidExchangesParams(
-    val exchangesStatus: List<ExchangeStatus>? = null,
+    val exchangesInfo: List<ExchangeInfo>? = null,
     var markets: List<MarketPrice>
 )

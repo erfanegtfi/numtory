@@ -2,6 +2,7 @@ package com.numtory.application.features.market.domain.usecase
 
 import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.market.data.repositories.MarketRepository
+import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.features.market.domain.enums.Exchanges
 import kotlinx.coroutines.flow.Flow
@@ -12,6 +13,8 @@ class GetEterexPriceUseCase constructor(
 ) {
 
     fun action(assetSymbol: String): Flow<ApiCallResult<MarketPrice>> {
+        val exchangesInfo = marketRepository.getSavedExchangesInfo()
+
         return marketRepository.getEterexPrice().map { response ->
             when (response) {
                 is ApiCallResult.Success -> {
@@ -22,7 +25,12 @@ class GetEterexPriceUseCase constructor(
                         MarketPrice(
                             buyPrice = tether?.price?.irtUsdt,
                             sellPrice = tether?.price?.usdtIrt,
-                            exchange = Exchanges.eterex,
+                            exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.eterex }
+                                ?: ExchangeInfo(
+                                    exchange = Exchanges.eterex,
+                                    active = true,
+                                    display = true
+                                ),
                             lastRefresh = System.currentTimeMillis()
                         )
                     )

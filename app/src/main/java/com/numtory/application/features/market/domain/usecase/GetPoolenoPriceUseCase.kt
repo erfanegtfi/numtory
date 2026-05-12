@@ -2,6 +2,7 @@ package com.numtory.application.features.market.domain.usecase
 
 import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.market.data.repositories.MarketRepository
+import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.features.market.domain.enums.Exchanges
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +14,7 @@ class GetPoolenoPriceUseCase constructor(
 ) {
 
     fun action(baseCurrency: String, quoteCurrency: String): Flow<ApiCallResult<MarketPrice>> {
+        val exchangesInfo = marketRepository.getSavedExchangesInfo()
 
         val flow1 = marketRepository.getPoolenoPrice(baseCurrency, quoteCurrency, true)
         val flow2 = marketRepository.getPoolenoPrice(baseCurrency, quoteCurrency, false)
@@ -23,7 +25,11 @@ class GetPoolenoPriceUseCase constructor(
         }.transform { (buyPriceResponse, sellPriceResponse) ->
 
             val swapPrice = MarketPrice(
-                exchange = Exchanges.pooleno,
+                exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.pooleno } ?: ExchangeInfo(
+                    exchange = Exchanges.pooleno,
+                    active = true,
+                    display = true
+                ),
                 lastRefresh = System.currentTimeMillis()
             )
 

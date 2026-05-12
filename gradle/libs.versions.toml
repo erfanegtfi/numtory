@@ -15,6 +15,7 @@ okhttp = "4.11.0"
 koin_version = "4.1.1"
 material3 = "1.4.0"
 serialization-json = "1.9.0"
+slf4jSimple = "2.0.16"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -56,6 +57,7 @@ androidx-data-store = { group = "androidx.datastore", name = "datastore-preferen
 compose-destinations = { group = "io.github.raamcosta.compose-destinations", name = "core", version = "2.2.0" }
 compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version = "2.2.0" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4jSimple" }
 
 
 [plugins]

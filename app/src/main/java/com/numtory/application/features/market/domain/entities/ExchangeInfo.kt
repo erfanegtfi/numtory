@@ -3,16 +3,19 @@ package com.numtory.application.features.market.domain.entities
 import com.numtory.application.features.market.domain.enums.Exchanges
 
 
-data class ExchangeStatus constructor(
-    var id: Integer,
-    var exchange: Exchanges?,
+data class ExchangeInfo constructor(
+    var id: Integer? = null,
+    var exchange: Exchanges,
     var display: Boolean,
     var active: Boolean,
+    var isMarket: Boolean? = null,
+    var hasMarket: Boolean? = null,
+    var fee: Float? = null,
 ) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other !is ExchangeStatus) return false
+        if (other !is ExchangeInfo) return false
 
         return exchange == other.exchange
 

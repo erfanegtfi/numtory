@@ -2,6 +2,7 @@ package com.numtory.application.features.market.domain.usecase
 
 import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.market.data.repositories.MarketRepository
+import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.features.market.domain.enums.Exchanges
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +14,7 @@ class GetBit24PriceUseCase constructor(
 ) {
 
     fun action(fromCurrency: String, toCurrency: String): Flow<ApiCallResult<MarketPrice>> {
+        val exchangesInfo = marketRepository.getSavedExchangesInfo()
 
         val flow1 = marketRepository.getBit24SwapPrice(fromCurrency, toCurrency)
         val flow2 = marketRepository.getBit24MarketPrice()
@@ -23,7 +25,11 @@ class GetBit24PriceUseCase constructor(
             when (swapResponse) {
                 is ApiCallResult.Success -> {
                     val swapPrice = MarketPrice(
-                        exchange = Exchanges.bit24,
+                        exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.bit24 } ?: ExchangeInfo(
+                            exchange = Exchanges.bit24,
+                            active = true,
+                            display = true
+                        ),
                         buyPrice = ((swapResponse.result.data.metas.buyPrice
                             ?: "0").toInt() ).toString(),
                         sellPrice = ((swapResponse.result.data.metas.sellPrice
@@ -41,7 +47,11 @@ class GetBit24PriceUseCase constructor(
             when (marketResponse) {
                 is ApiCallResult.Success -> {
                     val marketPrice = MarketPrice(
-                        exchange = Exchanges.bit24Market,
+                        exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.bit24Market } ?: ExchangeInfo(
+                            exchange = Exchanges.bit24Market,
+                            active = true,
+                            display = true
+                        ),
                         marketPrice = (
                                 (marketResponse.result.firstOrNull { it.symbol?.lowercase() == toCurrency.lowercase() }?.market?.get(
                                     fromCurrency.lowercase()

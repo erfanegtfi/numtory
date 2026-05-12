@@ -1,0 +1,183 @@
+package com.numtory.application.features.market.presenter
+
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.QrCode
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+
+// Define your screen destinations
+sealed class Screen(
+    val route: String,
+    val title: String,
+    val icon: ImageVector,
+    val selectedIcon: ImageVector
+) {
+    object Home : Screen("home", "مقایسه قیمت", Icons.Outlined.BarChart, Icons.Filled.Home)
+    object Search : Screen("search", "استعلام تراکنش", Icons.Outlined.QrCode, Icons.Filled.Search)
+}
+
+@Destination<RootGraph>(start = true)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
+@Composable
+fun BottomNavHost(navigator: DestinationsNavigator) {
+    val navController = rememberNavController()
+
+    Scaffold(
+        bottomBar = { BottomNavigationBar(navController) }
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = Screen.Home.route,
+            modifier = Modifier//.padding(innerPadding)
+                .padding(
+                    bottom = innerPadding.calculateBottomPadding(), // Only top padding
+                    start = innerPadding.calculateStartPadding(LayoutDirection.Rtl),
+                    end = innerPadding.calculateEndPadding(LayoutDirection.Rtl)
+                    // NO bottom padding!
+                )
+        ) {
+            composable(Screen.Home.route) { MarketList(navigator) }
+            composable(Screen.Search.route) { ExchangeScan(navigator) }
+        }
+    }
+}
+
+@Composable
+fun BottomNavigationBar(navController: NavHostController) {
+    val screens = listOf(
+        Screen.Home,
+        Screen.Search,
+    )
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
+
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.surface,
+        tonalElevation = 8.dp,
+        modifier = Modifier.height(100.dp),
+    ) {
+
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceAround, // Space between items
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Material2NavigationBarItem(
+                icon = Screen.Home.icon,
+                label = Screen.Home.title,
+                selected = currentRoute == Screen.Home.route,
+                onClick = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+            )
+            Material2NavigationBarItem(
+                icon = Screen.Search.icon,
+                label = Screen.Search.title,
+                selected = currentRoute == Screen.Search.route,
+                onClick = {
+                    navController.navigate(Screen.Search.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+            )
+        }
+    }
+}
+
+@Composable
+fun Material2NavigationBarItem(
+    selected: Boolean,
+    onClick: () -> Unit,
+    icon: ImageVector,
+    label: String,
+    modifier: Modifier = Modifier
+) {
+    val color = if (selected) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier
+            .width(80.dp)
+            .fillMaxHeight()
+            .clickable(
+                onClick = onClick,
+//                indication = rememberRipple(
+//                    color = MaterialTheme.colorScheme.primary,
+//                    radius = 24.dp
+//                )
+            )
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            modifier = Modifier.size(24.dp),
+            tint = color
+        )
+
+        Spacer(modifier = Modifier.height(2.dp))
+
+        Text(
+            text = label,
+            fontSize = 12.sp,
+            color = color,
+            style = if (selected) MaterialTheme.typography.titleMedium else MaterialTheme.typography.labelMedium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}

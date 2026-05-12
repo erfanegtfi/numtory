@@ -25,7 +25,8 @@ enum class Exchanges(val title: String, val logo: Int) {
 	wallex("والکس", R.drawable.wallex),
 	saraf("صراف", R.drawable.saraf),
 	arz3("ارز 3", R.drawable.arz3),
-	ubitex("یوبیتکس", R.drawable.ubitex);
+	ubitex("یوبیتکس", R.drawable.ubitex),
+    ramzinex("رمزینکس (سریع)", R.drawable.ramzinex);
 
 
     companion object {

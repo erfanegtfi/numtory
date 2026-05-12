@@ -16,9 +16,9 @@ class GetMarketAvgUseCase constructor() {
 
         priceList.filter {
             // in case that exchange info api not responded  (it.exchangeInfo == null) ||
-            displayExchanges.contains(it.exchangeInfo?.exchange)
+            displayExchanges.contains(it.exchangeInfo.exchange)
         }.forEach { item ->
-            if (item.exchangeInfo?.hasMarket == true) {
+            if (item.exchangeInfo.hasMarket == true) {
                 // if has quick swap and market we prefer market and skip quick swap
                 if (item.marketPrice != null && item.marketPrice?.toFloat() != 0f) {
                     size++

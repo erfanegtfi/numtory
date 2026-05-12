@@ -14,6 +14,7 @@ import com.numtory.application.features.market.domain.usecase.GetMarketAvgUseCas
 import com.numtory.application.features.market.domain.usecase.GetNobitexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetPingiPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetPoolenoPriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetRamzinexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetSarafPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetSarmayexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetTabtealPriceUseCase
@@ -46,6 +47,7 @@ val marketPresenterModule = module {
     factory { GetSarafPriceUseCase(get<MarketRepository>()) }
     factory { GetArz3PriceUseCase(get<MarketRepository>()) }
     factory { GetUbitexPriceUseCase(get<MarketRepository>()) }
+    factory { GetRamzinexPriceUseCase(get<MarketRepository>()) }
     factory { SortMarketUseCase() }
     factory { FilterMarketUseCase() }
     factory { RemoveOutOfRangeExchangeUseCase() }
@@ -56,6 +58,7 @@ val marketPresenterModule = module {
 //    viewModel<MarketsViewModel>{ MarketsViewModel(get<GetBitPinPriceUseCase>()) }
     viewModel {
         MarketsViewModel(
+            get(),
             get(),
             get(),
             get(),

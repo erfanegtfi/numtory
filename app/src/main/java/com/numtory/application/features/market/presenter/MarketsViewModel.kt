@@ -26,6 +26,7 @@ import com.numtory.application.features.market.domain.usecase.GetMarketAvgUseCas
 import com.numtory.application.features.market.domain.usecase.GetNobitexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetPingiPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetPoolenoPriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetRamzinexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetSarafPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetSarmayexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetTabtealPriceUseCase
@@ -72,6 +73,7 @@ constructor(
     private val getWallexPriceUseCase: GetWallexPriceUseCase,
     private val getSarafPriceUseCase: GetSarafPriceUseCase,
     private val getUbitexPriceUseCase: GetUbitexPriceUseCase,
+    private val getRamzinexPriceUseCase: GetRamzinexPriceUseCase,
     private val sortMarketUseCase: SortMarketUseCase,
     private val filterMarketUseCase: FilterMarketUseCase,
     private val removeOutOfRangeExchangesUseCase: RemoveOutOfRangeExchangeUseCase,
@@ -147,6 +149,7 @@ constructor(
                 add(getSarmayexPriceUseCase.action("USDT", "USDT_IRT"))
                 add(getSarafPriceUseCase.action("USDT"))
                 add(getUbitexPriceUseCase.action("USDT", "TMN"))
+                add(getRamzinexPriceUseCase.action("2", "9"))
             }
 //         mergedFlow = merge(
 //            getBitPinPriceUseCase.action(5),
@@ -165,6 +168,7 @@ constructor(
 //            getWallexPriceUseCase.action("USDT", "TMN"),
 //            getSarafPriceUseCase.action("USDT"),
 //            getUbitexPriceUseCase.action("USDT", "TMN"),
+//            getRamzinexPriceUseCase.action("2", "9"),
 //        )
         else
             mergedFlow.apply {
@@ -200,6 +204,8 @@ constructor(
                     add(getSarafPriceUseCase.action("USDT"))
                 if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.ubitex }?.active == true)
                     add(getUbitexPriceUseCase.action("USDT", "TMN"))
+                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.ramzinex }?.active == true)
+                    add(getRamzinexPriceUseCase.action("2", "9"))
             }
 
         viewModelScope.launch {
@@ -210,25 +216,28 @@ constructor(
                         is ApiCallResult.Success -> {
 
                             allMarkets =
-                                allMarkets.filterNot { it.exchangeInfo?.exchange == response.result.exchangeInfo?.exchange }
+                                allMarkets.filterNot { it.exchangeInfo.exchange == response.result.exchangeInfo?.exchange }
                                     .toMutableList()
+
+                            allMarkets.add(response.result)
+
+                            allMarkets = removeInvalidExchangeUseCase.action(
+                                RemoveInvalidExchangesParams(
+//                                    exchangesInfo = exchangesInfo,
+                                    markets = allMarkets
+                                )
+                            ).toMutableList()
 
                             // get avg from all of exchanges, so bad price will be detected better.
                             // we do not use add exchanges in avg,
                             // if first exchange price was out of range, avg will be invalid and broke other prices
-                            allMarkets.add(response.result)
                             val (avgBuy, avgSell) = getMarketAvgUseCase.action(
                                 allMarkets,
                                 userExchanges
                             )
 //                        allMarkets.add(response.result) // its better to be after  getting avg
 
-                            validMarkets = removeInvalidExchangeUseCase.action(
-                                RemoveInvalidExchangesParams(
-                                    exchangesInfo = exchangesInfo,
-                                    markets = allMarkets
-                                )
-                            ).toMutableList()
+
 
 
                             validMarkets = removeOutOfRangeExchangesUseCase.action(
@@ -240,7 +249,8 @@ constructor(
                             )
 
                             filterParams.markets = validMarkets
-                            filterParams.activeExchanges = userExchanges
+                            filterParams.userExchanges = userExchanges
+                            filterParams.exchangesInfo = exchangesInfo
                             validMarkets = filterMarketUseCase.action(filterParams)
                             sortParams.markets = validMarkets
 

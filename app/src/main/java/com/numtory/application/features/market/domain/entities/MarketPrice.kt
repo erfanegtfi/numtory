@@ -58,7 +58,7 @@ data class MarketPrice constructor(
             }
 
 
-            return if (addFee == true) (p - (p * (exchangeInfo?.fee
+            return if (addFee == true) (p - (p * (exchangeInfo.fee
                 ?: 0f))).toString() else p.toString()
         }
 
@@ -74,7 +74,7 @@ data class MarketPrice constructor(
             }
 
 
-            return if (addFee == true) (p + (p * (exchangeInfo?.fee
+            return if (addFee == true) (p + (p * (exchangeInfo.fee
                 ?: 0f))).toString() else p.toString()
         }
     val diff: String

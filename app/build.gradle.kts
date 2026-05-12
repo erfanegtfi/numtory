@@ -56,6 +56,7 @@ android {
         buildConfigField("String", "WALLEX_URL", getLocalProperty("WALLEX_URL"))
         buildConfigField("String", "SARAF_URL", getLocalProperty("SARAF_URL"))
         buildConfigField("String", "COINKADE_URL", getLocalProperty("COINKADE_URL"))
+        buildConfigField("String", "RAMZINEX_URL", getLocalProperty("RAMZINEX_URL"))
 
     }
 
@@ -108,6 +109,7 @@ dependencies {
 
     implementation (libs.compose.destinations)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.foundation)
     ksp (libs.compose.destinations.ksp)
     ksp (libs.androidx.room.compiler)
 

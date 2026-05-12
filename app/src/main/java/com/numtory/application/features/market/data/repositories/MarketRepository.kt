@@ -18,11 +18,12 @@ import com.numtory.application.features.market.domain.entities.Nobitex
 import com.numtory.application.features.market.domain.entities.NobitexMarket
 import com.numtory.application.features.market.domain.entities.PingiItem
 import com.numtory.application.features.market.domain.entities.Pooleno
+import com.numtory.application.features.market.domain.entities.Ramzinex
 import com.numtory.application.features.market.domain.entities.SarafPrice
 import com.numtory.application.features.market.domain.entities.SarmayexMarketItem
 import com.numtory.application.features.market.domain.entities.SarmayexSwap
-import com.numtory.application.features.market.domain.entities.Tabdeal
 import com.numtory.application.features.market.domain.entities.TabdealMarketItem
+import com.numtory.application.features.market.domain.entities.TabdealSwap
 import com.numtory.application.features.market.domain.entities.TetherLand
 import com.numtory.application.features.market.domain.entities.Twox
 import com.numtory.application.features.market.domain.entities.Ubitex
@@ -43,7 +44,7 @@ interface MarketRepository {
     fun getNobitex(market: String): Flow<ApiCallResult<Nobitex?>>
     fun getNobitexMarket(): Flow<ApiCallResult<Map<String, NobitexMarket>>>
 
-    fun getTabdeal(fromCurrency: String, toCurrency: String): Flow<ApiCallResult<Tabdeal>>
+    fun getTabdeal(fromCurrency: String, toCurrency: String): Flow<ApiCallResult<TabdealSwap>>
     fun getTabdealMarket(): Flow<ApiCallResult<Map<String, Map<String, TabdealMarketItem>>?>>
 
     fun getBit24SwapPrice(fromCurrency: String, toCurrency: String): Flow<ApiCallResult<Bit24Swap>>
@@ -73,6 +74,11 @@ interface MarketRepository {
     fun getSaraf(): Flow<ApiCallResult<SarafPrice>>
     fun getArz3Price(): Flow<ApiCallResult<List<Arz3CoinItem>?>>
     fun getUbitexPrice(baseCurrency: String, quoteCurrency: String): Flow<ApiCallResult<Ubitex?>>
+    fun getRamzinexSwapPrice(
+        fromId: String,
+        toId: String,
+        isBuy: Boolean
+    ): Flow<ApiCallResult<Ramzinex?>>
 }
 
 class MarketRepositoryImpl(
@@ -161,7 +167,7 @@ class MarketRepositoryImpl(
     override fun getTabdeal(
         fromCurrency: String,
         toCurrency: String
-    ): Flow<ApiCallResult<Tabdeal>> = flow {
+    ): Flow<ApiCallResult<TabdealSwap>> = flow {
         val response = getResult {
             marketRemoteDataSource.getTabdealSwapPrice(fromCurrency, toCurrency)
         }
@@ -331,6 +337,22 @@ class MarketRepositoryImpl(
     ): Flow<ApiCallResult<Ubitex?>> = flow {
         val response = getResult {
             marketRemoteDataSource.getUbitexSwapPrice(baseCurrency, quoteCurrency)
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result.toEntity()))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }
+
+    override fun getRamzinexSwapPrice(
+        fromId: String,
+        toId: String,
+        isBuy: Boolean
+    ): Flow<ApiCallResult<Ramzinex?>> = flow {
+        val response = getResult {
+            if (isBuy)
+                marketRemoteDataSource.getRamzinexSwapPrice(fromId, toId, toAmount = 1)
+            else marketRemoteDataSource.getRamzinexSwapPrice(fromId, toId, fromAmount = 1)
         }
         if (response is ApiCallResult.Success) {
             emit(ApiCallResult.Success(response.result.toEntity()))

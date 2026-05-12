@@ -33,7 +33,7 @@ fun CryptoPriceItem(item: MarketPrice, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 6.dp, end = 6.dp, top = 4.dp, bottom = 4.dp),
+            .padding(start = 6.dp, end = 6.dp, top = 2.dp, bottom = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -87,7 +87,7 @@ fun CryptoPriceItem(item: MarketPrice, modifier: Modifier = Modifier) {
         ) {
             Text(
                 "${
-                    if ((item.exchangeInfo.fee ?: 0f) == 0f) "" else String.format(
+                    if ((item.exchangeInfo.fee ?: 0f) == 0f) 0 else String.format(
                         "%.2f",
                         (item.exchangeInfo.fee ?: 0f) * 100
                     )

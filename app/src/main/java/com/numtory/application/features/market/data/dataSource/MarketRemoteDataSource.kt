@@ -14,7 +14,6 @@ import com.numtory.application.features.market.data.models.PingiDataModel
 import com.numtory.application.features.market.data.models.PoolenoDataModel
 import com.numtory.application.features.market.data.models.SarmayexMarketListDataModel
 import com.numtory.application.features.market.data.models.SarmayexSwapDataModel
-import com.numtory.application.features.market.data.models.TabdealDataModel
 import com.numtory.application.features.market.data.models.TabdealMarketListDataModel
 import com.numtory.application.features.market.data.models.TetherLandListDataModel
 import com.numtory.application.features.market.data.models.TwoxDataModel
@@ -34,6 +33,8 @@ import io.ktor.client.statement.bodyAsText
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import com.numtory.application.BuildConfig
+import com.numtory.application.features.market.data.models.RamzinexDataModel
+import com.numtory.application.features.market.data.models.TabdealSwapDataModel
 
 interface MarketRemoteDataSource {
     suspend fun getExchanges(): List<ExchangeInfoDataModel>
@@ -42,7 +43,7 @@ interface MarketRemoteDataSource {
     suspend fun getAbanTetherPrice(): AbanTetherListDataModel
     suspend fun getNobitexMarketPrice(): NobitexMarketListDataModel
     suspend fun getNobitexSwapPrice(market: String): NobitexSwapDataModel
-    suspend fun getTabdealSwapPrice(fromCurrency: String, toCurrency: String): TabdealDataModel
+    suspend fun getTabdealSwapPrice(fromCurrency: String, toCurrency: String): TabdealSwapDataModel
 
     suspend fun getTabdealMarketPrice(): TabdealMarketListDataModel
 
@@ -71,6 +72,12 @@ interface MarketRemoteDataSource {
     suspend fun getSarafSwapPrice(): SarafPriceDataModel
     suspend fun getArz3SwapPrice(): Arz3coinsDataModel
     suspend fun getUbitexSwapPrice(baseCurrency: String, quoteCurrency: String): UbitexDataModel
+    suspend fun getRamzinexSwapPrice(
+        fromId: String,
+        toId: String,
+        toAmount: Int? = null,
+        fromAmount: Int? = null,
+    ): RamzinexDataModel
 }
 
 class MarketRemoteDataSourceImpl constructor(
@@ -79,8 +86,8 @@ class MarketRemoteDataSourceImpl constructor(
 ) : MarketRemoteDataSource {
 
     override suspend fun getExchanges(): List<ExchangeInfoDataModel> {
-        val response = httpClient.get("http://192.168.1.105:8000/api/exchanges/")
-//        val response = httpClient.get("http://10.0.2.2:8000/api/exchanges/")
+//        val response = httpClient.get("http://192.168.1.105:8000/api/exchanges/")
+        val response = httpClient.get("http://10.0.2.2:8000/api/exchanges/")
         val json = response.bodyAsText()
         val type = object : TypeToken<List<ExchangeInfoDataModel>>() {}.type
         return gson.fromJson(json, type)
@@ -122,7 +129,7 @@ class MarketRemoteDataSourceImpl constructor(
     override suspend fun getTabdealSwapPrice(
         fromCurrency: String,
         toCurrency: String
-    ): TabdealDataModel {
+    ): TabdealSwapDataModel {
         val response =
             httpClient.get(
                 BuildConfig.TABDEAL_URL
@@ -131,7 +138,7 @@ class MarketRemoteDataSourceImpl constructor(
                 parameter("to_currency", toCurrency)
             }
         val json = response.bodyAsText()
-        return gson.fromJson(json, TabdealDataModel::class.java)
+        return gson.fromJson(json, TabdealSwapDataModel::class.java)
     }
 
     override suspend fun getTabdealMarketPrice(): TabdealMarketListDataModel {
@@ -296,6 +303,24 @@ class MarketRemoteDataSourceImpl constructor(
 
         val json = response.bodyAsText()
         return gson.fromJson(json, UbitexDataModel::class.java)
+    }
+
+    override suspend fun getRamzinexSwapPrice(
+        fromId: String,
+        toId: String,
+        toAmount: Int?,
+        fromAmount: Int?,
+    ): RamzinexDataModel {
+        val response =
+            httpClient.get("${BuildConfig.RAMZINEX_URL}$fromId/$toId") {
+                if (toAmount != null)
+                    parameter("to_amount", toAmount)
+                if (fromAmount != null)
+                    parameter("from_amount", fromAmount)
+            }
+
+        val json = response.bodyAsText()
+        return gson.fromJson(json, RamzinexDataModel::class.java)
     }
 
 }

@@ -86,8 +86,7 @@ class MarketRemoteDataSourceImpl constructor(
 ) : MarketRemoteDataSource {
 
     override suspend fun getExchanges(): List<ExchangeInfoDataModel> {
-//        val response = httpClient.get("http://192.168.1.105:8000/api/exchanges/")
-        val response = httpClient.get("http://10.0.2.2:8000/api/exchanges/")
+        val response = httpClient.get(BuildConfig.NUMTORY_URL)
         val json = response.bodyAsText()
         val type = object : TypeToken<List<ExchangeInfoDataModel>>() {}.type
         return gson.fromJson(json, type)

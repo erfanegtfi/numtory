@@ -39,6 +39,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.numtory.application.features.scanner.ExchangeScan
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -94,7 +95,7 @@ fun BottomNavigationBar(navController: NavHostController) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 8.dp,
-        modifier = Modifier.height(100.dp),
+        modifier = Modifier.height(110.dp),
     ) {
 
         Row(
@@ -153,6 +154,7 @@ fun Material2NavigationBarItem(
         verticalArrangement = Arrangement.Center,
         modifier = modifier
             .width(80.dp)
+            .padding(horizontal = 8.dp)
             .fillMaxHeight()
             .clickable(
                 onClick = onClick,
@@ -169,7 +171,7 @@ fun Material2NavigationBarItem(
             tint = color
         )
 
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(4.dp))
 
         Text(
             text = label,

@@ -92,7 +92,7 @@ constructor(
     private var sortParams: SortParams = SortParams()
     private var filterParams: FilterParams = FilterParams()
 
-    var exchangesInfo: List<ExchangeInfo>? = null
+    var appExchangesInfo: List<ExchangeInfo>? = null
 
     private val _priceState = MutableStateFlow<ViewState<List<MarketPrice>>>(ViewState.Init)
     val priceState: StateFlow<ViewState<List<MarketPrice>>> get() = _priceState.asStateFlow()
@@ -108,7 +108,8 @@ constructor(
             getAppExchangesUseCase.action().collect { response ->
                 when (response) {
                     is ApiCallResult.Success -> {
-                        exchangesInfo = response.result
+                        appExchangesInfo = response.result
+//                        getPrices()
                     }
 
                     is ApiCallResult.Failure -> {
@@ -121,6 +122,7 @@ constructor(
     }
 
     fun getPrices() {
+        getExchanges()
         _timer.value = REFRESH_TIMER
 
 
@@ -131,7 +133,7 @@ constructor(
         filterParams.addFee = exchangesLocalDataSource.addFee()
         val mergedFlow = mutableListOf<Flow<ApiCallResult<MarketPrice>>>()
 
-        if (exchangesInfo?.isNotEmpty() != true)
+        if (appExchangesInfo?.isNotEmpty() != true)
             mergedFlow.apply {
                 add(getBitPinPriceUseCase.action(5))
                 add(getTetherLandPriceUseCase.action())
@@ -172,39 +174,39 @@ constructor(
 //        )
         else
             mergedFlow.apply {
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.bitpin }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.bitpin }?.active == true)
                     add(getBitPinPriceUseCase.action(5))
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.tetherland }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.tetherland }?.active == true)
                     add(getTetherLandPriceUseCase.action())
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.nobitex }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.nobitex }?.active == true)
                     add(getNobitexPriceUseCase.action("USDTIRT", "usdt-rls"))
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.tabdeal }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.tabdeal }?.active == true)
                     add(getTabtealPriceUseCase.action("IRT", "USDT"))
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.bit24 }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.bit24 }?.active == true)
                     add(getBit24PriceUseCase.action("IRT", "USDT"))
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.arzplus }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.arzplus }?.active == true)
                     add(getArzplusPriceUseCase.action("IRT", "USDT"))
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.twox }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.twox }?.active == true)
                     add(getTwoxPriceUseCase.action("IRT", "USDT"))
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.coinkade }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.coinkade }?.active == true)
                     add(getCoinkadePriceUseCase.action())
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.pooleno }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.pooleno }?.active == true)
                     add(getPoolenoPriceUseCase.action("USDT", "TMN"))
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.eterex }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.eterex }?.active == true)
                     add(getEterexPriceUseCase.action("USDT"))
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.pingi }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.pingi }?.active == true)
                     add(getPingiPriceUseCase.action("USDT_IRT"))
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.wallex }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.wallex }?.active == true)
                     add(getWallexPriceUseCase.action("USDT", "TMN"))
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.abantether }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.abantether }?.active == true)
                     add(getAbanTetherPriceUseCase.action("USDT"))
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.sarmayex }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.sarmayex }?.active == true)
                     add(getSarmayexPriceUseCase.action("USDT", "USDT_IRT"))
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.saraf }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.saraf }?.active == true)
                     add(getSarafPriceUseCase.action("USDT"))
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.ubitex }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.ubitex }?.active == true)
                     add(getUbitexPriceUseCase.action("USDT", "TMN"))
-                if (exchangesInfo?.firstOrNull { it.exchange == Exchanges.ramzinex }?.active == true)
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.ramzinex }?.active == true)
                     add(getRamzinexPriceUseCase.action("2", "9"))
             }
 
@@ -235,9 +237,6 @@ constructor(
                                 allMarkets,
                                 userExchanges
                             )
-//                        allMarkets.add(response.result) // its better to be after  getting avg
-
-
 
 
                             validMarkets = removeOutOfRangeExchangesUseCase.action(
@@ -250,7 +249,7 @@ constructor(
 
                             filterParams.markets = validMarkets
                             filterParams.userExchanges = userExchanges
-                            filterParams.exchangesInfo = exchangesInfo
+                            filterParams.exchangesInfo = appExchangesInfo
                             validMarkets = filterMarketUseCase.action(filterParams)
                             sortParams.markets = validMarkets
 
@@ -290,8 +289,8 @@ constructor(
     }
 
     fun getMarketAverage(): Pair<Float, Float> {
-        val activeExchanges = getUserExchanges()
-        return getMarketAvgUseCase.action(validMarkets, activeExchanges)
+        val userExchanges = getUserExchanges()
+        return getMarketAvgUseCase.action(validMarkets, userExchanges)
     }
 
     fun saveAddFee(addFee: Boolean) {
@@ -307,12 +306,13 @@ constructor(
     }
 
     fun getUserExchanges(): List<Exchanges> {
+        // if user exchanges was null, we show all exchanges from Exchanges enum
         return exchangesLocalDataSource.getUserExchanges() ?: Exchanges.entries
     }
 
     fun getActiveExchangesInfo(): List<ExchangeInfo> {
         return exchangesLocalDataSource.getExchangesInfo()?.filter {
-            it.active
+            it.active && it.display
         } ?: emptyList()
     }
 

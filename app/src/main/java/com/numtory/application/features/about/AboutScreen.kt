@@ -28,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.numtory.application.R
+import com.numtory.application.common.aboutScreenOpened
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -47,6 +49,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Composable
 fun AboutScreen(navigator: DestinationsNavigator,) {
     val context = LocalContext.current
+    LaunchedEffect( 12) {
+        aboutScreenOpened()
+    }
 
     Scaffold(
         topBar = {

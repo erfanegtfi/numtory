@@ -17,10 +17,12 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowInsetsControllerCompat
+import com.numtory.application.common.appOpened
 import com.numtory.application.features.market.presenter.BottomNavHost
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.numtory.application.ui.theme.MyApplicationTheme
+import io.adtrace.sdk.AdTrace
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
@@ -28,6 +30,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         forceRTL()
         enableEdgeToEdge()
+        appOpened()
         setContent {
             MyApplicationTheme {
                 ApplyStatusBarTheme()
@@ -50,6 +53,16 @@ class MainActivity : ComponentActivity() {
 
         resources.configuration.setLayoutDirection(Locale("fa")) // Persian
         // or Locale("ar") for Arabic, Locale("he") for Hebrew
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AdTrace.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        AdTrace.onPause()
     }
 }
 

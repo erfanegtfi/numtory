@@ -35,6 +35,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eterex.composeui.ButtonComponent
 import com.numtory.application.R
+import com.numtory.application.common.exchangeScannerScreenOpened
+import com.numtory.application.common.onlyShowMarketsCheckbox
+import com.numtory.application.common.settingScreenOpened
+import com.numtory.application.common.showFeeCheckbox
 import com.numtory.application.composeUI.MyCheckbox
 import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.enums.Exchanges
@@ -59,6 +63,9 @@ fun AssetOptionsBottomSheetScreen(
             checkedStates[info.exchange] = userExchanges.contains(info.exchange) == true
         }
     }
+    LaunchedEffect(Unit) {
+        settingScreenOpened()
+    }
 
     val allChecked = remember { mutableStateOf(false) }
     val addFeeChecked = remember { mutableStateOf(addFee) }
@@ -71,6 +78,7 @@ fun AssetOptionsBottomSheetScreen(
         Box(modifier = Modifier.height(16.dp))
         MyCheckbox("اعمال کارمزد در قیمت ها", addFeeChecked.value) {
             addFeeChecked.value = it
+            showFeeCheckbox()
         }
 //        Text(
 //            "کارمزد روی قیمت بازار اعمال نمی شود",
@@ -81,13 +89,14 @@ fun AssetOptionsBottomSheetScreen(
 //        )
 //        Box(modifier = Modifier.height(6.dp))
 
-        MyCheckbox("نمایش بازارها", onlyMarketsChecked.value) {
+        MyCheckbox("فقط نمایش بازارها", onlyMarketsChecked.value) {
             onlyMarketsChecked.value = it
             setMarkets(allExchanges, checkedStates, it)
 
             if (allChecked.value)
                 setAll(allExchanges, checkedStates, true)
 
+            onlyShowMarketsCheckbox()
         }
 //        Text(
 //            "صرافی هایی که قیمت بازار دارند و صرافی هایی که فقط تبدیل سریع دارند نمایش داده شوند",
@@ -126,9 +135,9 @@ fun setMarkets(
     checkedStates: MutableMap<Exchanges, Boolean>, check: Boolean
 ) {
     allExchanges.forEach { info ->
-            if (info.isMarket == true)
-                checkedStates[info.exchange] = check
-            else checkedStates[info.exchange] = false
+        if (info.isMarket == true)
+            checkedStates[info.exchange] = check
+        else checkedStates[info.exchange] = false
     }
 }
 
@@ -137,7 +146,7 @@ fun setAll(
     checkedStates: MutableMap<Exchanges, Boolean>, check: Boolean
 ) {
     allExchanges.forEach { info ->
-            checkedStates[info.exchange] = check
+        checkedStates[info.exchange] = check
     }
 }
 
@@ -193,7 +202,9 @@ fun ExchangesListWithSelectAll(
                 isChecked = checkedStates[info.exchange] ?: false,
                 onCheckedChange = { isChecked ->
                     checkedStates[info.exchange] = isChecked
-                    val selected: List<Exchanges> = allExchanges.filter { checkedStates[it.exchange] == true }.map { it.exchange }
+                    val selected: List<Exchanges> =
+                        allExchanges.filter { checkedStates[it.exchange] == true }
+                            .map { it.exchange }
                     onSelectedExchangesChanged(selected)
                 }
             )

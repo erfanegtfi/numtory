@@ -53,10 +53,12 @@ android {
         buildConfigField("String", "SARMAYEX_MARKET_URL", getLocalProperty("SARMAYEX_MARKET_URL"))
         buildConfigField("String", "POOLENO_URL", getLocalProperty("POOLENO_URL"))
         buildConfigField("String", "TWOX_URL", getLocalProperty("TWOX_URL"))
+        buildConfigField("String", "NUMTORY_URL", getLocalProperty("NUMTORY_URL"))
         buildConfigField("String", "WALLEX_URL", getLocalProperty("WALLEX_URL"))
         buildConfigField("String", "SARAF_URL", getLocalProperty("SARAF_URL"))
         buildConfigField("String", "COINKADE_URL", getLocalProperty("COINKADE_URL"))
         buildConfigField("String", "RAMZINEX_URL", getLocalProperty("RAMZINEX_URL"))
+        buildConfigField("String", "ADTRACE_TOKEN", getLocalProperty("ADTRACE_TOKEN"))
 
     }
 
@@ -119,4 +121,8 @@ dependencies {
     implementation(libs.koin.androidx.compose)
 
     implementation(libs.slf4j.simple)
+
+    implementation(libs.android.sdk)
+    implementation(libs.installreferrer)
+    implementation(libs.play.services.ads.identifier)
 }

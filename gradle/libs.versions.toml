@@ -1,5 +1,7 @@
 [versions]
 agp = "8.13.2"
+androidSdk = "2.6.0"
+installreferrer = "2.2"
 kotlin = "2.2.20"
 coreKtx = "1.17.0"
 kotlinxCoroutinesCore = "1.9.0"
@@ -9,6 +11,7 @@ activityCompose = "1.11.0"
 composeBom = "2025.09.00"
 coil = "2.2.2"
 gson = "2.12.0"
+playServicesAdsIdentifier = "18.0.1"
 room = "2.8.0"
 data-store = '1.1.7'
 okhttp = "4.11.0"
@@ -19,6 +22,7 @@ slf4jSimple = "2.0.16"
 foundation = "1.11.0"
 
 [libraries]
+android-sdk = { module = "io.adtrace:android-sdk", version.ref = "androidSdk" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-version" }
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-version" }
@@ -34,6 +38,7 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-material-icons = { group = "androidx.compose.material", name = "material-icons-core" }
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+installreferrer = { module = "com.android.installreferrer:installreferrer", version.ref = "installreferrer" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization-json" }
 
@@ -58,6 +63,7 @@ androidx-data-store = { group = "androidx.datastore", name = "datastore-preferen
 compose-destinations = { group = "io.github.raamcosta.compose-destinations", name = "core", version = "2.2.0" }
 compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version = "2.2.0" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+play-services-ads-identifier = { module = "com.google.android.gms:play-services-ads-identifier", version.ref = "playServicesAdsIdentifier" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4jSimple" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 

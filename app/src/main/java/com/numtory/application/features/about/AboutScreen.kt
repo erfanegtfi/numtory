@@ -27,10 +27,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -47,24 +49,33 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 @Destination<RootGraph>
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
-fun AboutScreen(navigator: DestinationsNavigator,) {
+fun AboutScreen(navigator: DestinationsNavigator) {
     val context = LocalContext.current
-    LaunchedEffect( 12) {
+    LaunchedEffect(12) {
         aboutScreenOpened()
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("اطلاعات تماس") },
+                title = {
+                    Text(
+                        "اطلاعات تماس",
+                        style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = {
                         navigator.popBackStack()
                     }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
                     }
                 },
-
+                colors = TopAppBarDefaults.topAppBarColors(// Use 'surface' instead of 'primary' for the app bar background
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                ),
             )
         }
     ) { innerPadding ->
@@ -94,8 +105,7 @@ fun AboutScreen(navigator: DestinationsNavigator,) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         "توکن چند",
-                        fontSize = 24.sp,
-                        style = MaterialTheme.typography.headlineSmall
+                        style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
                     )
 //                    Text(
 //                        "Android Developer",

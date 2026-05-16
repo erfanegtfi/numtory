@@ -11,7 +11,7 @@ enum class Exchanges(val title: String, val logo: Int) {
     nobitexMarket("نوبیتکس (بازار)", R.drawable.nobitex),
     bit24("بیت 24 (سریع)", R.drawable.bit24),
     bit24Market("بیت 24 (بازار)", R.drawable.bit24),
-    arzplus("ارزپلاس", R.drawable.arzplus),
+    arzplus("ارزپلاس (سریع)", R.drawable.arzplus),
     arzplusMarket("ارزپلاس (بازار)", R.drawable.arzplus),
     coinkade("کوین کده", R.drawable.coinkade),
     twox("توایکس", R.drawable.twox),

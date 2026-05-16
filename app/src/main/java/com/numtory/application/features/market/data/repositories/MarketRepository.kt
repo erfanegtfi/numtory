@@ -65,7 +65,7 @@ interface MarketRepository {
         isBuy: Boolean
     ): Flow<ApiCallResult<Pooleno>>
 
-    fun getEterexPrice(): Flow<ApiCallResult<List<EterexGroups>>>
+    fun getEterexPrice(): Flow<ApiCallResult<List<EterexGroups>?>>
 
     fun getSarmayex(market: String): Flow<ApiCallResult<SarmayexSwap?>>
     fun getSarmayexMarket(): Flow<ApiCallResult<Map<String, SarmayexMarketItem>?>>
@@ -259,7 +259,7 @@ class MarketRepositoryImpl(
             emit(ApiCallResult.Failure(response.error))
     }
 
-    override fun getEterexPrice(): Flow<ApiCallResult<List<EterexGroups>>> = flow {
+    override fun getEterexPrice(): Flow<ApiCallResult<List<EterexGroups>?>> = flow {
         val response = getResult {
             marketRemoteDataSource.getEterexPrice()
         }

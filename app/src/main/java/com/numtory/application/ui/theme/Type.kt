@@ -35,6 +35,13 @@ private val defaultTypography = Typography()
 
 // Set of Material typography styles to start with
 val lightTypography = Typography(
+    headlineMedium = TextStyle(
+        fontFamily = CustomFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        fontStyle = FontStyle.Normal,
+        color = textBlack,
+    ),
     titleLarge = TextStyle(
         fontFamily = CustomFontFamily,
         fontWeight = FontWeight.Bold,

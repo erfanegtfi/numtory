@@ -56,7 +56,7 @@ sealed class Screen(
     object Search : Screen("search", "استعلام تراکنش", Icons.Outlined.QrCode, Icons.Filled.Search)
 }
 
-@Destination<RootGraph>(start = true)
+//@Destination<RootGraph>(start = true)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun BottomNavHost(navigator: DestinationsNavigator) {
@@ -153,8 +153,8 @@ fun Material2NavigationBarItem(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = modifier
-            .width(80.dp)
             .padding(horizontal = 8.dp)
+            .width(80.dp)
             .fillMaxHeight()
             .clickable(
                 onClick = onClick,

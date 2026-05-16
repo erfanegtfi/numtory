@@ -6,10 +6,10 @@ import com.google.gson.annotations.SerializedName
 
 data class EterexPriceGroupsDataModel(
     @SerializedName("priceGroups")
-    val results: List<EterexGroupsDataModel>
+    val results: List<EterexGroupsDataModel>?
 ) {
-    fun toEntity(): List<EterexGroups> =
-        results.map { it.toEntity() }
+    fun toEntity(): List<EterexGroups>? =
+        results?.map { it.toEntity() }
 }
 
 data class EterexGroupsDataModel constructor(

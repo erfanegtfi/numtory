@@ -251,7 +251,7 @@ class MarketRemoteDataSourceImpl constructor(
     }
 
     override suspend fun getSarmayexSwapPrice(market: String): SarmayexSwapDataModel {
-        val response = httpClient.get("h${BuildConfig.SARMAYEX_URL}$market")
+        val response = httpClient.get("${BuildConfig.SARMAYEX_URL}$market")
         val json = response.bodyAsText()
         return gson.fromJson(json, SarmayexSwapDataModel::class.java)
     }

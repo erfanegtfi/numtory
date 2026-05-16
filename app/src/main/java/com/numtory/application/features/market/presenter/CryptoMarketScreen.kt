@@ -1,6 +1,7 @@
 package com.numtory.application.features.market.presenter
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
@@ -58,6 +60,7 @@ import com.numtory.application.ui.theme.Primary
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
 
+@Destination<RootGraph>(start = true)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
@@ -135,7 +138,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                         Text(
                             text = "توکن چند",
                             modifier = Modifier.align(Alignment.CenterStart),
-                            style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onPrimary)
+                            style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
                         )
                     }
                 },
@@ -146,7 +149,8 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                         Icon(
                             modifier = Modifier.padding(9.dp),
                             painter = painterResource(id = R.drawable.ic_about),
-                            contentDescription = "Menu"
+                            contentDescription = "Menu",
+                            tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                     IconButton(onClick = {
@@ -166,14 +170,12 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
     ) {  innerPadding ->
 
         Column(
-            modifier = Modifier.fillMaxSize()//.padding(innerPadding)
-                .padding(
-                    top = innerPadding.calculateTopPadding(), // Only top padding
-//                    bottom = innerPadding.calculateBottomPadding(), // Only top padding
-                    start = innerPadding.calculateStartPadding(LayoutDirection.Rtl),
-                    end = innerPadding.calculateEndPadding(LayoutDirection.Rtl)
-                    // NO bottom padding!
-                )
+            modifier = Modifier.fillMaxSize().padding(innerPadding)
+//                .padding(
+//                    top = innerPadding.calculateTopPadding(), // Only top padding
+//                    start = innerPadding.calculateStartPadding(LayoutDirection.Rtl),
+//                    end = innerPadding.calculateEndPadding(LayoutDirection.Rtl)
+//                )
         ) {
             PullToRefreshBox(
                 isRefreshing = priceList is ViewState.Loading,

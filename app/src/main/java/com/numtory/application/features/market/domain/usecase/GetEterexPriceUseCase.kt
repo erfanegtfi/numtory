@@ -19,7 +19,7 @@ class GetEterexPriceUseCase constructor(
             when (response) {
                 is ApiCallResult.Success -> {
                     val tether =
-                        response.result.firstOrNull { item -> item.coins.contains(assetSymbol.uppercase()) }
+                        response.result?.firstOrNull { item -> item.coins.contains(assetSymbol.uppercase()) }
 
                     ApiCallResult.Success(
                         MarketPrice(

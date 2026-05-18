@@ -17,6 +17,7 @@ import com.numtory.application.features.market.domain.usecase.FilterMarketUseCas
 import com.numtory.application.features.market.domain.usecase.FilterParams
 import com.numtory.application.features.market.domain.usecase.GetAbanTetherPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetAppExchangesUseCase
+import com.numtory.application.features.market.domain.usecase.GetArzinjaPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetArzplusPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBit24PriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBitPinPriceUseCase
@@ -74,6 +75,7 @@ constructor(
     private val getSarafPriceUseCase: GetSarafPriceUseCase,
     private val getUbitexPriceUseCase: GetUbitexPriceUseCase,
     private val getRamzinexPriceUseCase: GetRamzinexPriceUseCase,
+    private val getArzinjaPriceUseCase: GetArzinjaPriceUseCase,
     private val sortMarketUseCase: SortMarketUseCase,
     private val filterMarketUseCase: FilterMarketUseCase,
     private val removeOutOfRangeExchangesUseCase: RemoveOutOfRangeExchangeUseCase,
@@ -151,6 +153,7 @@ constructor(
                 add(getSarmayexPriceUseCase.action("USDT", "USDT_IRT"))
                 add(getSarafPriceUseCase.action("USDT"))
                 add(getUbitexPriceUseCase.action("USDT", "TMN"))
+                add(getArzinjaPriceUseCase.action("USDT", "IRT"))
                 add(getRamzinexPriceUseCase.action("2", "9"))
             }
 //         mergedFlow = merge(
@@ -206,6 +209,8 @@ constructor(
                     add(getSarafPriceUseCase.action("USDT"))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.ubitex }?.active == true)
                     add(getUbitexPriceUseCase.action("USDT", "TMN"))
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.arzinja }?.active == true)
+                    add(getArzinjaPriceUseCase.action("USDT", "IRT"))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.ramzinex }?.active == true)
                     add(getRamzinexPriceUseCase.action("2", "9"))
             }

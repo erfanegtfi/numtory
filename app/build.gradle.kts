@@ -58,6 +58,7 @@ android {
         buildConfigField("String", "SARAF_URL", getLocalProperty("SARAF_URL"))
         buildConfigField("String", "COINKADE_URL", getLocalProperty("COINKADE_URL"))
         buildConfigField("String", "RAMZINEX_URL", getLocalProperty("RAMZINEX_URL"))
+        buildConfigField("String", "ARZINJA_URL", getLocalProperty("ARZINJA_URL"))
         buildConfigField("String", "ADTRACE_TOKEN", getLocalProperty("ADTRACE_TOKEN"))
 
     }

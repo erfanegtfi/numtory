@@ -33,6 +33,7 @@ import io.ktor.client.statement.bodyAsText
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import com.numtory.application.BuildConfig
+import com.numtory.application.features.market.data.models.ArzinjaDataModel
 import com.numtory.application.features.market.data.models.RamzinexDataModel
 import com.numtory.application.features.market.data.models.TabdealSwapDataModel
 
@@ -78,6 +79,8 @@ interface MarketRemoteDataSource {
         toAmount: Int? = null,
         fromAmount: Int? = null,
     ): RamzinexDataModel
+
+    suspend fun getArzinjaPrice(baseCurrency: String, providerType: String): ArzinjaDataModel
 }
 
 class MarketRemoteDataSourceImpl constructor(
@@ -320,6 +323,22 @@ class MarketRemoteDataSourceImpl constructor(
 
         val json = response.bodyAsText()
         return gson.fromJson(json, RamzinexDataModel::class.java)
+    }
+
+    override suspend fun getArzinjaPrice(
+        baseCurrency: String,
+        providerType: String,
+    ): ArzinjaDataModel {
+        val response =
+            httpClient.get(BuildConfig.ARZINJA_URL) {
+                    parameter("page", 1)
+                    parameter("per_page", 1)
+                    parameter("base_asset", baseCurrency)
+                    parameter("provider_type", providerType)
+            }
+
+        val json = response.bodyAsText()
+        return gson.fromJson(json, ArzinjaDataModel::class.java)
     }
 
 }

@@ -4,8 +4,11 @@ import com.numtory.application.data.remote.getResult
 import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.market.data.dataSource.MarketRemoteDataSource
 import com.numtory.application.features.market.data.local.ExchangesLocalDataSource
+import com.numtory.application.features.market.data.models.ArzinjaDataModel
 import com.numtory.application.features.market.domain.entities.AbanTether
 import com.numtory.application.features.market.domain.entities.Arz3CoinItem
+import com.numtory.application.features.market.domain.entities.ArzinjaItem
+import com.numtory.application.features.market.domain.entities.ArzinjaState
 import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.entities.ArzplusMarketItem
 import com.numtory.application.features.market.domain.entities.ArzplusSwap
@@ -79,6 +82,11 @@ interface MarketRepository {
         toId: String,
         isBuy: Boolean
     ): Flow<ApiCallResult<Ramzinex?>>
+
+    fun getArzinjaPrice(
+        baseCurrency: String,
+        providerType: String,
+    ): Flow<ApiCallResult<List<Map<String, ArzinjaItem>>?>>
 }
 
 class MarketRepositoryImpl(
@@ -353,6 +361,19 @@ class MarketRepositoryImpl(
             if (isBuy)
                 marketRemoteDataSource.getRamzinexSwapPrice(fromId, toId, toAmount = 1)
             else marketRemoteDataSource.getRamzinexSwapPrice(fromId, toId, fromAmount = 1)
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result.toEntity()))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }
+
+    override  fun getArzinjaPrice(
+        baseCurrency: String,
+        providerType: String,
+    ): Flow<ApiCallResult<List<Map<String, ArzinjaItem>>?>> = flow {
+        val response = getResult {
+            marketRemoteDataSource.getArzinjaPrice(baseCurrency,  providerType)
         }
         if (response is ApiCallResult.Success) {
             emit(ApiCallResult.Success(response.result.toEntity()))

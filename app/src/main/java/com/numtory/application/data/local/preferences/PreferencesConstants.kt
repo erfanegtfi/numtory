@@ -6,5 +6,8 @@ object PreferencesConstants {
         const val EXCHANGES_STATUS = "exchanges_status"
         const val ADD_FEE = "add_fee"
 
+        const val ENABLE_GOLD_EXCHANGES = "gold_enable_exchanges"
+        const val GOLD_EXCHANGES_STATUS = "gold_exchanges_status"
+        const val ADD_GOLD_FEE = "gold_add_fee"
 
 }

@@ -25,7 +25,7 @@ import com.numtory.application.features.market.domain.enums.SortOrder
 import com.numtory.application.features.market.domain.usecase.SortParams
 
 @Composable
-fun MarketPriceHeader(sortField: SortField, sortOrder: SortOrder, sortParam: SortParams, onSortChanged:(sortParam: SortParams) -> Unit) {
+fun MarketPriceHeader(sortField: SortField, sortOrder: SortOrder,  onSortChanged:(sortField: SortField, sortOrder: SortOrder) -> Unit) {
     var sortField by remember { mutableStateOf(sortField) }
     var sortOrder by remember { mutableStateOf(sortOrder) }
 
@@ -53,9 +53,10 @@ fun MarketPriceHeader(sortField: SortField, sortOrder: SortOrder, sortParam: Sor
                     sortField = it
                     sortOrder = SortOrder.Ascending
                 }
-                sortParam.sortField = sortField
-                sortParam.sortOrder = sortOrder
-                onSortChanged(sortParam)
+                onSortChanged(sortField, sortOrder)
+//                sortParam.sortField = sortField
+//                sortParam.sortOrder = sortOrder
+//                onSortChanged(sortParam)
             },
             modifier = Modifier.weight(1f)
         )
@@ -72,10 +73,10 @@ fun MarketPriceHeader(sortField: SortField, sortOrder: SortOrder, sortParam: Sor
                     sortField = it
                     sortOrder = SortOrder.Ascending
                 }
-                sortParam.sortField = sortField
-                sortParam.sortOrder = sortOrder
-                onSortChanged(sortParam)
-//                viewModel.sort(sortParam)
+                onSortChanged(sortField, sortOrder)
+//                sortParam.sortField = sortField
+//                sortParam.sortOrder = sortOrder
+//                onSortChanged(sortParam)
             },
             modifier = Modifier.weight(1f)
         )

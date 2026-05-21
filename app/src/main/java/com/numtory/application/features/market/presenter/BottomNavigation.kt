@@ -17,7 +17,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.BarChart
-import androidx.compose.material.icons.outlined.QrCode
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,7 +38,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.numtory.application.features.scanner.ExchangeScan
+import com.numtory.application.features.gold.GoldMarketList
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -52,11 +51,11 @@ sealed class Screen(
     val icon: ImageVector,
     val selectedIcon: ImageVector
 ) {
-    object Home : Screen("home", "مقایسه قیمت", Icons.Outlined.BarChart, Icons.Filled.Home)
-    object Search : Screen("search", "استعلام تراکنش", Icons.Outlined.QrCode, Icons.Filled.Search)
+    object Home : Screen("crypto", "مقایسه تتر", Icons.Outlined.BarChart, Icons.Filled.Home)
+    object Search : Screen("gold", "مقایسه طلا", Icons.Outlined.BarChart, Icons.Filled.Search)
 }
 
-//@Destination<RootGraph>(start = true)
+@Destination<RootGraph>(start = true)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun BottomNavHost(navigator: DestinationsNavigator) {
@@ -77,7 +76,7 @@ fun BottomNavHost(navigator: DestinationsNavigator) {
                 )
         ) {
             composable(Screen.Home.route) { MarketList(navigator) }
-            composable(Screen.Search.route) { ExchangeScan(navigator) }
+            composable(Screen.Search.route) { GoldMarketList(navigator) }
         }
     }
 }

@@ -62,8 +62,6 @@ class GetArzinjaPriceUseCase constructor(
                                 ?: "0").toInt()).toString(),
                             sellPrice = ((marketResponse.result.first()["$baseCurrency$quoteCurrency"]?.stats?.bidPrice
                                 ?: "0").toInt()).toString(),
-//                        marketPrice = ((marketResponse.result?.get("$baseCurrency$quoteCurrency")?.stats?.lastPrice
-//                            ?: "0").toInt()).toString(),
                             lastRefresh = System.currentTimeMillis()
                         )
                         emit(ApiCallResult.Success(marketPrice))

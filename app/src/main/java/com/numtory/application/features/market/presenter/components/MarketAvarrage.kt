@@ -46,12 +46,12 @@ fun GetMarketAverage(averageBuyPrice: Float, averageSellPrice: Float) {
         ) {
 
             Text(
-                text = "تتر",
+                text = "طلا",
                 style = MaterialTheme.typography.titleMedium
             )
 
             Text(
-                text = "USDT",
+                text = "GOLD",
                 style = MaterialTheme.typography.bodySmall
             )
         }

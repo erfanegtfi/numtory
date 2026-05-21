@@ -1,7 +1,6 @@
-package com.numtory.application.features.market.presenter
+package com.numtory.application.features.gold
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
@@ -41,36 +39,34 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.destinations.AboutScreenDestination
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.numtory.application.R
 import com.numtory.application.composeUI.ShowBottomSheet
 import com.numtory.application.features.base.ViewState
-import com.numtory.application.features.market.domain.entities.MarketPrice
-import com.numtory.application.features.market.domain.usecase.FilterParams
-import com.numtory.application.features.market.domain.usecase.SortParams
-import com.numtory.application.features.market.presenter.components.AssetOptionsBottomSheetScreen
-import com.numtory.application.features.market.presenter.components.CryptoPriceItem
+import com.numtory.application.features.gold.domain.entities.GoldMarketPrice
+import com.numtory.application.features.gold.domain.usecase.FilterGoldParams
+import com.numtory.application.features.gold.domain.usecase.SortGoldParams
+import com.numtory.application.features.gold.presenter.GoldMarketsViewModel
+import com.numtory.application.features.gold.presenter.components.GoldAssetOptionsBottomSheetScreen
+import com.numtory.application.features.gold.presenter.components.GoldPriceItem
 import com.numtory.application.features.market.presenter.components.GetMarketAverage
 import com.numtory.application.features.market.presenter.components.MarketPriceHeader
 import com.numtory.application.features.market.presenter.components.TimerProgressBar
 import com.numtory.application.ui.theme.Primary
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
 
-//@Destination<RootGraph>(start = true)
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
-fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = koinViewModel()) {
+fun GoldMarketList(navigator: DestinationsNavigator, viewModel: GoldMarketsViewModel = koinViewModel()) {
 
     val priceList by viewModel.priceState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
     val pullToRefreshState = rememberPullToRefreshState()
-    var sortParam by remember { mutableStateOf(SortParams()) }
-    var filterParam by remember { mutableStateOf(FilterParams()) }
+    var sortParam by remember { mutableStateOf(SortGoldParams()) }
+    var filterParam by remember { mutableStateOf(FilterGoldParams()) }
     var showSheet by remember { mutableStateOf(false) }
 
 //    printLogs(priceList)
@@ -104,7 +100,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
 
     if (showSheet)
         ShowBottomSheet(onDismiss = { showSheet = false }) { modalBottomSheetState, hide ->
-            AssetOptionsBottomSheetScreen(
+            GoldAssetOptionsBottomSheetScreen(
                 viewModel.getUserExchanges(),
                 viewModel.getActiveExchangesInfo(),
                 viewModel.getAddFee(),
@@ -144,16 +140,6 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                 },
                 actions = {
                     IconButton(onClick = {
-                        navigator.navigate(AboutScreenDestination)
-                    }) {
-                        Icon(
-                            modifier = Modifier.padding(9.dp),
-                            painter = painterResource(id = R.drawable.ic_about),
-                            contentDescription = "Menu",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                    IconButton(onClick = {
                         showSheet = true
                     }) {
                         Icon(
@@ -189,7 +175,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
 
                     stickyHeader {
                         Column {
-                            if (priceList is ViewState.Success<List<MarketPrice>>) {
+                            if (priceList is ViewState.Success<List<GoldMarketPrice>>) {
 
                                 val (avgBuy, avgSell) = viewModel.getMarketAverage()
 
@@ -236,7 +222,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                         }
 
                         is ViewState.Success -> {
-                            val items = (priceList as ViewState.Success<List<MarketPrice>>).data
+                            val items = (priceList as ViewState.Success<List<GoldMarketPrice>>).data
                             if (items.isEmpty())
                                 item {
                                     Box(
@@ -247,7 +233,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                                 }
                             else
                                 itemsIndexed(items) { index, itemState ->
-                                    CryptoPriceItem(
+                                    GoldPriceItem(
                                         itemState
 //                                modifier = Modifier.background(if (index % 2 == 0) Gray0 else Color.White)
                                     )

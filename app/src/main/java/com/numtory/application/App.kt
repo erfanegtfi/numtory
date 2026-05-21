@@ -2,6 +2,8 @@ package com.numtory.application
 
 import android.app.Application
 import com.numtory.application.data.di.dataModule
+import com.numtory.application.features.gold.data.di.goldMarketDataModule
+import com.numtory.application.features.gold.presenter.di.goldMarketPresenterModule
 import com.numtory.application.features.market.data.di.marketDataModule
 import com.numtory.application.features.market.presenter.di.marketPresenterModule
 import io.adtrace.sdk.AdTrace
@@ -11,7 +13,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 
-class App : Application(){
+class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
@@ -24,21 +26,39 @@ class App : Application(){
         startKoin {
             androidLogger()
             androidContext(this@App)
-            modules(dataModule, marketDataModule, marketPresenterModule)
+            modules(
+                dataModule,
+                marketDataModule,
+                goldMarketDataModule,
+                marketPresenterModule,
+                goldMarketPresenterModule
+            )
         }
     }
 
     private class AdTraceLifecycleCallbacks : Application.ActivityLifecycleCallbacks {
-        override fun onActivityCreated(activity: android.app.Activity, savedInstanceState: android.os.Bundle?) {}
+        override fun onActivityCreated(
+            activity: android.app.Activity,
+            savedInstanceState: android.os.Bundle?
+        ) {
+        }
+
         override fun onActivityStarted(activity: android.app.Activity) {}
         override fun onActivityResumed(activity: android.app.Activity) {
             AdTrace.onResume()
         }
+
         override fun onActivityPaused(activity: android.app.Activity) {
             AdTrace.onPause()
         }
+
         override fun onActivityStopped(activity: android.app.Activity) {}
-        override fun onActivitySaveInstanceState(activity: android.app.Activity, outState: android.os.Bundle) {}
+        override fun onActivitySaveInstanceState(
+            activity: android.app.Activity,
+            outState: android.os.Bundle
+        ) {
+        }
+
         override fun onActivityDestroyed(activity: android.app.Activity) {}
     }
 }

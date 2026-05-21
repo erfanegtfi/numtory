@@ -1,0 +1,43 @@
+package com.numtory.application.features.gold.presenter.di
+
+import com.numtory.application.features.gold.data.local.GoldExchangesLocalDataSourceImpl
+import com.numtory.application.features.gold.data.repositories.GoldMarketRepository
+import com.numtory.application.features.gold.domain.usecase.FilterGoldMarketUseCase
+import com.numtory.application.features.gold.domain.usecase.GetAppGoldExchangesUseCase
+import com.numtory.application.features.gold.domain.usecase.GetDigikalaPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetGoldMarketAvgUseCase
+import com.numtory.application.features.gold.domain.usecase.GetGoldikaPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.RemoveInvalidGoldExchangeUseCase
+import com.numtory.application.features.gold.domain.usecase.RemoveOutOfRangeGoldExchangeUseCase
+import com.numtory.application.features.gold.domain.usecase.SortGoldMarketUseCase
+import com.numtory.application.features.gold.presenter.GoldMarketsViewModel
+import com.numtory.application.features.market.domain.usecase.GetAppExchangesUseCase
+import org.koin.core.module.dsl.viewModel
+import org.koin.dsl.module
+
+val goldMarketPresenterModule = module {
+    factory { GetDigikalaPriceUseCase(get<GoldMarketRepository>()) }
+    factory { GetGoldikaPriceUseCase(get<GoldMarketRepository>()) }
+    factory { SortGoldMarketUseCase() }
+    factory { FilterGoldMarketUseCase() }
+    factory { GetAppGoldExchangesUseCase(get()) }
+    factory { RemoveOutOfRangeGoldExchangeUseCase() }
+    factory { GetGoldMarketAvgUseCase() }
+    factory { GoldExchangesLocalDataSourceImpl(get()) }
+    factory { GetAppExchangesUseCase(get()) }
+    factory { RemoveInvalidGoldExchangeUseCase() }
+
+    viewModel {
+        GoldMarketsViewModel(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+        )
+    }
+}

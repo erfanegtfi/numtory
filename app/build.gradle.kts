@@ -63,6 +63,9 @@ android {
         buildConfigField("String", "DIGIKALA_URL", getLocalProperty("DIGIKALA_URL"))
         buildConfigField("String", "GOLDIKA_URL", getLocalProperty("GOLDIKA_URL"))
         buildConfigField("String", "ADTRACE_TOKEN", getLocalProperty("ADTRACE_TOKEN"))
+        buildConfigField("String", "HAMRAH_GOLD_URL", getLocalProperty("HAMRAH_GOLD_URL"))
+        buildConfigField("String", "TLYN_URL", getLocalProperty("TLYN_URL"))
+        buildConfigField("String", "MELLIGOLD_URL", getLocalProperty("MELLIGOLD_URL"))
 
     }
 

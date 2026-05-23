@@ -24,8 +24,8 @@ class GetDigikalaPriceUseCase constructor(
                 is ApiCallResult.Success -> {
                     ApiCallResult.Success(
                         GoldMarketPrice(
-                            buyPrice = (response.result.gold18.price * 100).toString(),
-                            sellPrice = (response.result.gold18.price * 100).toString(),
+                            buyPrice = ((response.result.gold18?.price ?: 0) * 100).toString(),
+                            sellPrice = ((response.result.gold18?.price ?: 0) * 100).toString(),
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == GoldExchanges.digikala }
                                 ?: GoldExchangeInfo(
                                     exchange = GoldExchanges.digikala,

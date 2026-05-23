@@ -1,9 +1,7 @@
 package com.numtory.application.features.gold.data.dataSource
 
-import com.numtory.application.features.market.data.models.BitPinDataModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.numtory.application.features.market.data.models.ExchangeInfoDataModel
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -11,11 +9,19 @@ import com.numtory.application.BuildConfig
 import com.numtory.application.features.gold.data.models.DigikalaDataModel
 import com.numtory.application.features.gold.data.models.GoldExchangeInfoDataModel
 import com.numtory.application.features.gold.data.models.GoldikaDataModel
+import com.numtory.application.features.gold.data.models.HamrahGoldDataModel
+import com.numtory.application.features.gold.data.models.MelliGoldDataModel
+import com.numtory.application.features.gold.data.models.TlynDataModel
+import io.ktor.client.request.parameter
+import io.ktor.http.parameters
 
 interface GoldMarketRemoteDataSource {
     suspend fun getGoldExchanges(): List<GoldExchangeInfoDataModel>
     suspend fun getDigikalaPrice(): DigikalaDataModel
     suspend fun getGoldikaPrice(): GoldikaDataModel
+    suspend fun getHamrahGoldPrice(): HamrahGoldDataModel
+    suspend fun getTlynPrice(): TlynDataModel
+    suspend fun getMelliGoldPrice(): MelliGoldDataModel
 
 }
 
@@ -41,6 +47,27 @@ class GoldMarketRemoteDataSourceImpl constructor(
         val response = httpClient.get(BuildConfig.GOLDIKA_URL)
         val json = response.bodyAsText()
         return gson.fromJson(json, GoldikaDataModel::class.java)
+    }
+
+    override suspend fun getHamrahGoldPrice(): HamrahGoldDataModel {
+        val response = httpClient.get(BuildConfig.HAMRAH_GOLD_URL)
+        val json = response.bodyAsText()
+        return gson.fromJson(json, HamrahGoldDataModel::class.java)
+    }
+
+    override suspend fun getTlynPrice(): TlynDataModel {
+        val response = httpClient.get(BuildConfig.TLYN_URL)
+        val json = response.bodyAsText()
+        return gson.fromJson(json, TlynDataModel::class.java)
+    }
+
+    override suspend fun getMelliGoldPrice(): MelliGoldDataModel {
+        val response = httpClient.get(BuildConfig.MELLIGOLD_URL){
+            parameter("symbol", "XAU18")
+            parameter("format", "json")
+        }
+        val json = response.bodyAsText()
+        return gson.fromJson(json, MelliGoldDataModel::class.java)
     }
 
 }

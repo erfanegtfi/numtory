@@ -1,5 +1,6 @@
 package com.numtory.application.features.market.presenter.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,7 +23,7 @@ import com.numtory.application.common.priceFormatter
 import com.numtory.application.ui.theme.White
 
 @Composable
-fun GetMarketAverage(averageBuyPrice: Float, averageSellPrice: Float) {
+fun GetMarketAverage(averageBuyPrice: Float, averageSellPrice: Float, title:String, Subtitle: String, @DrawableRes icon: Int ) {
 
     return Row(
         modifier = Modifier
@@ -34,7 +35,7 @@ fun GetMarketAverage(averageBuyPrice: Float, averageSellPrice: Float) {
 
     ) {
         Image(
-            painter = painterResource(id = R.drawable.tether),
+            painter = painterResource(id = icon),
             contentDescription = "",
             modifier = Modifier
                 .size(26.dp),
@@ -46,12 +47,12 @@ fun GetMarketAverage(averageBuyPrice: Float, averageSellPrice: Float) {
         ) {
 
             Text(
-                text = "طلا",
+                text = title,
                 style = MaterialTheme.typography.titleMedium
             )
 
             Text(
-                text = "GOLD",
+                text = Subtitle,
                 style = MaterialTheme.typography.bodySmall
             )
         }

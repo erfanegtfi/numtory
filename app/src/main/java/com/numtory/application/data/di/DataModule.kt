@@ -34,14 +34,14 @@ val dataModule = module {
 
     single<OkHttpClient> {
 
-       OkHttpClient.Builder()
+        OkHttpClient.Builder()
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
             .writeTimeout(30, TimeUnit.SECONDS)
             .retryOnConnectionFailure(true)
 //           .addInterceptor(get<LoggingInterceptor>())
-           .addInterceptor(get<SimpleLoggingInterceptor>())
-
+            .addInterceptor(get<SimpleLoggingInterceptor>())
+            .followRedirects(true)
             .build()
 
 

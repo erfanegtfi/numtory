@@ -2,14 +2,17 @@ package com.numtory.application.data.remote
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.UserAgent
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.accept
+import io.ktor.client.request.headers
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
+import io.ktor.client.plugins.cookies.HttpCookies
 
 
 class KtorHttpClient(
@@ -18,6 +21,7 @@ class KtorHttpClient(
 ) {
     fun create(): HttpClient {
         return HttpClient(OkHttp) {
+            followRedirects = true
             engine {
                 preconfigured = okHttpClient
                 // added config in injected OkHttpClient
@@ -35,6 +39,13 @@ class KtorHttpClient(
             defaultRequest {
                 contentType(ContentType.Application.Json)
                 accept(ContentType.Application.Json)
+                headers {
+                    append("Accept", "*/*")
+                    append("Accept-Language", "en-US,en;q=0.9")
+//                    append("Accept-Encoding", "gzip, deflate, br")
+                    append("Connection", "keep-alive")
+                    append("Upgrade-Insecure-Requests", "1")
+                }
             }
 
 
@@ -46,8 +57,10 @@ class KtorHttpClient(
                 })
 //                gson()
             }
-
-
+            install(UserAgent) {
+                agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+            install(HttpCookies)
             // a logger to see logging information about every request we make using the client
 //            install(Logging) {
 //                level = LogLevel.ALL

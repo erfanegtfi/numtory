@@ -180,7 +180,7 @@ fun GoldMarketList(navigator: DestinationsNavigator, viewModel: GoldMarketsViewM
                                 val (avgBuy, avgSell) = viewModel.getMarketAverage()
 
                                 Box(modifier = Modifier) {
-                                    GetMarketAverage(avgBuy, avgSell)
+                                    GetMarketAverage(avgBuy, avgSell, "طلا", "Gold", R.drawable.xaut)
                                 }
                             }
                             MarketPriceHeader(

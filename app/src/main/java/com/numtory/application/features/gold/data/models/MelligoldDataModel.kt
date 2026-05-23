@@ -6,26 +6,21 @@ import com.numtory.application.features.gold.domain.entities.DigikalaPrice
 import com.numtory.application.features.gold.domain.entities.Goldika
 import com.numtory.application.features.gold.domain.entities.GoldikaData
 import com.numtory.application.features.gold.domain.entities.GoldikaPrice
+import com.numtory.application.features.gold.domain.entities.MelliGold
+import com.numtory.application.features.gold.domain.entities.MelliGoldPrice
 
-data class GoldikaDataModel(
+data class MelliGoldDataModel(
     @SerializedName("data")
-    val data: GoldikaDataDataModel?,
+    val data: MelliGoldPriceDataModel?,
 ) {
-    fun toEntity(): Goldika = Goldika(data?.toEntity())
+    fun toEntity(): MelliGold = MelliGold(data?.toEntity())
 }
 
-data class GoldikaDataDataModel(
-    @SerializedName("price")
-    val price: GoldikaPriceDataModel?,
+data class MelliGoldPriceDataModel(
+    @SerializedName("price_buy")
+    val buy: Int?,
+    @SerializedName("price_sell")
+    val sell: Int?,
 ) {
-    fun toEntity(): GoldikaData = GoldikaData(price?.toEntity())
-}
-
-data class GoldikaPriceDataModel(
-    @SerializedName("sell")
-    val sell: Int,
-    @SerializedName("buy")
-    val buy: Int,
-) {
-    fun toEntity(): GoldikaPrice = GoldikaPrice(sell, buy)
+    fun toEntity(): MelliGoldPrice = MelliGoldPrice(buy, sell)
 }

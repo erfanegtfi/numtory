@@ -3,7 +3,6 @@ package com.numtory.application.features.gold.presenter;
 import android.annotation.SuppressLint
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.numtory.application.data.utils.ApiCallResult
@@ -18,46 +17,17 @@ import com.numtory.application.features.gold.domain.usecase.GetAppGoldExchangesU
 import com.numtory.application.features.gold.domain.usecase.GetDigikalaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldMarketAvgUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldikaPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetHamrahGoldPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetMelliGoldPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetTlynPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveInvalidGoldExchangeUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveInvalidGoldExchangesParams
 import com.numtory.application.features.gold.domain.usecase.RemoveOutOfRangeGoldExchangeUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveOutOfRangeGoldExchangesParams
 import com.numtory.application.features.gold.domain.usecase.SortGoldMarketUseCase
 import com.numtory.application.features.gold.domain.usecase.SortGoldParams
-import com.numtory.application.features.market.data.local.ExchangesLocalDataSource
-import com.numtory.application.features.market.domain.entities.ExchangeInfo
-import com.numtory.application.features.market.domain.entities.MarketPrice
-import com.numtory.application.features.market.domain.enums.Exchanges
 import com.numtory.application.features.market.domain.enums.SortField
 import com.numtory.application.features.market.domain.enums.SortOrder
-import com.numtory.application.features.market.domain.usecase.FilterMarketUseCase
-import com.numtory.application.features.market.domain.usecase.FilterParams
-import com.numtory.application.features.market.domain.usecase.GetAbanTetherPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetAppExchangesUseCase
-import com.numtory.application.features.market.domain.usecase.GetArzinjaPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetArzplusPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetBit24PriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetBitPinPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetCoinkadePriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetEterexPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetMarketAvgUseCase
-import com.numtory.application.features.market.domain.usecase.GetNobitexPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetPingiPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetPoolenoPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetRamzinexPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetSarafPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetSarmayexPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetTabtealPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetTetherLandPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetTwoxPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetUbitexPriceUseCase
-import com.numtory.application.features.market.domain.usecase.GetWallexPriceUseCase
-import com.numtory.application.features.market.domain.usecase.RemoveInvalidExchangeUseCase
-import com.numtory.application.features.market.domain.usecase.RemoveInvalidExchangesParams
-import com.numtory.application.features.market.domain.usecase.RemoveOutOfRangeExchangesParams
-import com.numtory.application.features.market.domain.usecase.RemoveOutOfRangeExchangeUseCase
-import com.numtory.application.features.market.domain.usecase.SortMarketUseCase
-import com.numtory.application.features.market.domain.usecase.SortParams
 import com.numtory.application.ui.theme.REFRESH_TIMER
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -77,6 +47,9 @@ class GoldMarketsViewModel
 constructor(
     private val getDigikalaPriceUseCase: GetDigikalaPriceUseCase,
     private val getGoldikaPriceUseCase: GetGoldikaPriceUseCase,
+    private val getTlynPriceUseCase: GetTlynPriceUseCase,
+    private val getHamrahGoldPriceUseCase: GetHamrahGoldPriceUseCase,
+    private val getMelliGoldPriceUseCase: GetMelliGoldPriceUseCase,
 
     private val sortMarketUseCase: SortGoldMarketUseCase,
     private val filterMarketUseCase: FilterGoldMarketUseCase,
@@ -127,7 +100,7 @@ constructor(
 
     fun getPrices() {
         getExchanges()
-        _timer.value = REFRESH_TIMER
+        _timer.intValue = REFRESH_TIMER
 
 
         if (_priceState.value is ViewState.Init)
@@ -141,7 +114,9 @@ constructor(
             mergedFlow.apply {
                 add(getDigikalaPriceUseCase.action())
                 add(getGoldikaPriceUseCase.action())
-
+                add(getHamrahGoldPriceUseCase.action())
+                add(getTlynPriceUseCase.action())
+                add(getMelliGoldPriceUseCase.action())
             }
         else
             mergedFlow.apply {
@@ -149,7 +124,12 @@ constructor(
                     add(getDigikalaPriceUseCase.action())
                 if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.goldika }?.active == true)
                     add(getGoldikaPriceUseCase.action())
-
+                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.taline }?.active == true)
+                    add(getTlynPriceUseCase.action())
+                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.hamrahgold }?.active == true)
+                    add(getHamrahGoldPriceUseCase.action())
+                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.melligold }?.active == true)
+                    add(getMelliGoldPriceUseCase.action())
 
             }
 
@@ -267,9 +247,9 @@ constructor(
         timerJob = viewModelScope.launch {
 
             while (true) {
-                _timer.value = _timer.value - 1
+                _timer.intValue = _timer.intValue - 1
                 delay(1000)
-                if (_timer.value == 0) {
+                if (_timer.intValue == 0) {
                     getPrices()
                 }
             }

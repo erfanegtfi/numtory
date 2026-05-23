@@ -1,7 +1,7 @@
 package com.numtory.application.features.gold.domain.entities
 
 data class Digikala(
-    val gold18: DigikalaPrice,
+    val gold18: DigikalaPrice?,
 ) {
 }
 

@@ -6,9 +6,9 @@ import com.numtory.application.features.gold.domain.entities.DigikalaPrice
 
 data class DigikalaDataModel(
     @SerializedName("gold18")
-    val gold18: DigikalaPriceDataModel,
+    val gold18: DigikalaPriceDataModel?,
 ) {
-    fun toEntity(): Digikala = Digikala(gold18.toEntity())
+    fun toEntity(): Digikala = Digikala(gold18?.toEntity())
 }
 
 data class DigikalaPriceDataModel(

@@ -2,6 +2,7 @@ package com.numtory.application.features.market.presenter;
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -85,7 +86,7 @@ constructor(
     private val removeInvalidExchangeUseCase: RemoveInvalidExchangeUseCase,
 ) : ViewModel() {
 
-    private val _timer = mutableStateOf<Int>(REFRESH_TIMER)
+    private val _timer = mutableIntStateOf(REFRESH_TIMER)
     val timer: State<Int> get() = _timer
 
     var allMarkets: MutableList<MarketPrice> = mutableListOf()
@@ -125,7 +126,7 @@ constructor(
 
     fun getPrices() {
         getExchanges()
-        _timer.value = REFRESH_TIMER
+        _timer.intValue = REFRESH_TIMER
 
 
         if (_priceState.value is ViewState.Init)
@@ -329,9 +330,9 @@ constructor(
         timerJob = viewModelScope.launch {
 
             while (true) {
-                _timer.value = _timer.value - 1
+                _timer.intValue = _timer.intValue - 1
                 delay(1000)
-                if (_timer.value == 0) {
+                if (_timer.intValue == 0) {
                     getPrices()
                 }
             }

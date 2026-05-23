@@ -7,6 +7,9 @@ import com.numtory.application.features.gold.domain.usecase.GetAppGoldExchangesU
 import com.numtory.application.features.gold.domain.usecase.GetDigikalaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldMarketAvgUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldikaPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetHamrahGoldPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetMelliGoldPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetTlynPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveInvalidGoldExchangeUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveOutOfRangeGoldExchangeUseCase
 import com.numtory.application.features.gold.domain.usecase.SortGoldMarketUseCase
@@ -18,6 +21,9 @@ import org.koin.dsl.module
 val goldMarketPresenterModule = module {
     factory { GetDigikalaPriceUseCase(get<GoldMarketRepository>()) }
     factory { GetGoldikaPriceUseCase(get<GoldMarketRepository>()) }
+    factory { GetTlynPriceUseCase(get<GoldMarketRepository>()) }
+    factory { GetHamrahGoldPriceUseCase(get<GoldMarketRepository>()) }
+    factory { GetMelliGoldPriceUseCase(get<GoldMarketRepository>()) }
     factory { SortGoldMarketUseCase() }
     factory { FilterGoldMarketUseCase() }
     factory { GetAppGoldExchangesUseCase(get()) }
@@ -29,6 +35,9 @@ val goldMarketPresenterModule = module {
 
     viewModel {
         GoldMarketsViewModel(
+            get(),
+            get(),
+            get(),
             get(),
             get(),
             get(),

@@ -194,7 +194,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                                 val (avgBuy, avgSell) = viewModel.getMarketAverage()
 
                                 Box(modifier = Modifier) {
-                                    GetMarketAverage(avgBuy, avgSell)
+                                    GetMarketAverage(avgBuy, avgSell, "تتر", "USDT", R.drawable.tether)
                                 }
                             }
                             MarketPriceHeader(

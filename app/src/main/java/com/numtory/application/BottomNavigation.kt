@@ -1,4 +1,4 @@
-package com.numtory.application.features.market.presenter
+package com.numtory.application
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +38,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.numtory.application.common.appOpened
+import com.numtory.application.common.cryptoExchangesScreenOpened
+import com.numtory.application.common.goldExchangesScreenOpened
 import com.numtory.application.features.gold.GoldMarketList
+import com.numtory.application.features.market.presenter.MarketList
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -51,8 +55,8 @@ sealed class Screen(
     val icon: ImageVector,
     val selectedIcon: ImageVector
 ) {
-    object Home : Screen("crypto", "مقایسه تتر", Icons.Outlined.BarChart, Icons.Filled.Home)
-    object Search : Screen("gold", "مقایسه طلا", Icons.Outlined.BarChart, Icons.Filled.Search)
+    object CryptoExchanges : Screen("crypto", "مقایسه تتر", Icons.Outlined.BarChart, Icons.Filled.Home)
+    object GoldExchanges : Screen("gold", "مقایسه طلا", Icons.Outlined.BarChart, Icons.Filled.Search)
 }
 
 @Destination<RootGraph>(start = true)
@@ -66,7 +70,7 @@ fun BottomNavHost(navigator: DestinationsNavigator) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screen.Home.route,
+            startDestination = Screen.CryptoExchanges.route,
             modifier = Modifier//.padding(innerPadding)
                 .padding(
                     bottom = innerPadding.calculateBottomPadding(), // Only top padding
@@ -75,18 +79,14 @@ fun BottomNavHost(navigator: DestinationsNavigator) {
                     // NO bottom padding!
                 )
         ) {
-            composable(Screen.Home.route) { MarketList(navigator) }
-            composable(Screen.Search.route) { GoldMarketList(navigator) }
+            composable(Screen.CryptoExchanges.route) { MarketList(navigator) }
+            composable(Screen.GoldExchanges.route) { GoldMarketList(navigator) }
         }
     }
 }
 
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
-    val screens = listOf(
-        Screen.Home,
-        Screen.Search,
-    )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -103,11 +103,12 @@ fun BottomNavigationBar(navController: NavHostController) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Material2NavigationBarItem(
-                icon = Screen.Home.icon,
-                label = Screen.Home.title,
-                selected = currentRoute == Screen.Home.route,
+                icon = Screen.CryptoExchanges.icon,
+                label = Screen.CryptoExchanges.title,
+                selected = currentRoute == Screen.CryptoExchanges.route,
                 onClick = {
-                    navController.navigate(Screen.Home.route) {
+                    cryptoExchangesScreenOpened()
+                    navController.navigate(Screen.CryptoExchanges.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
@@ -117,11 +118,12 @@ fun BottomNavigationBar(navController: NavHostController) {
                 },
             )
             Material2NavigationBarItem(
-                icon = Screen.Search.icon,
-                label = Screen.Search.title,
-                selected = currentRoute == Screen.Search.route,
+                icon = Screen.GoldExchanges.icon,
+                label = Screen.GoldExchanges.title,
+                selected = currentRoute == Screen.GoldExchanges.route,
                 onClick = {
-                    navController.navigate(Screen.Search.route) {
+                    goldExchangesScreenOpened()
+                    navController.navigate(Screen.GoldExchanges.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }

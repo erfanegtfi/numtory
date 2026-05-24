@@ -35,7 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eterex.composeui.ButtonComponent
 import com.numtory.application.R
-import com.numtory.application.common.settingScreenOpened
+import com.numtory.application.common.exchangesSettingScreenOpened
+import com.numtory.application.common.goldSettingScreenOpened
 import com.numtory.application.common.showFeeCheckbox
 import com.numtory.application.composeUI.MyCheckbox
 import com.numtory.application.features.gold.domain.entities.GoldExchangeInfo
@@ -62,7 +63,7 @@ fun GoldAssetOptionsBottomSheetScreen(
         }
     }
     LaunchedEffect(Unit) {
-        settingScreenOpened()
+        goldSettingScreenOpened()
     }
 
     val allChecked = remember { mutableStateOf(false) }

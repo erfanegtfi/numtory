@@ -35,9 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.eterex.composeui.ButtonComponent
 import com.numtory.application.R
-import com.numtory.application.common.exchangeScannerScreenOpened
 import com.numtory.application.common.onlyShowMarketsCheckbox
-import com.numtory.application.common.settingScreenOpened
+import com.numtory.application.common.exchangesSettingScreenOpened
 import com.numtory.application.common.showFeeCheckbox
 import com.numtory.application.composeUI.MyCheckbox
 import com.numtory.application.features.market.domain.entities.ExchangeInfo
@@ -64,7 +63,7 @@ fun AssetOptionsBottomSheetScreen(
         }
     }
     LaunchedEffect(Unit) {
-        settingScreenOpened()
+        exchangesSettingScreenOpened()
     }
 
     val allChecked = remember { mutableStateOf(false) }

@@ -9,15 +9,31 @@ fun appOpened(){
     AdTrace.trackEvent(adtraceEvent)
 }
 
+fun goldExchangesScreenOpened(){
+    val adtraceEvent = AdTraceEvent("dej992")
+    AdTrace.trackEvent(adtraceEvent)
+}
+
+fun cryptoExchangesScreenOpened(){
+    val adtraceEvent = AdTraceEvent("qbf65n")
+    AdTrace.trackEvent(adtraceEvent)
+}
+
 fun exchangeScannerScreenOpened(){
     val adtraceEvent = AdTraceEvent("v2bjad")
     AdTrace.trackEvent(adtraceEvent)
 }
 
-fun settingScreenOpened(){
+fun exchangesSettingScreenOpened(){
     val adtraceEvent = AdTraceEvent("37lsoa")
     AdTrace.trackEvent(adtraceEvent)
 }
+
+fun goldSettingScreenOpened(){
+    val adtraceEvent = AdTraceEvent("c30gg5")
+    AdTrace.trackEvent(adtraceEvent)
+}
+
 
 fun aboutScreenOpened(){
     val adtraceEvent = AdTraceEvent("4dloof")

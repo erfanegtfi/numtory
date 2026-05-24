@@ -1,7 +1,6 @@
 package com.numtory.application
 
 import android.os.Bundle
-import android.view.Surface
 import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,7 +17,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowInsetsControllerCompat
 import com.numtory.application.common.appOpened
-import com.numtory.application.features.market.presenter.BottomNavHost
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import com.numtory.application.ui.theme.MyApplicationTheme

@@ -19,6 +19,7 @@ import com.numtory.application.features.gold.domain.usecase.GetGoldMarketAvgUseC
 import com.numtory.application.features.gold.domain.usecase.GetGoldikaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetHamrahGoldPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetMelliGoldPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetTalaseaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetTlynPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveInvalidGoldExchangeUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveInvalidGoldExchangesParams
@@ -50,6 +51,7 @@ constructor(
     private val getTlynPriceUseCase: GetTlynPriceUseCase,
     private val getHamrahGoldPriceUseCase: GetHamrahGoldPriceUseCase,
     private val getMelliGoldPriceUseCase: GetMelliGoldPriceUseCase,
+    private val getTalaseaPriceUseCase: GetTalaseaPriceUseCase,
 
     private val sortMarketUseCase: SortGoldMarketUseCase,
     private val filterMarketUseCase: FilterGoldMarketUseCase,
@@ -117,6 +119,7 @@ constructor(
                 add(getHamrahGoldPriceUseCase.action())
                 add(getTlynPriceUseCase.action())
                 add(getMelliGoldPriceUseCase.action())
+                add(getTalaseaPriceUseCase.action())
             }
         else
             mergedFlow.apply {
@@ -130,6 +133,8 @@ constructor(
                     add(getHamrahGoldPriceUseCase.action())
                 if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.melligold }?.active == true)
                     add(getMelliGoldPriceUseCase.action())
+                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.talasea }?.active == true)
+                    add(getTalaseaPriceUseCase.action())
 
             }
 

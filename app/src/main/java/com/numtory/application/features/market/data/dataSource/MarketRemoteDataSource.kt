@@ -34,8 +34,11 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import com.numtory.application.BuildConfig
 import com.numtory.application.features.market.data.models.ArzinjaDataModel
+import com.numtory.application.features.market.data.models.ArzyptoDataModel
 import com.numtory.application.features.market.data.models.RamzinexDataModel
 import com.numtory.application.features.market.data.models.TabdealSwapDataModel
+import com.numtory.application.features.market.domain.entities.Arzypto
+import io.ktor.client.request.setBody
 
 interface MarketRemoteDataSource {
     suspend fun getExchanges(): List<ExchangeInfoDataModel>
@@ -81,6 +84,12 @@ interface MarketRemoteDataSource {
     ): RamzinexDataModel
 
     suspend fun getArzinjaPrice(baseCurrency: String, providerType: String): ArzinjaDataModel
+
+    suspend fun getArzyptoSwapPrice(
+        currency: String,
+        side: String,
+        symbol: String,
+    ): ArzyptoDataModel
 }
 
 class MarketRemoteDataSourceImpl constructor(
@@ -339,6 +348,25 @@ class MarketRemoteDataSourceImpl constructor(
 
         val json = response.bodyAsText()
         return gson.fromJson(json, ArzinjaDataModel::class.java)
+    }
+
+    override suspend fun getArzyptoSwapPrice(
+        currency: String,
+        side: String,
+        symbol: String
+    ): ArzyptoDataModel {
+        val response =
+            httpClient.post(BuildConfig.ARZYPTO_URL) {
+                setBody(mapOf(
+                    "currency" to currency,
+                    "side" to side,
+                    "symbol" to symbol
+                ))
+
+            }
+
+        val json = response.bodyAsText()
+        return gson.fromJson(json, ArzyptoDataModel::class.java)
     }
 
 }

@@ -7,6 +7,7 @@ import com.numtory.application.features.market.domain.usecase.GetAppExchangesUse
 import com.numtory.application.features.market.domain.usecase.GetArz3PriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetArzinjaPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetArzplusPriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetArzyptoPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBit24PriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBitPinPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetCoinkadePriceUseCase
@@ -50,6 +51,7 @@ val marketPresenterModule = module {
     factory { GetUbitexPriceUseCase(get<MarketRepository>()) }
     factory { GetRamzinexPriceUseCase(get<MarketRepository>()) }
     factory { GetArzinjaPriceUseCase(get<MarketRepository>()) }
+    factory { GetArzyptoPriceUseCase(get<MarketRepository>()) }
     factory { SortMarketUseCase() }
     factory { FilterMarketUseCase() }
     factory { RemoveOutOfRangeExchangeUseCase() }
@@ -60,6 +62,7 @@ val marketPresenterModule = module {
 //    viewModel<MarketsViewModel>{ MarketsViewModel(get<GetBitPinPriceUseCase>()) }
     viewModel {
         MarketsViewModel(
+            get(),
             get(),
             get(),
             get(),

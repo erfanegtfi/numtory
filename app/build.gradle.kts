@@ -60,12 +60,14 @@ android {
         buildConfigField("String", "COINKADE_URL", getLocalProperty("COINKADE_URL"))
         buildConfigField("String", "RAMZINEX_URL", getLocalProperty("RAMZINEX_URL"))
         buildConfigField("String", "ARZINJA_URL", getLocalProperty("ARZINJA_URL"))
+        buildConfigField("String", "ARZYPTO_URL", getLocalProperty("ARZYPTO_URL"))
         buildConfigField("String", "DIGIKALA_URL", getLocalProperty("DIGIKALA_URL"))
         buildConfigField("String", "GOLDIKA_URL", getLocalProperty("GOLDIKA_URL"))
         buildConfigField("String", "ADTRACE_TOKEN", getLocalProperty("ADTRACE_TOKEN"))
         buildConfigField("String", "HAMRAH_GOLD_URL", getLocalProperty("HAMRAH_GOLD_URL"))
         buildConfigField("String", "TLYN_URL", getLocalProperty("TLYN_URL"))
         buildConfigField("String", "MELLIGOLD_URL", getLocalProperty("MELLIGOLD_URL"))
+        buildConfigField("String", "TALASEA_URL", getLocalProperty("TALASEA_URL"))
 
     }
 

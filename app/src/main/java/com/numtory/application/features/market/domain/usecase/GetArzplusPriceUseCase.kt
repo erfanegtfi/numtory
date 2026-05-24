@@ -37,7 +37,7 @@ class GetArzplusPriceUseCase constructor(
             when (buyResponse) {
                 is ApiCallResult.Success -> {
                     swapPrice.buyPrice = ((buyResponse.result.price ?: "0").toInt()).toString()
-                    emit(ApiCallResult.Success(swapPrice))
+//                    emit(ApiCallResult.Success(swapPrice))
                 }
 
                 is ApiCallResult.Failure -> {

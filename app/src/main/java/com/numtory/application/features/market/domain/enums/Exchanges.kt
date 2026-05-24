@@ -27,7 +27,8 @@ enum class Exchanges(val title: String, val logo: Int) {
 	arz3("ارز 3", R.drawable.arz3),
 	ubitex("یوبیتکس", R.drawable.ubitex),
 	arzinja("ارزاینجا (سریع)", R.drawable.arzinja),
-	arzinjaMarket("ارزاینجا", R.drawable.arzinja),
+	arzinjaMarket("ارزاینجا (بازار)", R.drawable.arzinja),
+    arzypto("ارزیپتو (سریع)", R.drawable.arzypto),
     ramzinex("رمزینکس (سریع)", R.drawable.ramzinex);
 
 

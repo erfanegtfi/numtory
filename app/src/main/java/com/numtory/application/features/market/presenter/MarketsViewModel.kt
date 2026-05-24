@@ -20,6 +20,7 @@ import com.numtory.application.features.market.domain.usecase.GetAbanTetherPrice
 import com.numtory.application.features.market.domain.usecase.GetAppExchangesUseCase
 import com.numtory.application.features.market.domain.usecase.GetArzinjaPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetArzplusPriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetArzyptoPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBit24PriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBitPinPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetCoinkadePriceUseCase
@@ -69,6 +70,7 @@ constructor(
     private val getTwoxPriceUseCase: GetTwoxPriceUseCase,
     private val getCoinkadePriceUseCase: GetCoinkadePriceUseCase,
     private val getPoolenoPriceUseCase: GetPoolenoPriceUseCase,
+    private val getArzyptoPriceUseCase: GetArzyptoPriceUseCase,
     private val getEterexPriceUseCase: GetEterexPriceUseCase,
     private val getSarmayexPriceUseCase: GetSarmayexPriceUseCase,
     private val getPingiPriceUseCase: GetPingiPriceUseCase,
@@ -156,6 +158,7 @@ constructor(
                 add(getUbitexPriceUseCase.action("USDT", "TMN"))
                 add(getArzinjaPriceUseCase.action("USDT", "IRT"))
                 add(getRamzinexPriceUseCase.action("2", "9"))
+                add(getArzyptoPriceUseCase.action("TOMAN", "USDT"))
             }
 //         mergedFlow = merge(
 //            getBitPinPriceUseCase.action(5),
@@ -214,6 +217,8 @@ constructor(
                     add(getArzinjaPriceUseCase.action("USDT", "IRT"))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.ramzinex }?.active == true)
                     add(getRamzinexPriceUseCase.action("2", "9"))
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.arzypto }?.active == true)
+                    add(getArzyptoPriceUseCase.action("TOMAN", "USDT"))
             }
 
         viewModelScope.launch {

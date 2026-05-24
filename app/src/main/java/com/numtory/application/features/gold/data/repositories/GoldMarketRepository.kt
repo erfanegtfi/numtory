@@ -12,6 +12,7 @@ import com.numtory.application.features.gold.domain.entities.GoldExchangeInfo
 import com.numtory.application.features.gold.domain.entities.Goldika
 import com.numtory.application.features.gold.domain.entities.HamrahGold
 import com.numtory.application.features.gold.domain.entities.MelliGold
+import com.numtory.application.features.gold.domain.entities.TalaSea
 import com.numtory.application.features.gold.domain.entities.Tlyn
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
@@ -27,6 +28,7 @@ interface GoldMarketRepository {
     fun getHamrahGoldPrice(): Flow<ApiCallResult<HamrahGold>>
     fun getTlynPrice(): Flow<ApiCallResult<Tlyn>>
     fun getMelliGoldPrice(): Flow<ApiCallResult<MelliGold>>
+    fun getTalaseaPrice(): Flow<ApiCallResult<TalaSea>>
 }
 
 class GoldMarketRepositoryImpl(
@@ -93,6 +95,16 @@ class GoldMarketRepositoryImpl(
     override fun getMelliGoldPrice(): Flow<ApiCallResult<MelliGold>> = flow {
         val response = getResult {
             marketRemoteDataSource.getMelliGoldPrice()
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result.toEntity()))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }.flowOn(dispatcher)
+
+    override fun getTalaseaPrice(): Flow<ApiCallResult<TalaSea>> = flow {
+        val response = getResult {
+            marketRemoteDataSource.getTalaseaPrice()
         }
         if (response is ApiCallResult.Success) {
             emit(ApiCallResult.Success(response.result.toEntity()))

@@ -11,6 +11,7 @@ import com.numtory.application.features.gold.data.models.GoldExchangeInfoDataMod
 import com.numtory.application.features.gold.data.models.GoldikaDataModel
 import com.numtory.application.features.gold.data.models.HamrahGoldDataModel
 import com.numtory.application.features.gold.data.models.MelliGoldDataModel
+import com.numtory.application.features.gold.data.models.TalaSeaDataModel
 import com.numtory.application.features.gold.data.models.TlynDataModel
 import io.ktor.client.request.parameter
 import io.ktor.http.parameters
@@ -22,6 +23,7 @@ interface GoldMarketRemoteDataSource {
     suspend fun getHamrahGoldPrice(): HamrahGoldDataModel
     suspend fun getTlynPrice(): TlynDataModel
     suspend fun getMelliGoldPrice(): MelliGoldDataModel
+    suspend fun getTalaseaPrice(): TalaSeaDataModel
 
 }
 
@@ -70,4 +72,9 @@ class GoldMarketRemoteDataSourceImpl constructor(
         return gson.fromJson(json, MelliGoldDataModel::class.java)
     }
 
+    override suspend fun getTalaseaPrice(): TalaSeaDataModel {
+        val response = httpClient.get(BuildConfig.TALASEA_URL)
+        val json = response.bodyAsText()
+        return gson.fromJson(json, TalaSeaDataModel::class.java)
+    }
 }

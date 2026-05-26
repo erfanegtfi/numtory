@@ -17,9 +17,11 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowInsetsControllerCompat
 import com.numtory.application.common.appOpened
+import com.numtory.application.features.chart.AppChartWebView
+import com.numtory.application.ui.theme.CHART_SCRIPT
+import com.numtory.application.ui.theme.MyApplicationTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
-import com.numtory.application.ui.theme.MyApplicationTheme
 import io.adtrace.sdk.AdTrace
 import java.util.Locale
 
@@ -37,6 +39,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background
                     ) {
+
                         DestinationsNavHost(navGraph = NavGraphs.root)
                     }
 

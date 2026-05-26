@@ -43,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.numtory.application.R
 import com.numtory.application.composeUI.ShowBottomSheet
 import com.numtory.application.features.base.ViewState
+import com.numtory.application.features.chart.AppChartWebView
 import com.numtory.application.features.gold.domain.entities.GoldMarketPrice
 import com.numtory.application.features.gold.domain.usecase.FilterGoldParams
 import com.numtory.application.features.gold.domain.usecase.SortGoldParams
@@ -52,7 +53,9 @@ import com.numtory.application.features.gold.presenter.components.GoldPriceItem
 import com.numtory.application.features.market.presenter.components.GetMarketAverage
 import com.numtory.application.features.market.presenter.components.MarketPriceHeader
 import com.numtory.application.features.market.presenter.components.TimerProgressBar
+import com.numtory.application.ui.theme.CHART_SCRIPT
 import com.numtory.application.ui.theme.Primary
+import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
@@ -61,7 +64,10 @@ import org.koin.androidx.compose.koinViewModel
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
-fun GoldMarketList(navigator: DestinationsNavigator, viewModel: GoldMarketsViewModel = koinViewModel()) {
+fun GoldMarketList(
+    navigator: DestinationsNavigator,
+    viewModel: GoldMarketsViewModel = koinViewModel()
+) {
 
     val priceList by viewModel.priceState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -117,7 +123,9 @@ fun GoldMarketList(navigator: DestinationsNavigator, viewModel: GoldMarketsViewM
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.height(90.dp).background(Primary),
+                modifier = Modifier
+                    .height(90.dp)
+                    .background(Primary),
                 colors = TopAppBarDefaults.topAppBarColors(// Use 'surface' instead of 'primary' for the app bar background
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
@@ -154,10 +162,11 @@ fun GoldMarketList(navigator: DestinationsNavigator, viewModel: GoldMarketsViewM
             )
         },
         modifier = Modifier.fillMaxSize()
-    ) {  innerPadding ->
+    ) { innerPadding ->
 
         Column(
-            modifier = Modifier.fillMaxSize()//.padding(innerPadding)
+            modifier = Modifier
+                .fillMaxSize()//.padding(innerPadding)
                 .padding(
                     top = innerPadding.calculateTopPadding(), // Only top padding
                     start = innerPadding.calculateStartPadding(LayoutDirection.Rtl),
@@ -180,16 +189,31 @@ fun GoldMarketList(navigator: DestinationsNavigator, viewModel: GoldMarketsViewM
 
                                 val (avgBuy, avgSell) = viewModel.getMarketAverage()
 
-                                Box(modifier = Modifier.clickable {
-
-                                },) {
-                                    GetMarketAverage(avgBuy, avgSell, "طلا آب شده (18 عیار)", "Gold 18", R.drawable.xaut)
+                                Box(
+                                    modifier = Modifier.clickable {
+                                        navigator.navigate(
+                                            AppChartWebViewDestination(
+                                                CHART_SCRIPT.replace(
+                                                    "{symbol_hear}",
+                                                    "brs:GOLD18IRT"
+                                                ).trimIndent(),
+                                            )
+                                        )
+                                    },
+                                ) {
+                                    GetMarketAverage(
+                                        avgBuy,
+                                        avgSell,
+                                        "طلا آب شده (18 عیار)",
+                                        "Gold 18",
+                                        R.drawable.xaut
+                                    )
                                 }
                             }
                             MarketPriceHeader(
                                 sortField = sortParam.sortField,
                                 sortOrder = sortParam.sortOrder,
-                            ) {sortField, sortOrder ->
+                            ) { sortField, sortOrder ->
                                 viewModel.sort(sortField, sortOrder)
                             }
                             TimerProgressBar(viewModel.timer)
@@ -229,9 +253,14 @@ fun GoldMarketList(navigator: DestinationsNavigator, viewModel: GoldMarketsViewM
                             if (items.isEmpty())
                                 item {
                                     Box(
-                                        modifier = Modifier.fillMaxSize().height(300.dp)
-                                    ){
-                                        Text("موردی پیدا نشد", modifier = Modifier.align(alignment = Alignment.Center))
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .height(300.dp)
+                                    ) {
+                                        Text(
+                                            "موردی پیدا نشد",
+                                            modifier = Modifier.align(alignment = Alignment.Center)
+                                        )
                                     }
                                 }
                             else

@@ -3,6 +3,7 @@ package com.numtory.application.features.market.presenter
 import android.annotation.SuppressLint
 import android.graphics.Color
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -56,7 +57,10 @@ import com.numtory.application.features.market.presenter.components.CryptoPriceI
 import com.numtory.application.features.market.presenter.components.GetMarketAverage
 import com.numtory.application.features.market.presenter.components.MarketPriceHeader
 import com.numtory.application.features.market.presenter.components.TimerProgressBar
+import com.numtory.application.ui.theme.CHART_SCRIPT
 import com.numtory.application.ui.theme.Primary
+import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination
+import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination.invoke
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
 
@@ -193,7 +197,16 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
 
                                 val (avgBuy, avgSell) = viewModel.getMarketAverage()
 
-                                Box(modifier = Modifier) {
+                                Box(  modifier = Modifier.clickable {
+                                    navigator.navigate(
+                                        AppChartWebViewDestination(
+                                            CHART_SCRIPT.replace(
+                                                "{symbol_hear}",
+                                                "nobitex_spot:USDTIRT"
+                                            ).trimIndent(),
+                                        )
+                                    )
+                                },) {
                                     GetMarketAverage(avgBuy, avgSell, "تتر", "USDT", R.drawable.tether)
                                 }
                             }

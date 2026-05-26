@@ -1,5 +1,7 @@
 package com.numtory.application.common
 
+import android.content.Context
+import android.content.pm.PackageManager
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import kotlin.let
@@ -40,5 +42,15 @@ fun formatDuration(totalSeconds: Long?): String {
         hours > 0 -> "${hours} ساعت"
         minutes > 0 -> "${minutes} دقیقه"
         else -> "کمتر از یک دقیقه"
+    }
+}
+
+fun getAppVersion(context: Context): Int {
+    return try {
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        packageInfo.versionCode
+    } catch (e: PackageManager.NameNotFoundException) {
+        e.printStackTrace()
+        0
     }
 }

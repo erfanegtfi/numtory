@@ -14,6 +14,7 @@ import com.numtory.application.features.gold.domain.enums.GoldExchanges
 import com.numtory.application.features.gold.domain.usecase.FilterGoldMarketUseCase
 import com.numtory.application.features.gold.domain.usecase.FilterGoldParams
 import com.numtory.application.features.gold.domain.usecase.GetAppGoldExchangesUseCase
+import com.numtory.application.features.gold.domain.usecase.GetDaricPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetDigikalaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldMarketAvgUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldikaPriceUseCase
@@ -58,6 +59,7 @@ constructor(
     private val getWallGoldPriceUseCase: GetWallGoldPriceUseCase,
     private val getMilliPriceUseCase: GetMilliPriceUseCase,
     private val getTechnoGoldPriceUseCase: GetTechnoGoldPriceUseCase,
+    private val getDaricPriceUseCase: GetDaricPriceUseCase,
 
     private val sortMarketUseCase: SortGoldMarketUseCase,
     private val filterMarketUseCase: FilterGoldMarketUseCase,
@@ -129,6 +131,7 @@ constructor(
                 add(getWallGoldPriceUseCase.action())
                 add(getMilliPriceUseCase.action())
                 add(getTechnoGoldPriceUseCase.action())
+                add(getDaricPriceUseCase.action("GOLD18TMN"))
             }
         else
             mergedFlow.apply {
@@ -150,6 +153,8 @@ constructor(
                     add(getMilliPriceUseCase.action())
                 if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.technoGold }?.active == true)
                     add(getTechnoGoldPriceUseCase.action())
+                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.daric }?.active == true)
+                    add(getDaricPriceUseCase.action("GOLD18TMN"))
             }
 
         viewModelScope.launch {

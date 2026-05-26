@@ -1,7 +1,9 @@
-package com.numtory.application
+package com.numtory.application.features.main
 
+import android.graphics.Color
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,9 +16,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +29,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,21 +38,24 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.numtory.application.common.appOpened
 import com.numtory.application.common.cryptoExchangesScreenOpened
 import com.numtory.application.common.goldExchangesScreenOpened
+import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.gold.GoldMarketList
 import com.numtory.application.features.market.presenter.MarketList
+import com.numtory.application.features.setting.domain.entities.AppSettings
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.androidx.compose.koinViewModel
 
 // Define your screen destinations
 sealed class Screen(
@@ -55,19 +64,95 @@ sealed class Screen(
     val icon: ImageVector,
     val selectedIcon: ImageVector
 ) {
-    object CryptoExchanges : Screen("crypto", "مقایسه تتر", Icons.Outlined.BarChart, Icons.Filled.Home)
-    object GoldExchanges : Screen("gold", "مقایسه طلا", Icons.Outlined.BarChart, Icons.Filled.Search)
+    object CryptoExchanges :
+        Screen("crypto", "مقایسه تتر", Icons.Outlined.BarChart, Icons.Filled.Home)
+
+    object GoldExchanges :
+        Screen("gold", "مقایسه طلا", Icons.Outlined.BarChart, Icons.Filled.Search)
+}
+
+@Composable
+fun SuccessDialog(
+    message: String,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Success") },
+        text = { Text(message) },
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text("OK")
+            }
+        },
+        icon = {
+            Icon(
+                Icons.Default.CheckCircle,
+                contentDescription = null,
+            )
+        }
+    )
 }
 
 @Destination<RootGraph>(start = true)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
-fun BottomNavHost(navigator: DestinationsNavigator) {
+fun BottomNavHost(
+    navigator: DestinationsNavigator,
+    viewModel: SettingsViewModel = koinViewModel()
+) {
     val navController = rememberNavController()
+
+    val settings by viewModel.settingsState.collectAsStateWithLifecycle()
+    val dialogMessage by viewModel.showSuccessDialog.collectAsStateWithLifecycle()
+
+//    LaunchedEffect(12) {
+//        viewModel.getSettings()
+//    }
+
+    if (dialogMessage)
+        SuccessDialog("آپدیت جدید") {
+            viewModel.closeDialog()
+        }
+
+    when (settings) {
+        is ViewState.Init -> {
+
+        }
+
+        is ViewState.Failure -> {
+
+        }
+
+        ViewState.Loading -> {
+
+        }
+
+        is ViewState.Success<AppSettings?> -> {
+
+        }
+
+    }
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) }
     ) { innerPadding ->
+
+//        when (settings) {
+//            is ViewState.Init -> {
+//
+//            }
+//            is ViewState.Failure -> {
+//
+//            }
+//            ViewState.Loading -> {
+//
+//            }
+//            is ViewState.Success<*> -> {
+//
+//            }
+//        }
+
         NavHost(
             navController = navController,
             startDestination = Screen.CryptoExchanges.route,

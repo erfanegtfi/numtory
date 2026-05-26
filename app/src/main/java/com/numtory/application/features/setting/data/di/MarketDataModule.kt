@@ -6,16 +6,28 @@ import com.numtory.application.features.market.data.local.ExchangesLocalDataSour
 import com.numtory.application.features.market.data.local.ExchangesLocalDataSourceImpl
 import com.numtory.application.features.market.data.repositories.MarketRepository
 import com.numtory.application.features.market.data.repositories.MarketRepositoryImpl
+import com.numtory.application.features.setting.data.dataSource.SettingsRemoteDataSource
+import com.numtory.application.features.setting.data.dataSource.SettingsRemoteDataSourceImpl
+import com.numtory.application.features.setting.data.local.SettingsLocalDataSource
+import com.numtory.application.features.setting.data.local.SettingsLocalDataSourceImpl
+import com.numtory.application.features.setting.data.repositories.SettingsRepository
+import com.numtory.application.features.setting.data.repositories.SettingsRepositoryImpl
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-val marketDataModule = module {
-    single<MarketRemoteDataSource> { MarketRemoteDataSourceImpl(get(), get()) }
-    single<MarketRepository> { MarketRepositoryImpl(get(), get(), get(qualifier = named("IO"))) }
+val settingsDataModule = module {
+    single<SettingsRemoteDataSource> { SettingsRemoteDataSourceImpl(get(), get()) }
+    single<SettingsRepository> {
+        SettingsRepositoryImpl(
+            get(),
+            get(),
+            get(qualifier = named("IO"))
+        )
+    }
 
 
-    factory<ExchangesLocalDataSource> {
-        ExchangesLocalDataSourceImpl(get())
+    factory<SettingsLocalDataSource> {
+        SettingsLocalDataSourceImpl(get())
     }
 
 }

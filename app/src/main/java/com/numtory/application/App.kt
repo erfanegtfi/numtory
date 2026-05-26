@@ -4,8 +4,10 @@ import android.app.Application
 import com.numtory.application.data.di.dataModule
 import com.numtory.application.features.gold.data.di.goldMarketDataModule
 import com.numtory.application.features.gold.presenter.di.goldMarketPresenterModule
+import com.numtory.application.features.main.di.settingsPresenterModule
 import com.numtory.application.features.market.data.di.marketDataModule
 import com.numtory.application.features.market.presenter.di.marketPresenterModule
+import com.numtory.application.features.setting.data.di.settingsDataModule
 import io.adtrace.sdk.AdTrace
 import io.adtrace.sdk.AdTraceConfig
 import io.adtrace.sdk.LogLevel
@@ -31,7 +33,9 @@ class App : Application() {
                 marketDataModule,
                 goldMarketDataModule,
                 marketPresenterModule,
-                goldMarketPresenterModule
+                goldMarketPresenterModule,
+                settingsDataModule,
+                settingsPresenterModule
             )
         }
     }

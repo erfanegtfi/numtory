@@ -71,6 +71,7 @@ android {
         buildConfigField("String", "WALLGOLD_URL", getLocalProperty("WALLGOLD_URL"))
         buildConfigField("String", "MILLI_URL", getLocalProperty("MILLI_URL"))
         buildConfigField("String", "TECHNO_GOLD_URL", getLocalProperty("TECHNO_GOLD_URL"))
+        buildConfigField("String", "DARIC_URL", getLocalProperty("DARIC_URL"))
         buildConfigField("String", "APP_SETTINGS_URL", getLocalProperty("APP_SETTINGS_URL"))
 
     }

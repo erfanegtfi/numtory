@@ -9,6 +9,7 @@ import com.numtory.application.features.gold.data.models.MelliGoldDataModel
 import com.numtory.application.features.gold.data.models.MilliDataModel
 import com.numtory.application.features.gold.data.models.TlynDataModel
 import com.numtory.application.features.gold.data.models.WallGoldDataModel
+import com.numtory.application.features.gold.domain.entities.Daric
 import com.numtory.application.features.gold.domain.entities.Digikala
 import com.numtory.application.features.gold.domain.entities.GoldExchangeInfo
 import com.numtory.application.features.gold.domain.entities.Goldika
@@ -37,6 +38,7 @@ interface GoldMarketRepository {
     fun getWallGoldPrice(): Flow<ApiCallResult<WallGold>>
     fun getMilliPrice(): Flow<ApiCallResult<Milli>>
     fun getTechnoGoldPrice(): Flow<ApiCallResult<TechnoGold>>
+    fun getDaricPrice(symbol: String): Flow<ApiCallResult<Daric>>
 }
 
 class GoldMarketRepositoryImpl(
@@ -144,6 +146,16 @@ class GoldMarketRepositoryImpl(
     override fun getTechnoGoldPrice(): Flow<ApiCallResult<TechnoGold>> = flow {
         val response = getResult {
             marketRemoteDataSource.getTechnoGoldPrice()
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result.toEntity()))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }.flowOn(dispatcher)
+
+    override fun getDaricPrice(symbol: String): Flow<ApiCallResult<Daric>> = flow {
+        val response = getResult {
+            marketRemoteDataSource.getDaricPrice(symbol)
         }
         if (response is ApiCallResult.Success) {
             emit(ApiCallResult.Success(response.result.toEntity()))

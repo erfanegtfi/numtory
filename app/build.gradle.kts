@@ -26,8 +26,8 @@ android {
         applicationId = "com.numtory"
         minSdk = 23
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.2.0"
+        versionCode = 5
+        versionName = "1.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -68,6 +68,9 @@ android {
         buildConfigField("String", "TLYN_URL", getLocalProperty("TLYN_URL"))
         buildConfigField("String", "MELLIGOLD_URL", getLocalProperty("MELLIGOLD_URL"))
         buildConfigField("String", "TALASEA_URL", getLocalProperty("TALASEA_URL"))
+        buildConfigField("String", "WALLGOLD_URL", getLocalProperty("WALLGOLD_URL"))
+        buildConfigField("String", "MILLI_URL", getLocalProperty("MILLI_URL"))
+        buildConfigField("String", "TECHNO_GOLD_URL", getLocalProperty("TECHNO_GOLD_URL"))
 
     }
 

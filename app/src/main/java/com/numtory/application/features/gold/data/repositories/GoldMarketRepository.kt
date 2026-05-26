@@ -6,14 +6,19 @@ import com.numtory.application.features.gold.data.dataSource.GoldMarketRemoteDat
 import com.numtory.application.features.gold.data.local.GoldExchangesLocalDataSource
 import com.numtory.application.features.gold.data.models.HamrahGoldDataModel
 import com.numtory.application.features.gold.data.models.MelliGoldDataModel
+import com.numtory.application.features.gold.data.models.MilliDataModel
 import com.numtory.application.features.gold.data.models.TlynDataModel
+import com.numtory.application.features.gold.data.models.WallGoldDataModel
 import com.numtory.application.features.gold.domain.entities.Digikala
 import com.numtory.application.features.gold.domain.entities.GoldExchangeInfo
 import com.numtory.application.features.gold.domain.entities.Goldika
 import com.numtory.application.features.gold.domain.entities.HamrahGold
 import com.numtory.application.features.gold.domain.entities.MelliGold
+import com.numtory.application.features.gold.domain.entities.Milli
 import com.numtory.application.features.gold.domain.entities.TalaSea
+import com.numtory.application.features.gold.domain.entities.TechnoGold
 import com.numtory.application.features.gold.domain.entities.Tlyn
+import com.numtory.application.features.gold.domain.entities.WallGold
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -29,6 +34,9 @@ interface GoldMarketRepository {
     fun getTlynPrice(): Flow<ApiCallResult<Tlyn>>
     fun getMelliGoldPrice(): Flow<ApiCallResult<MelliGold>>
     fun getTalaseaPrice(): Flow<ApiCallResult<TalaSea>>
+    fun getWallGoldPrice(): Flow<ApiCallResult<WallGold>>
+    fun getMilliPrice(): Flow<ApiCallResult<Milli>>
+    fun getTechnoGoldPrice(): Flow<ApiCallResult<TechnoGold>>
 }
 
 class GoldMarketRepositoryImpl(
@@ -105,6 +113,37 @@ class GoldMarketRepositoryImpl(
     override fun getTalaseaPrice(): Flow<ApiCallResult<TalaSea>> = flow {
         val response = getResult {
             marketRemoteDataSource.getTalaseaPrice()
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result.toEntity()))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }.flowOn(dispatcher)
+
+    override fun getWallGoldPrice(): Flow<ApiCallResult<WallGold>> = flow {
+        val response = getResult {
+            marketRemoteDataSource.getWallGoldPrice()
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result.toEntity()))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }.flowOn(dispatcher)
+
+    override fun getMilliPrice(): Flow<ApiCallResult<Milli>> = flow {
+        val response = getResult {
+            marketRemoteDataSource.getMilliPrice()
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result.toEntity()))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }.flowOn(dispatcher)
+
+
+    override fun getTechnoGoldPrice(): Flow<ApiCallResult<TechnoGold>> = flow {
+        val response = getResult {
+            marketRemoteDataSource.getTechnoGoldPrice()
         }
         if (response is ApiCallResult.Success) {
             emit(ApiCallResult.Success(response.result.toEntity()))

@@ -19,8 +19,11 @@ import com.numtory.application.features.gold.domain.usecase.GetGoldMarketAvgUseC
 import com.numtory.application.features.gold.domain.usecase.GetGoldikaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetHamrahGoldPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetMelliGoldPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetMilliPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetTalaseaPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetTechnoGoldPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetTlynPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetWallGoldPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveInvalidGoldExchangeUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveInvalidGoldExchangesParams
 import com.numtory.application.features.gold.domain.usecase.RemoveOutOfRangeGoldExchangeUseCase
@@ -52,6 +55,9 @@ constructor(
     private val getHamrahGoldPriceUseCase: GetHamrahGoldPriceUseCase,
     private val getMelliGoldPriceUseCase: GetMelliGoldPriceUseCase,
     private val getTalaseaPriceUseCase: GetTalaseaPriceUseCase,
+    private val getWallGoldPriceUseCase: GetWallGoldPriceUseCase,
+    private val getMilliPriceUseCase: GetMilliPriceUseCase,
+    private val getTechnoGoldPriceUseCase: GetTechnoGoldPriceUseCase,
 
     private val sortMarketUseCase: SortGoldMarketUseCase,
     private val filterMarketUseCase: FilterGoldMarketUseCase,
@@ -120,6 +126,9 @@ constructor(
                 add(getTlynPriceUseCase.action())
                 add(getMelliGoldPriceUseCase.action())
                 add(getTalaseaPriceUseCase.action())
+                add(getWallGoldPriceUseCase.action())
+                add(getMilliPriceUseCase.action())
+                add(getTechnoGoldPriceUseCase.action())
             }
         else
             mergedFlow.apply {
@@ -135,7 +144,12 @@ constructor(
                     add(getMelliGoldPriceUseCase.action())
                 if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.talasea }?.active == true)
                     add(getTalaseaPriceUseCase.action())
-
+                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.wallgold }?.active == true)
+                    add(getWallGoldPriceUseCase.action())
+                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.milli }?.active == true)
+                    add(getMilliPriceUseCase.action())
+                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.technoGold }?.active == true)
+                    add(getTechnoGoldPriceUseCase.action())
             }
 
         viewModelScope.launch {

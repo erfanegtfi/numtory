@@ -2,6 +2,7 @@ package com.numtory.application.features.gold
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -179,8 +180,10 @@ fun GoldMarketList(navigator: DestinationsNavigator, viewModel: GoldMarketsViewM
 
                                 val (avgBuy, avgSell) = viewModel.getMarketAverage()
 
-                                Box(modifier = Modifier) {
-                                    GetMarketAverage(avgBuy, avgSell, "طلا", "Gold", R.drawable.xaut)
+                                Box(modifier = Modifier.clickable {
+
+                                },) {
+                                    GetMarketAverage(avgBuy, avgSell, "طلا آب شده (18 عیار)", "Gold 18", R.drawable.xaut)
                                 }
                             }
                             MarketPriceHeader(

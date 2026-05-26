@@ -11,8 +11,11 @@ import com.numtory.application.features.gold.data.models.GoldExchangeInfoDataMod
 import com.numtory.application.features.gold.data.models.GoldikaDataModel
 import com.numtory.application.features.gold.data.models.HamrahGoldDataModel
 import com.numtory.application.features.gold.data.models.MelliGoldDataModel
+import com.numtory.application.features.gold.data.models.MilliDataModel
 import com.numtory.application.features.gold.data.models.TalaSeaDataModel
+import com.numtory.application.features.gold.data.models.TechnoGoldDataModel
 import com.numtory.application.features.gold.data.models.TlynDataModel
+import com.numtory.application.features.gold.data.models.WallGoldDataModel
 import io.ktor.client.request.parameter
 import io.ktor.http.parameters
 
@@ -24,6 +27,9 @@ interface GoldMarketRemoteDataSource {
     suspend fun getTlynPrice(): TlynDataModel
     suspend fun getMelliGoldPrice(): MelliGoldDataModel
     suspend fun getTalaseaPrice(): TalaSeaDataModel
+    suspend fun getWallGoldPrice(): WallGoldDataModel
+    suspend fun getMilliPrice(): MilliDataModel
+    suspend fun getTechnoGoldPrice(): TechnoGoldDataModel
 
 }
 
@@ -76,5 +82,26 @@ class GoldMarketRemoteDataSourceImpl constructor(
         val response = httpClient.get(BuildConfig.TALASEA_URL)
         val json = response.bodyAsText()
         return gson.fromJson(json, TalaSeaDataModel::class.java)
+    }
+
+    override suspend fun getWallGoldPrice(): WallGoldDataModel {
+        val response = httpClient.get(BuildConfig.WALLGOLD_URL){
+            parameter("side", "buy")
+            parameter("symbol", "GLD_18C_750TMN")
+        }
+        val json = response.bodyAsText()
+        return gson.fromJson(json, WallGoldDataModel::class.java)
+    }
+
+    override suspend fun getMilliPrice(): MilliDataModel {
+        val response = httpClient.get(BuildConfig.MILLI_URL)
+        val json = response.bodyAsText()
+        return gson.fromJson(json, MilliDataModel::class.java)
+    }
+
+    override suspend fun getTechnoGoldPrice(): TechnoGoldDataModel {
+        val response = httpClient.get(BuildConfig.TECHNO_GOLD_URL)
+        val json = response.bodyAsText()
+        return gson.fromJson(json, TechnoGoldDataModel::class.java)
     }
 }

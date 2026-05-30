@@ -1,9 +1,7 @@
 package com.numtory.application.features.main
 
-import android.graphics.Color
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,9 +15,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.CurrencyBitcoin
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.BarChart
+import androidx.compose.material.icons.outlined.CurrencyBitcoin
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,7 +29,6 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,7 +46,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.numtory.application.common.cryptoExchangesScreenOpened
 import com.numtory.application.common.goldExchangesScreenOpened
+import com.numtory.application.features.about.UpdateAppScreen
 import com.numtory.application.features.base.ViewState
+import com.numtory.application.features.cryptoMarket.presenter.CryptoListScreen
 import com.numtory.application.features.gold.GoldMarketList
 import com.numtory.application.features.market.presenter.MarketList
 import com.numtory.application.features.setting.domain.entities.AppSettings
@@ -69,6 +70,9 @@ sealed class Screen(
 
     object GoldExchanges :
         Screen("gold", "مقایسه طلا", Icons.Outlined.BarChart, Icons.Filled.Search)
+
+    object GlobalCryptoMarket :
+        Screen("Crypto", "قیمت رمزارزها", Icons.Outlined.CurrencyBitcoin, Icons.Filled.CurrencyBitcoin)
 }
 
 @Composable
@@ -166,6 +170,8 @@ fun BottomNavHost(
         ) {
             composable(Screen.CryptoExchanges.route) { MarketList(navigator) }
             composable(Screen.GoldExchanges.route) { GoldMarketList(navigator) }
+            composable(Screen.GlobalCryptoMarket.route) { CryptoListScreen(navigator) }
+//            composable(Screen.GlobalCryptoMarket.route) { UpdateAppScreen() }
         }
     }
 }
@@ -187,6 +193,21 @@ fun BottomNavigationBar(navController: NavHostController) {
             horizontalArrangement = Arrangement.SpaceAround, // Space between items
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Material2NavigationBarItem(
+                icon = Screen.GlobalCryptoMarket.icon,
+                label = Screen.GlobalCryptoMarket.title,
+                selected = currentRoute == Screen.GlobalCryptoMarket.route,
+                onClick = {
+                    cryptoExchangesScreenOpened()
+                    navController.navigate(Screen.GlobalCryptoMarket.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+            )
             Material2NavigationBarItem(
                 icon = Screen.CryptoExchanges.icon,
                 label = Screen.CryptoExchanges.title,

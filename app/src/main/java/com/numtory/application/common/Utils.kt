@@ -1,7 +1,9 @@
 package com.numtory.application.common
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import kotlin.let
@@ -53,4 +55,9 @@ fun getAppVersion(context: Context): Int {
         e.printStackTrace()
         0
     }
+}
+
+fun openDownloadUrl(context: Context, url: String) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    context.startActivity(intent)
 }

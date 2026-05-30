@@ -5,18 +5,18 @@ import io.adtrace.sdk.AdTraceEvent
 
 
 fun appOpened(){
-    val adtraceEvent = AdTraceEvent("3j3bm7")
-    AdTrace.trackEvent(adtraceEvent)
+//    val adtraceEvent = AdTraceEvent("3j3bm7")
+//    AdTrace.trackEvent(adtraceEvent)
 }
 
 fun goldExchangesScreenOpened(){
-    val adtraceEvent = AdTraceEvent("dej992")
-    AdTrace.trackEvent(adtraceEvent)
+//    val adtraceEvent = AdTraceEvent("dej992")
+//    AdTrace.trackEvent(adtraceEvent)
 }
 
 fun cryptoExchangesScreenOpened(){
-    val adtraceEvent = AdTraceEvent("qbf65n")
-    AdTrace.trackEvent(adtraceEvent)
+//    val adtraceEvent = AdTraceEvent("qbf65n")
+//    AdTrace.trackEvent(adtraceEvent)
 }
 
 fun exchangeScannerScreenOpened(){

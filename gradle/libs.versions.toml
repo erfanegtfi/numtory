@@ -1,6 +1,7 @@
 [versions]
 agp = "8.13.2"
 androidSdk = "2.6.0"
+coilCompose = "3.4.0"
 installreferrer = "2.2"
 kotlin = "2.2.20"
 coreKtx = "1.17.0"
@@ -38,6 +39,9 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-material-icons = { group = "androidx.compose.material", name = "material-icons-core" }
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coilCompose" }
+coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilCompose" }
+coil-svg = { module = "io.coil-kt:coil3-svg", version.ref = "coilCompose" }
 installreferrer = { module = "com.android.installreferrer:installreferrer", version.ref = "installreferrer" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization-json" }
@@ -50,7 +54,6 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 
 
-coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 koin-android = { module = "io.insert-koin:koin-android" , version.ref = "koin_version"}
 koin-androidx-compose = { module = "io.insert-koin:koin-androidx-compose" , version.ref = "koin_version"}
 

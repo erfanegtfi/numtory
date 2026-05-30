@@ -48,6 +48,7 @@ import com.ramcosta.composedestinations.generated.destinations.AboutScreenDestin
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.numtory.application.R
 import com.numtory.application.composeUI.ShowBottomSheet
+import com.numtory.application.features.about.UpdateAppScreen
 import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.features.market.domain.usecase.FilterParams

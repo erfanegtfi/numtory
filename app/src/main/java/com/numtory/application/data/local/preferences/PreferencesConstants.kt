@@ -12,4 +12,6 @@ object PreferencesConstants {
         const val GOLD_EXCHANGES_STATUS = "gold_exchanges_status"
         const val ADD_GOLD_FEE = "gold_add_fee"
 
+        const val GLOBAL_CRYPTO_SYMBOLS = "global_crypto_symbols"
+
 }

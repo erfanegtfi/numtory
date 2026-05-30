@@ -73,6 +73,8 @@ android {
         buildConfigField("String", "TECHNO_GOLD_URL", getLocalProperty("TECHNO_GOLD_URL"))
         buildConfigField("String", "DARIC_URL", getLocalProperty("DARIC_URL"))
         buildConfigField("String", "APP_SETTINGS_URL", getLocalProperty("APP_SETTINGS_URL"))
+        buildConfigField("String", "CRYPTO_ICON_URL", getLocalProperty("CRYPTO_ICON_URL"))
+        buildConfigField("String", "CRYPTO_GLOBAL_MARKET_URL", getLocalProperty("CRYPTO_GLOBAL_MARKET_URL"))
 
     }
 
@@ -139,4 +141,7 @@ dependencies {
     implementation(libs.android.sdk)
     implementation(libs.installreferrer)
     implementation(libs.play.services.ads.identifier)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+//    implementation(libs.coil.svg)
 }

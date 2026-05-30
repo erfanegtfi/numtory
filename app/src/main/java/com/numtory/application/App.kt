@@ -2,6 +2,8 @@ package com.numtory.application
 
 import android.app.Application
 import com.numtory.application.data.di.dataModule
+import com.numtory.application.features.cryptoMarket.data.di.cryptoGlobalMarketDataModule
+import com.numtory.application.features.cryptoMarket.presenter.di.cryptoGlobalMarketPresenterModule
 import com.numtory.application.features.gold.data.di.goldMarketDataModule
 import com.numtory.application.features.gold.presenter.di.goldMarketPresenterModule
 import com.numtory.application.features.main.di.settingsPresenterModule
@@ -35,7 +37,9 @@ class App : Application() {
                 marketPresenterModule,
                 goldMarketPresenterModule,
                 settingsDataModule,
-                settingsPresenterModule
+                settingsPresenterModule,
+                cryptoGlobalMarketDataModule,
+                cryptoGlobalMarketPresenterModule
             )
         }
     }

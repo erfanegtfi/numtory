@@ -4,7 +4,7 @@ import com.numtory.application.R
 
 enum class Exchanges(val title: String, val logo: Int) {
     none("", R.drawable.launcher),
-    tetherland("تترلند", R.drawable.tetherland),
+    tetherland("تترلند (سریع)", R.drawable.tetherland),
     abantether("آبان تتر", R.drawable.aban),
     bitpin("بیت پین", R.drawable.bitpin),
     nobitex("نوبیتکس (سریع)", R.drawable.nobitex,),

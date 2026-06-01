@@ -36,6 +36,7 @@ android {
             abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86_64"))
         }
         buildConfigField("String", "BITPIN_URL", getLocalProperty("BITPIN_URL"))
+        buildConfigField("String", "BITPIN_MARKET_URL", getLocalProperty("BITPIN_MARKET_URL"))
         buildConfigField("String", "NUBITEX_URL", getLocalProperty("NUBITEX_URL"))
         buildConfigField("String", "NUBITEX_MARKET_URL", getLocalProperty("NUBITEX_MARKET_URL"))
         buildConfigField("String", "BIT24_URL", getLocalProperty("BIT24_URL"))
@@ -46,6 +47,7 @@ android {
         buildConfigField("String", "TABDEAL_MARKET_URL", getLocalProperty("TABDEAL_MARKET_URL"))
         buildConfigField("String", "UBITEX_URL", getLocalProperty("UBITEX_URL"))
         buildConfigField("String", "ETEREX_URL", getLocalProperty("ETEREX_URL"))
+        buildConfigField("String", "ETEREX_PRICE_URL", getLocalProperty("ETEREX_PRICE_URL"))
         buildConfigField("String", "TETHERLAND_URL", getLocalProperty("TETHERLAND_URL"))
         buildConfigField("String", "ARZPLUS_URL", getLocalProperty("ARZPLUS_URL"))
         buildConfigField("String", "ARZPLUS_MARKET_URL", getLocalProperty("ARZPLUS_MARKET_URL"))
@@ -59,6 +61,7 @@ android {
         buildConfigField("String", "SARAF_URL", getLocalProperty("SARAF_URL"))
         buildConfigField("String", "COINKADE_URL", getLocalProperty("COINKADE_URL"))
         buildConfigField("String", "RAMZINEX_URL", getLocalProperty("RAMZINEX_URL"))
+        buildConfigField("String", "RAMZINEX_CURRENCIES_URL", getLocalProperty("RAMZINEX_CURRENCIES_URL"))
         buildConfigField("String", "ARZINJA_URL", getLocalProperty("ARZINJA_URL"))
         buildConfigField("String", "ARZYPTO_URL", getLocalProperty("ARZYPTO_URL"))
         buildConfigField("String", "DIGIKALA_URL", getLocalProperty("DIGIKALA_URL"))

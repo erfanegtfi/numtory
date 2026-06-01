@@ -11,7 +11,7 @@ data class GoldikaData(
 }
 
 data class GoldikaPrice(
-    val sell: Int,
-    val buy: Int,
+    val sell: Long,
+    val buy: Long,
 ) {
 }

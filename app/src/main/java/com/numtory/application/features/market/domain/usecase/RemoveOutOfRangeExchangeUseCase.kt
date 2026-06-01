@@ -10,12 +10,12 @@ class RemoveOutOfRangeExchangeUseCase constructor() {
 
         return params.markets
             .filter {
-                if(params.avgBuy == 0f) true
+                if(params.avgBuy == 0.0) true
 //                var buy = (it.marketPrice ?: it.buyPrice ?: "0").toFloat() - avgBuy
 //                var sell = (it.marketPrice ?: it.sellPrice ?: "0").toFloat() - avgSell
 
-                var buy = (it.finalBuyPrice).toFloat() - params.avgBuy
-                var sell = (it.finalSellPrice).toFloat() - params.avgSell
+                var buy = (it.finalBuyPrice).toDouble() - params.avgBuy
+                var sell = (it.finalSellPrice).toDouble() - params.avgSell
 
                 if (buy < 0) buy = buy * -1
                 if (sell < 0) sell = buy * -1
@@ -29,7 +29,7 @@ class RemoveOutOfRangeExchangeUseCase constructor() {
 }
 
 data class RemoveOutOfRangeExchangesParams(
-    val avgBuy: Float,
-    val avgSell: Float,
+    val avgBuy: Double,
+    val avgSell: Double,
     var markets: List<MarketPrice>
 )

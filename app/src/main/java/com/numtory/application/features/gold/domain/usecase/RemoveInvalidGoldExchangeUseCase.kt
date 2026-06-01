@@ -8,8 +8,8 @@ class RemoveInvalidGoldExchangeUseCase constructor() {
 
         return params.markets
             .filter {
-                ((it.sellPrice != null && it.sellPrice?.toFloat() != 0f) && (it.buyPrice != null && it.buyPrice?.toFloat() != 0f))
-                        || it.marketPrice != null && it.marketPrice?.toFloat() != 0f
+                ((it.sellPrice != null && it.sellPrice?.toDouble() != 0.0) && (it.buyPrice != null && it.buyPrice?.toDouble() != 0.0))
+                        || it.marketPrice != null && it.marketPrice?.toDouble() != 0.0
             }
 //            .filter { marketPrice ->
 //                if (params.exchangesInfo?.isNotEmpty() != true) true

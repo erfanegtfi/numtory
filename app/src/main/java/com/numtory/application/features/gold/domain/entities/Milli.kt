@@ -6,6 +6,6 @@ data class Milli(
 }
 
 data class MilliPrice(
-    val price: Int?,
+    val price: Long?,
 ) {
 }

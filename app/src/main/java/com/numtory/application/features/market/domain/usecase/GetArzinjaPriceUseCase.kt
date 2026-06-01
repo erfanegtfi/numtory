@@ -26,17 +26,21 @@ class GetArzinjaPriceUseCase constructor(
             when (swapResponse) {
                 is ApiCallResult.Success -> {
                     if (swapResponse.result?.isNotEmpty() == true) {
+                        val asset =
+                            swapResponse.result.first()["$baseCurrency$quoteCurrency"]
+
                         val swapPrice = MarketPrice(
+                            symbol = asset?.baseAsset,
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.arzinja }
                                 ?: ExchangeInfo(
                                     exchange = Exchanges.arzinja,
                                     active = true,
                                     display = true
                                 ),
-                            buyPrice = ((swapResponse.result.first()["$baseCurrency$quoteCurrency"]?.stats?.lastPrice
-                                ?: "0").toInt()).toString(),
-                            sellPrice = ((swapResponse.result.first()["$baseCurrency$quoteCurrency"]?.stats?.lastPrice
-                                ?: "0").toInt()).toString(),
+                            buyPrice = ((asset?.stats?.lastPrice
+                                ?: "0").toLong()).toString(),
+                            sellPrice = ((asset?.stats?.lastPrice
+                                ?: "0").toLong()).toString(),
                             lastRefresh = System.currentTimeMillis()
                         )
                         emit(ApiCallResult.Success(swapPrice))
@@ -51,17 +55,21 @@ class GetArzinjaPriceUseCase constructor(
             when (marketResponse) {
                 is ApiCallResult.Success -> {
                     if (marketResponse.result?.isNotEmpty() == true) {
+                        val asset =
+                            marketResponse.result.first()["$baseCurrency$quoteCurrency"]
+
                         val marketPrice = MarketPrice(
+                            symbol = asset?.baseAsset,
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.arzinjaMarket }
                                 ?: ExchangeInfo(
                                     exchange = Exchanges.arzinjaMarket,
                                     active = true,
                                     display = true
                                 ),
-                            buyPrice = ((marketResponse.result.first()["$baseCurrency$quoteCurrency"]?.stats?.askPrice
-                                ?: "0").toInt()).toString(),
-                            sellPrice = ((marketResponse.result.first()["$baseCurrency$quoteCurrency"]?.stats?.bidPrice
-                                ?: "0").toInt()).toString(),
+                            buyPrice = ((asset?.stats?.askPrice
+                                ?: "0").toLong()).toString(),
+                            sellPrice = ((asset?.stats?.bidPrice
+                                ?: "0").toLong()).toString(),
                             lastRefresh = System.currentTimeMillis()
                         )
                         emit(ApiCallResult.Success(marketPrice))

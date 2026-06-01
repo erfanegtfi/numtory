@@ -13,7 +13,7 @@ data class MelliGold(
 }
 
 data class MelliGoldPrice(
-    val buy: Int?,
-    val sell: Int?,
+    val buy: Long?,
+    val sell: Long?,
 ) {
 }

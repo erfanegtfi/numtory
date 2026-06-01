@@ -13,10 +13,10 @@ class GetBit24PriceUseCase constructor(
     private val marketRepository: MarketRepository,
 ) {
 
-    fun action(fromCurrency: String, toCurrency: String): Flow<ApiCallResult<MarketPrice>> {
+    fun action(fromCurrency: String, base: String): Flow<ApiCallResult<MarketPrice>> {
         val exchangesInfo = marketRepository.getSavedExchangesInfo()
 
-        val flow1 = marketRepository.getBit24SwapPrice(fromCurrency, toCurrency)
+        val flow1 = marketRepository.getBit24SwapPrice(fromCurrency, base)
         val flow2 = marketRepository.getBit24MarketPrice()
 
         return combine(flow1, flow2) { swap, market ->
@@ -25,15 +25,16 @@ class GetBit24PriceUseCase constructor(
             when (swapResponse) {
                 is ApiCallResult.Success -> {
                     val swapPrice = MarketPrice(
+                        symbol = base,
                         exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.bit24 } ?: ExchangeInfo(
                             exchange = Exchanges.bit24,
                             active = true,
                             display = true
                         ),
                         buyPrice = ((swapResponse.result.data.metas.buyPrice
-                            ?: "0").toInt() ).toString(),
+                            ?: "0").toLong() ).toString(),
                         sellPrice = ((swapResponse.result.data.metas.sellPrice
-                            ?: "0").toInt() ).toString(),
+                            ?: "0").toLong() ).toString(),
                         lastRefresh = System.currentTimeMillis()
                     )
                     emit(ApiCallResult.Success(swapPrice))
@@ -46,14 +47,20 @@ class GetBit24PriceUseCase constructor(
 
             when (marketResponse) {
                 is ApiCallResult.Success -> {
+
+                    val asset =
+                        marketResponse.result.firstOrNull { it.symbol?.lowercase() == base.lowercase() }
+
+
                     val marketPrice = MarketPrice(
+                        symbol = base,
                         exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.bit24Market } ?: ExchangeInfo(
                             exchange = Exchanges.bit24Market,
                             active = true,
                             display = true
                         ),
                         marketPrice = (
-                                (marketResponse.result.firstOrNull { it.symbol?.lowercase() == toCurrency.lowercase() }?.market?.get(
+                                (asset?.market?.get(
                                     fromCurrency.lowercase()
                                 )?.price?:"0")),
                         lastRefresh = System.currentTimeMillis()

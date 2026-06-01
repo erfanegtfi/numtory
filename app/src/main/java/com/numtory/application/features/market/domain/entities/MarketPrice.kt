@@ -1,8 +1,8 @@
 package com.numtory.application.features.market.domain.entities
 
-import com.numtory.application.features.market.domain.enums.Exchanges
 
 data class MarketPrice constructor(
+    var symbol: String? = null,
     var sellPrice: String? = null,
     var buyPrice: String? = null,
     var marketPrice: String? = null,
@@ -48,13 +48,13 @@ data class MarketPrice constructor(
     val finalSellPrice: String
         get(): String {
 
-            val p = if (marketPrice != null && marketPrice?.toFloat() != 0f) {
-                marketPrice?.toFloat() ?: 0f
+            val p = if (marketPrice != null && marketPrice?.toDouble() != 0.0) {
+                marketPrice?.toDouble() ?: 0.0
             } else {
-                if (sellPrice == null || sellPrice?.toFloat() == 0f)
-                    0f
+                if (sellPrice == null || sellPrice?.toDouble() == 0.0)
+                    0.0
                 else
-                    sellPrice?.toFloat() ?: 0f
+                    sellPrice?.toDouble() ?: 0.0
             }
 
 
@@ -64,13 +64,13 @@ data class MarketPrice constructor(
 
     val finalBuyPrice: String
         get(): String {
-            val p = if (marketPrice != null && marketPrice?.toFloat() != 0f) {
-                marketPrice?.toFloat() ?: 0f
+            val p = if (marketPrice != null && marketPrice?.toDouble() != 0.0) {
+                marketPrice?.toDouble() ?: 0.0
             } else {
-                if (buyPrice == null || buyPrice?.toFloat() == 0f)
-                    0f
+                if (buyPrice == null || buyPrice?.toDouble() == 0.0)
+                    0.0
                 else
-                    buyPrice?.toFloat() ?: 0f
+                    buyPrice?.toDouble() ?: 0.0
             }
 
 
@@ -79,6 +79,6 @@ data class MarketPrice constructor(
         }
     val diff: String
         get(): String {
-            return (finalBuyPrice.toFloat() - finalSellPrice.toFloat()).toInt().toString()
+            return (finalBuyPrice.toDouble() - finalSellPrice.toDouble()).toLong().toString()
         }
 }

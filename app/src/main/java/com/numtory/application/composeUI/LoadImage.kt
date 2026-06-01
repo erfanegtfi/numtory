@@ -16,12 +16,12 @@ import com.numtory.application.R
 import org.koin.compose.koinInject
 
 @Composable
-fun MyImageLoader(path: String, width: Int = 28, height: Int = 28) {
+fun MyImageLoader(url: String, width: Int = 28, height: Int = 28, modifier: Modifier = Modifier) {
     val imageLoader = koinInject<ImageLoader>()
 
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
-            .data(path)
+            .data(url)
 //            .decoderFactory(SvgDecoder.Factory()) // This is the key step
 //            .size(100, 100)  // Request specific size
             .build(),
@@ -29,8 +29,10 @@ fun MyImageLoader(path: String, width: Int = 28, height: Int = 28) {
         imageLoader = imageLoader,
         contentDescription = "Description of the SVG image",
         // You can still use placeholders and error handlers
-        placeholder = painterResource(R.drawable.image_placeholder, ),
+        placeholder = painterResource(R.drawable.image_placeholder),
         error = painterResource(R.drawable.image_placeholder),
-        modifier = Modifier.width(width.dp).height(height.dp)
+        modifier = modifier
+            .width(width.dp)
+            .height(height.dp)
     )
 }

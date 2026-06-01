@@ -23,9 +23,9 @@ data class GoldikaDataDataModel(
 
 data class GoldikaPriceDataModel(
     @SerializedName("sell")
-    val sell: Int,
+    val sell: Long,
     @SerializedName("buy")
-    val buy: Int,
+    val buy: Long,
 ) {
     fun toEntity(): GoldikaPrice = GoldikaPrice(sell, buy)
 }

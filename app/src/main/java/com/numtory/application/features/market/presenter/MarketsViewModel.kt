@@ -1,6 +1,7 @@
 package com.numtory.application.features.market.presenter;
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +44,7 @@ import com.numtory.application.features.market.domain.usecase.RemoveOutOfRangeEx
 import com.numtory.application.features.market.domain.usecase.RemoveOutOfRangeExchangeUseCase
 import com.numtory.application.features.market.domain.usecase.SortMarketUseCase
 import com.numtory.application.features.market.domain.usecase.SortParams
+import com.numtory.application.ui.theme.DEFAULT_TOKEN
 import com.numtory.application.ui.theme.REFRESH_TIMER
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -102,9 +104,12 @@ constructor(
     private val _priceState = MutableStateFlow<ViewState<List<MarketPrice>>>(ViewState.Init)
     val priceState: StateFlow<ViewState<List<MarketPrice>>> get() = _priceState.asStateFlow()
 
+    var symbol: String = DEFAULT_TOKEN
+    var priceJob :Job? = null
+
     init {
         getExchanges()
-        getPrices()
+        getPrices(symbol)
         startTimer()
     }
 
@@ -126,7 +131,14 @@ constructor(
         }
     }
 
-    fun getPrices() {
+    fun getPrices(symbol: String = this.symbol) {
+        if (this.symbol != symbol) {
+            allMarkets.clear()
+            validMarkets = emptyList()
+            priceJob?.cancel()
+        }
+
+        this.symbol = symbol
         getExchanges()
         _timer.intValue = REFRESH_TIMER
 
@@ -140,25 +152,25 @@ constructor(
 
         if (appExchangesInfo?.isNotEmpty() != true)
             mergedFlow.apply {
-                add(getBitPinPriceUseCase.action(5))
-                add(getTetherLandPriceUseCase.action())
-                add(getNobitexPriceUseCase.action("USDTIRT", "usdt-rls"))
-                add(getTabtealPriceUseCase.action("IRT", "USDT"))
-                add(getBit24PriceUseCase.action("IRT", "USDT"))
-                add(getArzplusPriceUseCase.action("IRT", "USDT"))
-                add(getTwoxPriceUseCase.action("IRT", "USDT"))
-                add(getCoinkadePriceUseCase.action())
-                add(getPoolenoPriceUseCase.action("USDT", "TMN"))
-                add(getEterexPriceUseCase.action("USDT"))
-                add(getPingiPriceUseCase.action("USDT_IRT"))
-                add(getWallexPriceUseCase.action("USDT", "TMN"))
-                add(getAbanTetherPriceUseCase.action("USDT"))
-                add(getSarmayexPriceUseCase.action("USDT", "USDT_IRT"))
-                add(getSarafPriceUseCase.action("USDT"))
-                add(getUbitexPriceUseCase.action("USDT", "TMN"))
-                add(getArzinjaPriceUseCase.action("USDT", "IRT"))
-                add(getRamzinexPriceUseCase.action("2", "9"))
-                add(getArzyptoPriceUseCase.action("TOMAN", "USDT"))
+                add(getBitPinPriceUseCase.action(symbol, "IRT"))
+                add(getTetherLandPriceUseCase.action(symbol))
+                add(getNobitexPriceUseCase.action(symbol, "rls"))
+                add(getTabtealPriceUseCase.action("IRT", symbol))
+                add(getBit24PriceUseCase.action("IRT", symbol))
+                add(getArzplusPriceUseCase.action("IRT", symbol))
+                add(getTwoxPriceUseCase.action("IRT", symbol))
+                add(getCoinkadePriceUseCase.action(symbol))
+                add(getPoolenoPriceUseCase.action(symbol, "TMN"))
+                add(getEterexPriceUseCase.action(symbol))
+                add(getPingiPriceUseCase.action(symbol, "IRT"))
+                add(getWallexPriceUseCase.action(symbol, "TMN"))
+                add(getAbanTetherPriceUseCase.action(symbol))
+                add(getSarmayexPriceUseCase.action(symbol, "IRT"))
+                add(getSarafPriceUseCase.action(symbol))
+                add(getUbitexPriceUseCase.action(symbol, "TMN"))
+                add(getArzinjaPriceUseCase.action(symbol, "IRT"))
+                add(getRamzinexPriceUseCase.action(symbol, "irr"))
+                add(getArzyptoPriceUseCase.action("TOMAN", symbol))
             }
 //         mergedFlow = merge(
 //            getBitPinPriceUseCase.action(5),
@@ -182,46 +194,46 @@ constructor(
         else
             mergedFlow.apply {
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.bitpin }?.active == true)
-                    add(getBitPinPriceUseCase.action(5))
+                    add(getBitPinPriceUseCase.action(symbol, "IRT"))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.tetherland }?.active == true)
-                    add(getTetherLandPriceUseCase.action())
+                    add(getTetherLandPriceUseCase.action(symbol))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.nobitex }?.active == true)
-                    add(getNobitexPriceUseCase.action("USDTIRT", "usdt-rls"))
+                    add(getNobitexPriceUseCase.action(symbol, "rls"))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.tabdeal }?.active == true)
-                    add(getTabtealPriceUseCase.action("IRT", "USDT"))
+                    add(getTabtealPriceUseCase.action("IRT", symbol))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.bit24 }?.active == true)
-                    add(getBit24PriceUseCase.action("IRT", "USDT"))
+                    add(getBit24PriceUseCase.action("IRT", symbol))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.arzplus }?.active == true)
-                    add(getArzplusPriceUseCase.action("IRT", "USDT"))
+                    add(getArzplusPriceUseCase.action("IRT", symbol))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.twox }?.active == true)
-                    add(getTwoxPriceUseCase.action("IRT", "USDT"))
+                    add(getTwoxPriceUseCase.action("IRT", symbol))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.coinkade }?.active == true)
-                    add(getCoinkadePriceUseCase.action())
+                    add(getCoinkadePriceUseCase.action(symbol))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.pooleno }?.active == true)
-                    add(getPoolenoPriceUseCase.action("USDT", "TMN"))
+                    add(getPoolenoPriceUseCase.action(symbol, "TMN"))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.eterex }?.active == true)
-                    add(getEterexPriceUseCase.action("USDT"))
+                    add(getEterexPriceUseCase.action(symbol))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.pingi }?.active == true)
-                    add(getPingiPriceUseCase.action("USDT_IRT"))
+                    add(getPingiPriceUseCase.action(symbol, "IRT"))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.wallex }?.active == true)
-                    add(getWallexPriceUseCase.action("USDT", "TMN"))
+                    add(getWallexPriceUseCase.action(symbol, "TMN"))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.abantether }?.active == true)
-                    add(getAbanTetherPriceUseCase.action("USDT"))
+                    add(getAbanTetherPriceUseCase.action(symbol))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.sarmayex }?.active == true)
-                    add(getSarmayexPriceUseCase.action("USDT", "USDT_IRT"))
+                    add(getSarmayexPriceUseCase.action(symbol, "IRT"))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.saraf }?.active == true)
-                    add(getSarafPriceUseCase.action("USDT"))
+                    add(getSarafPriceUseCase.action(symbol))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.ubitex }?.active == true)
-                    add(getUbitexPriceUseCase.action("USDT", "TMN"))
+                    add(getUbitexPriceUseCase.action(symbol, "TMN"))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.arzinja }?.active == true)
-                    add(getArzinjaPriceUseCase.action("USDT", "IRT"))
+                    add(getArzinjaPriceUseCase.action(symbol, "IRT"))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.ramzinex }?.active == true)
-                    add(getRamzinexPriceUseCase.action("2", "9"))
+                    add(getRamzinexPriceUseCase.action(symbol, "irr"))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.arzypto }?.active == true)
-                    add(getArzyptoPriceUseCase.action("TOMAN", "USDT"))
+                    add(getArzyptoPriceUseCase.action("TOMAN", symbol))
             }
 
-        viewModelScope.launch {
+        priceJob = viewModelScope.launch {
             merge(*mergedFlow.toTypedArray())
 //            mergedFlow
                 .collect { response ->
@@ -229,10 +241,12 @@ constructor(
                         is ApiCallResult.Success -> {
 
                             allMarkets =
-                                allMarkets.filterNot { it.exchangeInfo.exchange == response.result.exchangeInfo?.exchange }
+                                allMarkets.filterNot { it.exchangeInfo.exchange == response.result.exchangeInfo.exchange }
                                     .toMutableList()
 
-                            allMarkets.add(response.result)
+                            Log.v("symbol", symbol)
+                            if (response.result.symbol?.lowercase() == symbol.lowercase())
+                                allMarkets.add(response.result)
 
                             allMarkets = removeInvalidExchangeUseCase.action(
                                 RemoveInvalidExchangesParams(
@@ -299,7 +313,7 @@ constructor(
         }
     }
 
-    fun getMarketAverage(): Pair<Float, Float> {
+    fun getMarketAverage(): Pair<Double, Double> {
         val userExchanges = getUserExchanges()
         return getMarketAvgUseCase.action(validMarkets, userExchanges)
     }
@@ -338,7 +352,7 @@ constructor(
                 _timer.intValue = _timer.intValue - 1
                 delay(1000)
                 if (_timer.intValue == 0) {
-                    getPrices()
+                    getPrices(symbol)
                 }
             }
         }

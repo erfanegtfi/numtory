@@ -50,7 +50,9 @@ import com.numtory.application.R
 import com.numtory.application.composeUI.ShowBottomSheet
 import com.numtory.application.features.about.UpdateAppScreen
 import com.numtory.application.features.base.ViewState
+import com.numtory.application.features.cryptoMarket.domain.entities.cryptoMap
 import com.numtory.application.features.market.domain.entities.MarketPrice
+import com.numtory.application.features.market.domain.enums.topSymbols
 import com.numtory.application.features.market.domain.usecase.FilterParams
 import com.numtory.application.features.market.domain.usecase.SortParams
 import com.numtory.application.features.market.presenter.components.AssetOptionsBottomSheetScreen
@@ -59,6 +61,7 @@ import com.numtory.application.features.market.presenter.components.GetMarketAve
 import com.numtory.application.features.market.presenter.components.MarketPriceHeader
 import com.numtory.application.features.market.presenter.components.TimerProgressBar
 import com.numtory.application.ui.theme.CHART_SCRIPT
+import com.numtory.application.ui.theme.DEFAULT_TOKEN
 import com.numtory.application.ui.theme.Primary
 import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination
 import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination.invoke
@@ -77,6 +80,8 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
     var sortParam by remember { mutableStateOf(SortParams()) }
     var filterParam by remember { mutableStateOf(FilterParams()) }
     var showSheet by remember { mutableStateOf(false) }
+    var showTokenList by remember { mutableStateOf(false) }
+    var selectedToken by remember { mutableStateOf(DEFAULT_TOKEN) }
 
 //    printLogs(priceList)
 
@@ -122,30 +127,35 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
             }
         }
 
+    if (showTokenList)
+        ShowBottomSheet(onDismiss = {
+            showSheet = false
+        }) { modalBottomSheetState, hide ->
+            TokenListBottomSheetScreen(
+                topSymbols,
+                hide
+            ) { token ->
+                selectedToken = token
+                showTokenList = false
+                viewModel.getPrices(token)
+            }
+        }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.height(90.dp).background(Primary),
+//                modifier = Modifier.background(Primary),
                 colors = TopAppBarDefaults.topAppBarColors(// Use 'surface' instead of 'primary' for the app bar background
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 title = {
-                    Box(modifier = Modifier.fillMaxSize()) {
-//                        Text(
-//                            text = "USDT",
-//                            modifier = Modifier
-//                                .align(Alignment.CenterEnd)
-//                                .padding(end = 18.dp),
-//                            style = MaterialTheme.typography.titleLarge
-//                        )
-                        Text(
-                            text = "توکن چند",
-                            modifier = Modifier.align(Alignment.CenterStart),
-                            style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
-                        )
-                    }
+                    Text(
+                        text = "مقایسه قیمت تتر",
+//                            modifier = Modifier.align(Alignment.CenterStart),
+                        style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
+                    )
                 },
                 actions = {
                     IconButton(onClick = {
@@ -172,10 +182,11 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
             )
         },
         modifier = Modifier.fillMaxSize()
-    ) {  innerPadding ->
+    ) { innerPadding ->
 
         Column(
-            modifier = Modifier.fillMaxSize()//.padding(innerPadding)
+            modifier = Modifier
+                .fillMaxSize()//.padding(innerPadding)
                 .padding(
                     top = innerPadding.calculateTopPadding(), // Only top padding
                     start = innerPadding.calculateStartPadding(LayoutDirection.Rtl),
@@ -198,23 +209,33 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
 
                                 val (avgBuy, avgSell) = viewModel.getMarketAverage()
 
-                                Box(  modifier = Modifier.clickable {
-                                    navigator.navigate(
-                                        AppChartWebViewDestination(
-                                            CHART_SCRIPT.replace(
-                                                "{symbol_hear}",
-                                                "nobitex_spot:USDTIRT"
-                                            ).trimIndent(),
+
+                                GetMarketAverage(
+                                    avgBuy,
+                                    avgSell,
+                                    cryptoMap[selectedToken] ?: "",
+                                    selectedToken,
+                                    selectedToken,
+                                    onChartClicked = {
+                                        navigator.navigate(
+                                            AppChartWebViewDestination(
+                                                CHART_SCRIPT.replace(
+                                                    "{symbol_hear}",
+                                                    "nobitex_spot:USDTIRT"
+                                                ).trimIndent(),
+                                            )
                                         )
-                                    )
-                                },) {
-                                    GetMarketAverage(avgBuy, avgSell, "تتر", "USDT", R.drawable.tether)
-                                }
+                                    },
+                                    onTokenClicked = {
+                                        showTokenList = true
+                                    })
+
+
                             }
                             MarketPriceHeader(
                                 sortField = sortParam.sortField,
                                 sortOrder = sortParam.sortOrder,
-                            ) {sortField, sortOrder ->
+                            ) { sortField, sortOrder ->
                                 viewModel.sort(sortField, sortOrder)
                             }
                             TimerProgressBar(viewModel.timer)
@@ -254,9 +275,14 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                             if (items.isEmpty())
                                 item {
                                     Box(
-                                        modifier = Modifier.fillMaxSize().height(300.dp)
-                                    ){
-                                        Text("موردی پیدا نشد", modifier = Modifier.align(alignment = Alignment.Center))
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .height(300.dp)
+                                    ) {
+                                        Text(
+                                            "موردی پیدا نشد",
+                                            modifier = Modifier.align(alignment = Alignment.Center)
+                                        )
                                     }
                                 }
                             else

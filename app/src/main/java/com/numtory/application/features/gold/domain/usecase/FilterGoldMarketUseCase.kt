@@ -37,10 +37,10 @@ class FilterGoldMarketUseCase constructor() {
             .let { markets ->
                 when (params.filter) {
                     FilterBy.QuickSwap ->
-                        markets.filter { it.marketPrice == null || it.marketPrice?.toFloat() == 0f }
+                        markets.filter { it.marketPrice == null || it.marketPrice?.toDouble() == 0.0 }
 
                     FilterBy.Market ->
-                        markets.filter { it.marketPrice != null && it.marketPrice?.toFloat() != 0f }
+                        markets.filter { it.marketPrice != null && it.marketPrice?.toDouble() != 0.0 }
 
                     else -> markets
                 }

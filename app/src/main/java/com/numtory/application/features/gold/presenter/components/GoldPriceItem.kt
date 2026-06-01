@@ -19,12 +19,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.numtory.application.common.formatDuration
 import com.numtory.application.common.priceFormatter
 import com.numtory.application.features.gold.domain.entities.GoldMarketPrice
 import com.numtory.application.features.market.domain.entities.MarketPrice
+import kotlin.text.toLong
 
 
 @SuppressLint("DefaultLocale")
@@ -68,22 +70,26 @@ fun GoldPriceItem(item: GoldMarketPrice, modifier: Modifier = Modifier) {
         }
 
         Text(
-            priceFormatter((item.finalSellPrice.toFloat().toInt().toString())),
-            modifier = Modifier.weight(0.9f),
+            priceFormatter((item.finalSellPrice.toDouble().toLong().toString())),
+            modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
+            overflow = TextOverflow.Clip,
+            maxLines = 1,
             style = MaterialTheme.typography.bodyMedium
         )
 
 
         Text(
-            priceFormatter((item.finalBuyPrice.toFloat().toInt().toString())),
-            modifier = Modifier.weight(0.9f),
+            priceFormatter((item.finalBuyPrice.toDouble().toLong().toString())),
+            modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
+            overflow = TextOverflow.Clip,
+            maxLines = 1,
             style = MaterialTheme.typography.bodyMedium
         )
 
         Column(
-            modifier = Modifier.width(55.dp),
+            modifier = Modifier.width(52.dp),
             horizontalAlignment = Alignment.Start
         ) {
             Text(

@@ -13,11 +13,11 @@ class GetArzplusPriceUseCase constructor(
     private val marketRepository: MarketRepository,
 ) {
 
-    fun action(fromCurrency: String, toCurrency: String): Flow<ApiCallResult<MarketPrice>> {
+    fun action(fromCurrency: String, base: String): Flow<ApiCallResult<MarketPrice>> {
         val exchangesInfo = marketRepository.getSavedExchangesInfo()
 
-        val flow1 = marketRepository.getArzplusSwapPrice(fromCurrency, toCurrency)
-        val flow2 = marketRepository.getArzplusSwapPrice(toCurrency, fromCurrency)
+        val flow1 = marketRepository.getArzplusSwapPrice(fromCurrency, base)
+        val flow2 = marketRepository.getArzplusSwapPrice(base, fromCurrency)
         val flow3 = marketRepository.getArzplusMarketPrice()
 
         return combine(flow1, flow2, flow3) { buy, sell, market ->
@@ -25,19 +25,20 @@ class GetArzplusPriceUseCase constructor(
         }.transform { (buyResponse, sellResponse, marketResponse) ->
 
             val swapPrice = MarketPrice(
-                exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.arzplus } ?: ExchangeInfo(
-                    exchange = Exchanges.arzplus,
-                    active = true,
-                    display = true
-                ),
+                exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.arzplus }
+                    ?: ExchangeInfo(
+                        exchange = Exchanges.arzplus,
+                        active = true,
+                        display = true
+                    ),
                 lastRefresh = System.currentTimeMillis()
 
             )
 
             when (buyResponse) {
                 is ApiCallResult.Success -> {
-                    swapPrice.buyPrice = ((buyResponse.result.price ?: "0").toInt()).toString()
-//                    emit(ApiCallResult.Success(swapPrice))
+                    swapPrice.buyPrice = ((buyResponse.result.price ?: "0").toLong()).toString()
+                    swapPrice.symbol = base
                 }
 
                 is ApiCallResult.Failure -> {
@@ -47,7 +48,8 @@ class GetArzplusPriceUseCase constructor(
 
             when (sellResponse) {
                 is ApiCallResult.Success -> {
-                    swapPrice.sellPrice = ((sellResponse.result.price ?: "0").toInt()).toString()
+                    swapPrice.sellPrice = ((sellResponse.result.price ?: "0").toLong()).toString()
+                    swapPrice.symbol = base
                     emit(ApiCallResult.Success(swapPrice))
                 }
 
@@ -58,15 +60,21 @@ class GetArzplusPriceUseCase constructor(
 
             when (marketResponse) {
                 is ApiCallResult.Success -> {
+
+                    val asset =
+                        marketResponse.result.firstOrNull { it.symbol?.lowercase() == base.lowercase() }
+
                     val marketPrice = MarketPrice(
-                        exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.arzplusMarket } ?: ExchangeInfo(
-                            exchange = Exchanges.arzplusMarket,
-                            active = true,
-                            display = true
-                        ),
+                        symbol = asset?.symbol,
+                        exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.arzplusMarket }
+                            ?: ExchangeInfo(
+                                exchange = Exchanges.arzplusMarket,
+                                active = true,
+                                display = true
+                            ),
                         marketPrice = (
-                                (marketResponse.result.firstOrNull { it.symbol?.lowercase() == toCurrency.lowercase() }?.priceIrt
-                                    ?: "0").toInt()).toString(),
+                                (asset?.priceIrt
+                                    ?: "0").toLong()).toString(),
                         lastRefresh = System.currentTimeMillis()
                     )
                     emit(ApiCallResult.Success(marketPrice))

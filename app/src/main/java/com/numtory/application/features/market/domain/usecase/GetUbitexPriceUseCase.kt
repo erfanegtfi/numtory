@@ -21,6 +21,7 @@ class GetUbitexPriceUseCase constructor(
 
                     ApiCallResult.Success(
                         MarketPrice(
+                            symbol = base,
                             buyPrice = response.result?.sell?.price,
                             sellPrice = response.result?.buy?.price,
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.ubitex }?: ExchangeInfo(

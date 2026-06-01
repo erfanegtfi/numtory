@@ -22,6 +22,7 @@ class GetWallexPriceUseCase constructor(
 
                     ApiCallResult.Success(
                         MarketPrice(
+                            symbol = asset?.baseAsset,
                             buyPrice = asset?.quotes?.get(quote)?.price,
                             sellPrice = asset?.quotes?.get(quote)?.price,
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.wallex }?: ExchangeInfo(

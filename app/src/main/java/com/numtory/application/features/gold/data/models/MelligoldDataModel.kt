@@ -18,9 +18,9 @@ data class MelliGoldDataModel(
 
 data class MelliGoldPriceDataModel(
     @SerializedName("price_buy")
-    val buy: Int?,
+    val buy: Long?,
     @SerializedName("price_sell")
-    val sell: Int?,
+    val sell: Long?,
 ) {
     fun toEntity(): MelliGoldPrice = MelliGoldPrice(buy, sell)
 }

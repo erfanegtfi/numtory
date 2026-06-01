@@ -1,11 +1,8 @@
 package com.numtory.application.features.cryptoMarket.presenter
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -36,18 +33,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.numtory.application.BuildConfig
-import com.numtory.application.R
 import com.numtory.application.composeUI.MyImageLoader
 import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.cryptoMarket.domain.entities.CryptoMarketPrice
-import com.numtory.application.features.market.domain.entities.MarketPrice
-import com.numtory.application.features.market.presenter.components.GetMarketAverage
-import com.numtory.application.features.market.presenter.components.MarketPriceHeader
 import com.numtory.application.features.market.presenter.components.TimerProgressBar
-import com.numtory.application.ui.theme.CHART_SCRIPT
-import com.numtory.application.ui.theme.Primary
-import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination
-import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination.invoke
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
@@ -65,7 +54,7 @@ fun CryptoListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.height(90.dp).background(Primary),
+//                modifier = Modifier.background(Primary),
                 title = {
                     Text(
                         text = "قیمت رمز ارزها",
@@ -162,13 +151,15 @@ fun CryptoListScreen(
 
                     is ViewState.Failure -> {
                         item {
-                            Text("خطایی رخ داد!")
-//                                Text("Error: ${(priceList as ViewState.Failure).error.message}")
+                            Box(
+                                modifier = Modifier.fillParentMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("خطایی رخ داد!")
+                            }
                         }
                     }
                 }
-
-
             }
         }
     }

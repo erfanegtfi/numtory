@@ -16,7 +16,7 @@ data class MilliDataModel(
 
 data class MilliPriceDataModel(
     @SerializedName("price18")
-    val price: Int?,
+    val price: Long?,
 ) {
     fun toEntity(): MilliPrice = MilliPrice(price)
 }

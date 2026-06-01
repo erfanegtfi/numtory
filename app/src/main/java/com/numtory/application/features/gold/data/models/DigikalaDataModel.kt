@@ -13,7 +13,7 @@ data class DigikalaDataModel(
 
 data class DigikalaPriceDataModel(
     @SerializedName("price")
-    val price: Int,
+    val price: Long,
 ) {
     fun toEntity(): DigikalaPrice = DigikalaPrice(price)
 }

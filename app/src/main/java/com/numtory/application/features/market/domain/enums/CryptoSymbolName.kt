@@ -1,0 +1,28 @@
+package com.numtory.application.features.market.domain.enums
+
+val topSymbols = listOf(
+    "USDT",
+    "BTC",
+    "ETH",
+    "PAXG",
+    "XAUT",
+    "BNB",
+    "XRP",
+    "SOL",
+    "DOGE",
+    "ADA",
+    "BCH",
+    "TRX",
+    "AVAX",
+    "DOT",
+    "HYPE",
+    "XLM",
+    "LINK",
+    "MATIC",
+    "LTC",
+    "UNI",
+    "TON",
+    "SHIBA",
+    "PEPE",
+    "PUMP",
+)

@@ -21,7 +21,7 @@ class GetTabtealPriceUseCase constructor(
 
     fun action(
         fromCurrency: String,
-        toCurrency: String,
+        base: String,
     ): Flow<ApiCallResult<MarketPrice>> {
         val exchangesInfo = marketRepository.getSavedExchangesInfo()
 
@@ -32,8 +32,8 @@ class GetTabtealPriceUseCase constructor(
 //            .map { MarketEvent.Sell(it) }
 //        val flow3 = marketRepository.getTabdealMarket()
 //            .map { MarketEvent.Market(it) }
-        val flow1 = marketRepository.getTabdeal(fromCurrency, toCurrency)
-        val flow2 = marketRepository.getTabdeal(toCurrency, fromCurrency)
+        val flow1 = marketRepository.getTabdeal(fromCurrency, base)
+        val flow2 = marketRepository.getTabdeal(base, fromCurrency)
         val flow3 = marketRepository.getTabdealMarket()
 
         return combine(flow1, flow2, flow3) { buy, sell, market ->
@@ -50,11 +50,14 @@ class GetTabtealPriceUseCase constructor(
                 lastRefresh = System.currentTimeMillis(),
             )
 
+
             when (buyPriceResponse) {
                 is ApiCallResult.Success -> {
+                    val asset = buyPriceResponse.result.fromAmountData?.get(0)
+
                     if (buyPriceResponse.result.fromAmountData?.isNotEmpty() == true)
-                        swapPrice.buyPrice =
-                            buyPriceResponse.result.fromAmountData?.get(0)?.buyPrice
+                        swapPrice.buyPrice = asset?.buyPrice
+                    swapPrice.symbol = base
                 }
 
                 is ApiCallResult.Failure -> {
@@ -64,9 +67,13 @@ class GetTabtealPriceUseCase constructor(
 
             when (sellPriceResponse) {
                 is ApiCallResult.Success -> {
+                    val asset = sellPriceResponse.result.fromAmountData?.get(0)
+
                     if (sellPriceResponse.result.fromAmountData?.isNotEmpty() == true)
                         swapPrice.sellPrice =
-                            sellPriceResponse.result.fromAmountData?.get(0)?.sellPrice
+                            asset?.sellPrice
+
+                    swapPrice.symbol = base
                 }
 
                 is ApiCallResult.Failure -> {
@@ -76,15 +83,18 @@ class GetTabtealPriceUseCase constructor(
             emit(ApiCallResult.Success(swapPrice))
             when (marketResponse) {
                 is ApiCallResult.Success -> {
+
+                    val asset = marketResponse.result?.get(base)?.get(fromCurrency)
+
                     val marketPrice = MarketPrice(
+                        symbol = base,
                         exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.tabdealMarket }
                             ?: ExchangeInfo(
                                 exchange = Exchanges.tabdealMarket,
                                 active = true,
                                 display = true
                             ),
-                        marketPrice = marketResponse.result?.get(toCurrency)
-                            ?.get(fromCurrency)?.price,
+                        marketPrice = asset?.price,
                         lastRefresh = System.currentTimeMillis()
                     )
 

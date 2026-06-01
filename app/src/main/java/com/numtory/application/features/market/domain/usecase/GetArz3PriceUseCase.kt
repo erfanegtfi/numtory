@@ -23,6 +23,7 @@ class GetArz3PriceUseCase constructor(
 
                     ApiCallResult.Success(
                         MarketPrice(
+                            symbol = asset?.symbol,
                             buyPrice = asset?.price?.buy,
                             sellPrice = asset?.price?.sell,
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.arz3 } ?: ExchangeInfo(

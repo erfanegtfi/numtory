@@ -17,13 +17,14 @@ class GetAbanTetherPriceUseCase constructor(
         return marketRepository.getAbanTether().map { response ->
             when (response) {
                 is ApiCallResult.Success -> {
-                    val tether =
+                    val asset =
                         response.result.firstOrNull { item -> item.symbol?.lowercase() == symbol.lowercase() }
 
                     ApiCallResult.Success(
                         MarketPrice(
-                            buyPrice = tether?.buy,
-                            sellPrice = tether?.sell,
+                            symbol = asset?.symbol,
+                            buyPrice = asset?.buy,
+                            sellPrice = asset?.sell,
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.abantether } ?: ExchangeInfo(
                                 exchange = Exchanges.abantether,
                                 active = true,

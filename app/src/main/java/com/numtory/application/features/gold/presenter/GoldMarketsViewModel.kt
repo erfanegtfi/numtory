@@ -235,7 +235,7 @@ constructor(
         }
     }
 
-    fun getMarketAverage(): Pair<Float, Float> {
+    fun getMarketAverage(): Pair<Double, Double> {
         val userExchanges = getUserExchanges()
         return getMarketAvgUseCase.action(validMarkets, userExchanges)
     }

@@ -8,7 +8,7 @@ import com.numtory.application.features.gold.domain.entities.GoldikaData
 import com.numtory.application.features.gold.domain.entities.GoldikaPrice
 
 data class HamrahGold(
-    val buy: List<Int>?,
-    val sell: List<Int>?,
+    val buy: List<Long>?,
+    val sell: List<Long>?,
 ) {
 }

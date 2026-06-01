@@ -1,5 +1,6 @@
 package com.numtory.application.features.market.domain.entities
 
+import com.google.gson.annotations.SerializedName
 import com.numtory.application.features.market.data.models.Bit24DataModel
 
 data class EterexPriceGroups(
@@ -20,4 +21,10 @@ data class EterexPrice constructor(
     var irtUsdt: String?,
 ) {
 
+}
+/////
+data class EterexAssetsPrice(
+    val symbol: String?,
+    val price: String?
+) {
 }

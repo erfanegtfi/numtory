@@ -6,9 +6,9 @@ import com.numtory.application.features.gold.domain.entities.HamrahGold
 
 data class HamrahGoldDataModel(
     @SerializedName("buy")
-    val buy: List<Int>?,
+    val buy: List<Long>?,
     @SerializedName("sell")
-    val sell: List<Int>?,
+    val sell: List<Long>?,
 ) {
     fun toEntity(): HamrahGold = HamrahGold(buy, sell)
 }

@@ -22,6 +22,7 @@ class GetSarafPriceUseCase constructor(
 
                     ApiCallResult.Success(
                         MarketPrice(
+                            symbol = asset?.symbol,
                             buyPrice = asset?.price,
                             sellPrice = asset?.price,
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.saraf } ?: ExchangeInfo(

@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.numtory.application.features.market.domain.enums.SortField
 import com.numtory.application.features.market.domain.enums.SortOrder
 import com.numtory.application.features.market.domain.usecase.SortParams
+import com.numtory.application.ui.theme.Secondary
 
 @Composable
 fun MarketPriceHeader(sortField: SortField, sortOrder: SortOrder,  onSortChanged:(sortField: SortField, sortOrder: SortOrder) -> Unit) {
@@ -32,7 +33,7 @@ fun MarketPriceHeader(sortField: SortField, sortOrder: SortOrder,  onSortChanged
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color(0xFFEEEEEE))
+            .background(Secondary)
             .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

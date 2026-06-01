@@ -1,5 +1,6 @@
 package com.numtory.application.features.main
 
+import android.provider.CalendarContract
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
@@ -45,13 +47,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.numtory.application.common.cryptoExchangesScreenOpened
+import com.numtory.application.common.globalCryptoMarketExchangesScreenOpened
 import com.numtory.application.common.goldExchangesScreenOpened
-import com.numtory.application.features.about.UpdateAppScreen
 import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.cryptoMarket.presenter.CryptoListScreen
 import com.numtory.application.features.gold.GoldMarketList
 import com.numtory.application.features.market.presenter.MarketList
 import com.numtory.application.features.setting.domain.entities.AppSettings
+import com.numtory.application.ui.theme.Secondary
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -183,9 +186,9 @@ fun BottomNavigationBar(navController: NavHostController) {
     val currentRoute = navBackStackEntry?.destination?.route
 
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surface,
+        containerColor = Secondary, //MaterialTheme.colorScheme.surface
         tonalElevation = 8.dp,
-        modifier = Modifier.height(110.dp),
+        modifier = Modifier.height(115.dp),
     ) {
 
         Row(
@@ -198,7 +201,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 label = Screen.GlobalCryptoMarket.title,
                 selected = currentRoute == Screen.GlobalCryptoMarket.route,
                 onClick = {
-                    cryptoExchangesScreenOpened()
+                    globalCryptoMarketExchangesScreenOpened()
                     navController.navigate(Screen.GlobalCryptoMarket.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true

@@ -10,7 +10,7 @@ class RemoveOutOfRangeGoldExchangeUseCase constructor() {
 
         return params.markets
             .filter {
-                if(params.avgBuy == 0f) true
+                if(params.avgBuy == 0.0) true
 //                var buy = (it.marketPrice ?: it.buyPrice ?: "0").toFloat() - avgBuy
 //                var sell = (it.marketPrice ?: it.sellPrice ?: "0").toFloat() - avgSell
 
@@ -29,7 +29,7 @@ class RemoveOutOfRangeGoldExchangeUseCase constructor() {
 }
 
 data class RemoveOutOfRangeGoldExchangesParams(
-    val avgBuy: Float,
-    val avgSell: Float,
+    val avgBuy: Double,
+    val avgSell: Double,
     var markets: List<GoldMarketPrice>
 )

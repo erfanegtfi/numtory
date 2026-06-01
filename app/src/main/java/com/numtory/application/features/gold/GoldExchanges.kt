@@ -123,30 +123,22 @@ fun GoldMarketList(
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier
-                    .height(90.dp)
-                    .background(Primary),
+//                modifier = Modifier
+////                    .height(90.dp)
+//                    .background(Primary),
+                title = {
+                    Text(
+                        text = "مقایسه قیمت طلا",
+//                            modifier = Modifier.align(Alignment.CenterStart),
+                        style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(// Use 'surface' instead of 'primary' for the app bar background
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                title = {
-                    Box(modifier = Modifier.fillMaxSize()) {
-//                        Text(
-//                            text = "USDT",
-//                            modifier = Modifier
-//                                .align(Alignment.CenterEnd)
-//                                .padding(end = 18.dp),
-//                            style = MaterialTheme.typography.titleLarge
-//                        )
-                        Text(
-                            text = "توکن چند",
-                            modifier = Modifier.align(Alignment.CenterStart),
-                            style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
-                        )
-                    }
-                },
+
                 actions = {
                     IconButton(onClick = {
                         showSheet = true
@@ -161,7 +153,7 @@ fun GoldMarketList(
                 }
             )
         },
-        modifier = Modifier.fillMaxSize()
+//        modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
 
         Column(
@@ -204,9 +196,11 @@ fun GoldMarketList(
                                     GetMarketAverage(
                                         avgBuy,
                                         avgSell,
-                                        "طلا آب شده (18 عیار)",
-                                        "Gold 18",
-                                        R.drawable.xaut
+                                        "گرم طلا",
+                                        "18 عیار",
+                                        "PAXG",
+                                        onTokenClicked = {},
+                                        onChartClicked = {}
                                     )
                                 }
                             }

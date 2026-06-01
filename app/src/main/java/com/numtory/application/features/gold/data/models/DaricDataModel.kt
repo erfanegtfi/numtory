@@ -17,7 +17,7 @@ data class DaricDataModel(
 
 data class DaricPriceDataModel(
     @SerializedName("price")
-    val price: Int,
+    val price: Long,
 ) {
     fun toEntity(): DaricPrice = DaricPrice(price)
 }

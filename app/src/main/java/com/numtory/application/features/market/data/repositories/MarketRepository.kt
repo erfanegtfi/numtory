@@ -4,11 +4,11 @@ import com.numtory.application.data.remote.getResult
 import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.market.data.dataSource.MarketRemoteDataSource
 import com.numtory.application.features.market.data.local.ExchangesLocalDataSource
-import com.numtory.application.features.market.data.models.ArzinjaDataModel
+import com.numtory.application.features.market.data.models.EterexAssetsPriceDataModel
+import com.numtory.application.features.market.data.models.RamzinexCurrenciesDataModel
 import com.numtory.application.features.market.domain.entities.AbanTether
 import com.numtory.application.features.market.domain.entities.Arz3CoinItem
 import com.numtory.application.features.market.domain.entities.ArzinjaItem
-import com.numtory.application.features.market.domain.entities.ArzinjaState
 import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.entities.ArzplusMarketItem
 import com.numtory.application.features.market.domain.entities.ArzplusSwap
@@ -16,7 +16,9 @@ import com.numtory.application.features.market.domain.entities.Arzypto
 import com.numtory.application.features.market.domain.entities.Bit24
 import com.numtory.application.features.market.domain.entities.Bit24Swap
 import com.numtory.application.features.market.domain.entities.BitPin
+import com.numtory.application.features.market.domain.entities.BitPinOTC
 import com.numtory.application.features.market.domain.entities.Coinkade
+import com.numtory.application.features.market.domain.entities.EterexAssetsPrice
 import com.numtory.application.features.market.domain.entities.EterexGroups
 import com.numtory.application.features.market.domain.entities.Nobitex
 import com.numtory.application.features.market.domain.entities.NobitexMarket
@@ -41,7 +43,8 @@ import kotlinx.coroutines.flow.flowOn
 interface MarketRepository {
     fun getExchanges(): Flow<ApiCallResult<List<ExchangeInfo>>>
     fun getSavedExchangesInfo(): List<ExchangeInfo>?
-    fun getBitPin(marketId: Int): Flow<ApiCallResult<BitPin>>
+    fun getBitPin(marketId: Int): Flow<ApiCallResult<BitPinOTC>>
+    fun getBitPinMarket(): Flow<ApiCallResult<List<BitPin>>>
     fun getTetherLand(): Flow<ApiCallResult<List<TetherLand>>>
     fun getAbanTether(): Flow<ApiCallResult<List<AbanTether>>>
 
@@ -70,6 +73,7 @@ interface MarketRepository {
     ): Flow<ApiCallResult<Pooleno>>
 
     fun getEterexPrice(): Flow<ApiCallResult<List<EterexGroups>?>>
+    fun getEterexAssetsPrice(): Flow<ApiCallResult<List<EterexAssetsPrice>?>>
 
     fun getSarmayex(market: String): Flow<ApiCallResult<SarmayexSwap?>>
     fun getSarmayexMarket(): Flow<ApiCallResult<Map<String, SarmayexMarketItem>?>>
@@ -83,6 +87,8 @@ interface MarketRepository {
         toId: String,
         isBuy: Boolean
     ): Flow<ApiCallResult<Ramzinex?>>
+
+    fun getRamzinexCurrencies(): Flow<ApiCallResult<RamzinexCurrenciesDataModel?>>
 
     fun getArzinjaPrice(
         baseCurrency: String,
@@ -119,12 +125,22 @@ class MarketRepositoryImpl(
         return exchangesLocalDataSource.getExchangesInfo()
     }
 
-    override fun getBitPin(marketId: Int): Flow<ApiCallResult<BitPin>> = flow {
+    override fun getBitPin(marketId: Int): Flow<ApiCallResult<BitPinOTC>> = flow {
         val response = getResult {
             marketRemoteDataSource.getBitPinPrice(marketId)
         }
         if (response is ApiCallResult.Success) {
             emit(ApiCallResult.Success(response.result.toEntity()))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }.flowOn(dispatcher)
+
+    override fun getBitPinMarket(): Flow<ApiCallResult<List<BitPin>>> = flow {
+        val response = getResult {
+            marketRemoteDataSource.getBitPinMarketPrice()
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result.map { it.toEntity() }))
         } else if (response is ApiCallResult.Failure)
             emit(ApiCallResult.Failure(response.error))
     }.flowOn(dispatcher)
@@ -286,6 +302,16 @@ class MarketRepositoryImpl(
             emit(ApiCallResult.Failure(response.error))
     }
 
+    override fun getEterexAssetsPrice(): Flow<ApiCallResult<List<EterexAssetsPrice>?>> = flow {
+        val response = getResult {
+            marketRemoteDataSource.getEterexAssetsPrice()
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result.map { it.toEntity() }))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }
+
 
     override fun getSarmayex(market: String): Flow<ApiCallResult<SarmayexSwap?>> = flow {
         val response = getResult {
@@ -373,6 +399,17 @@ class MarketRepositoryImpl(
         }
         if (response is ApiCallResult.Success) {
             emit(ApiCallResult.Success(response.result.toEntity()))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }
+
+    override fun getRamzinexCurrencies(): Flow<ApiCallResult<RamzinexCurrenciesDataModel?>> = flow {
+        val response = getResult {
+
+             marketRemoteDataSource.getRamzinexCurrencies()
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result))
         } else if (response is ApiCallResult.Failure)
             emit(ApiCallResult.Failure(response.error))
     }

@@ -6,6 +6,6 @@ data class Digikala(
 }
 
 data class DigikalaPrice(
-    val price: Int,
+    val price: Long,
 ) {
 }

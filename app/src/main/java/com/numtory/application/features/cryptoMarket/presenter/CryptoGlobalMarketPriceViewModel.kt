@@ -92,7 +92,7 @@ constructor(
                     }
 
                     is ApiCallResult.Failure -> {
-                        _priceState.value = ViewState.Failure(response.error)
+//                        _priceState.value = ViewState.Failure(response.error)
                     }
 
                 }

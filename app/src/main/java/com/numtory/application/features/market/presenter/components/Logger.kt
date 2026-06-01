@@ -22,19 +22,19 @@ fun printLogs(priceList: ViewState<List<MarketPrice>>) {
     if (priceList is ViewState.Success) {
 
         priceList.data.forEach { item ->
-            averageBuyPrice += (item.finalBuyPrice).toFloat().toInt()
-            averageSellPrice += (item.finalSellPrice).toFloat().toInt()
+            averageBuyPrice += (item.finalBuyPrice).toDouble().toLong()
+            averageSellPrice += (item.finalSellPrice).toDouble().toLong()
 
         }
 
         sb.appendLine(
             "میانگین خرید: " + priceFormatter(
-                (averageBuyPrice / priceList.data.size).toInt().toString()
+                (averageBuyPrice / priceList.data.size).toLong().toString()
             ),
         )
         sb.appendLine(
             "میانگین فروش: " + priceFormatter(
-                (averageSellPrice / priceList.data.size).toInt().toString()
+                (averageSellPrice / priceList.data.size).toLong().toString()
             ),
         )
 
@@ -61,9 +61,9 @@ fun printLogs(priceList: ViewState<List<MarketPrice>>) {
 //                        ((item.data.buyPrice?.toFloat() ?: 0f) - (item.data.sellPrice?.toFloat()
 //                            ?: 0f)).toString(),
 //                    ),
-                    priceFormatter(item.finalSellPrice.toFloat().toInt().toString()),
-                    priceFormatter(item.finalBuyPrice.toFloat().toInt().toString()),
-                    item.exchangeInfo?.exchange?.title ?: "",
+                    priceFormatter(item.finalSellPrice.toDouble().toLong().toString()),
+                    priceFormatter(item.finalBuyPrice.toDouble().toLong().toString()),
+                    item.exchangeInfo.exchange.title,
                 )
             )
         }

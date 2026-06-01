@@ -13,10 +13,10 @@ class GetSarmayexPriceUseCase constructor(
     private val marketRepository: MarketRepository,
 ) {
 
-    fun action(symbol: String, marketSymbol: String): Flow<ApiCallResult<MarketPrice>> {
+    fun action(base: String, quote: String): Flow<ApiCallResult<MarketPrice>> {
         val exchangesInfo = marketRepository.getSavedExchangesInfo()
 
-        val flow1 = marketRepository.getSarmayex(symbol)
+        val flow1 = marketRepository.getSarmayex(base)
         val flow2 = marketRepository.getSarmayexMarket()
 
         return combine(flow1, flow2) { swap, market ->
@@ -24,14 +24,20 @@ class GetSarmayexPriceUseCase constructor(
         }.transform { (swapResponse, marketResponse) ->
             when (swapResponse) {
                 is ApiCallResult.Success -> {
+                    val asset =swapResponse.result?.currency
+
+
                     val swapPrice = MarketPrice(
+                        symbol = asset?.symbol,
                         exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.sarmayex } ?: ExchangeInfo(
                             exchange = Exchanges.sarmayex,
                             active = true,
-                            display = true
+                            display = true,
+                            hasMarket = true,
+                            isMarket = false,
                         ),
-                        buyPrice = ((swapResponse.result?.currency?.sell?.price ?: "0")), // sell should be hear
-                        sellPrice = ((swapResponse.result?.currency?.buy?.price ?: "0")),
+                        buyPrice = ((asset?.sell?.price ?: "0")), // sell should be hear
+                        sellPrice = ((asset?.buy?.price ?: "0")),
                         lastRefresh = System.currentTimeMillis()
                     )
                     emit(ApiCallResult.Success(swapPrice))
@@ -44,14 +50,19 @@ class GetSarmayexPriceUseCase constructor(
 
             when (marketResponse) {
                 is ApiCallResult.Success -> {
+
+                    val asset = marketResponse.result?.get("${base}_$quote")
+
                     val marketPrice = MarketPrice(
+                        symbol = asset?.base,
                         exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.sarmayexMarket } ?: ExchangeInfo(
                             exchange = Exchanges.sarmayexMarket,
                             active = true,
-                            display = true
+                            display = true,
+                            hasMarket = true,
+                            isMarket = true,
                         ),
-                        marketPrice = ((marketResponse.result?.get(marketSymbol)?.price
-                            ?: "0")),
+                        marketPrice = ((asset?.price ?: "0")),
                         lastRefresh = System.currentTimeMillis()
                     )
                     emit(ApiCallResult.Success(marketPrice))

@@ -18,9 +18,9 @@ data class TechnoGoldDataModel(
 
 data class TechnoGoldPriceDataModel(
     @SerializedName("sell_price")
-    val sellPrice: Int?,
+    val sellPrice: Long?,
     @SerializedName("buy_price")
-    val buyPrice: Int?,
+    val buyPrice: Long?,
 ) {
     fun toEntity(): TechnoGoldPrice = TechnoGoldPrice(sellPrice, buyPrice)
 }

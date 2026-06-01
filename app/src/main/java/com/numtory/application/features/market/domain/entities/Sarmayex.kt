@@ -17,6 +17,7 @@ data class SarmayexSwap(
 
 
 data class SarmayexCurrency constructor(
+    var symbol: String?,
     var sell: SarmayexCurrencyPrice?,
     var buy: SarmayexCurrencyPrice?
 )

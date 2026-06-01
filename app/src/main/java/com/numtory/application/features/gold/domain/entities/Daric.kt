@@ -8,6 +8,6 @@ data class Daric(
 }
 
 data class DaricPrice(
-    val price: Int,
+    val price: Long,
 ) {
 }

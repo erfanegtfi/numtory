@@ -19,6 +19,11 @@ fun cryptoExchangesScreenOpened(){
 //    AdTrace.trackEvent(adtraceEvent)
 }
 
+fun globalCryptoMarketExchangesScreenOpened(){
+//    val adtraceEvent = AdTraceEvent("qbf65n")
+//    AdTrace.trackEvent(adtraceEvent)
+}
+
 fun exchangeScannerScreenOpened(){
     val adtraceEvent = AdTraceEvent("v2bjad")
     AdTrace.trackEvent(adtraceEvent)
@@ -34,6 +39,11 @@ fun goldSettingScreenOpened(){
     AdTrace.trackEvent(adtraceEvent)
 }
 
+fun exchangesTokenListScreenOpened(symbol: String){
+    val adtraceEvent = AdTraceEvent("c30gg5")
+    adtraceEvent.addEventParameter("symbol", symbol)
+    AdTrace.trackEvent(adtraceEvent)
+}
 
 fun aboutScreenOpened(){
     val adtraceEvent = AdTraceEvent("4dloof")

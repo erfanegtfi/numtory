@@ -3,6 +3,7 @@ package com.numtory.application.features.market.data.models
 import com.numtory.application.features.market.domain.entities.EterexGroups
 import com.numtory.application.features.market.domain.entities.EterexPrice
 import com.google.gson.annotations.SerializedName
+import com.numtory.application.features.market.domain.entities.EterexAssetsPrice
 
 data class EterexPriceGroupsDataModel(
     @SerializedName("priceGroups")
@@ -34,4 +35,14 @@ data class EterexPriceDataModel constructor(
 
     fun toEntity(): EterexPrice =
         EterexPrice(usdtIrt, irtUsdt)
+}
+
+///////////////
+data class EterexAssetsPriceDataModel(
+    @SerializedName("symbol")
+    val symbol: String?,
+    @SerializedName("price")
+    val price: String?
+) {
+    fun toEntity(): EterexAssetsPrice = EterexAssetsPrice(symbol, price)
 }

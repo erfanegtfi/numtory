@@ -15,7 +15,7 @@ data class TlynData(
 }
 
 data class TlynPrice(
-    val sell: Int,
-    val buy: Int,
+    val sell: Long,
+    val buy: Long,
 ) {
 }

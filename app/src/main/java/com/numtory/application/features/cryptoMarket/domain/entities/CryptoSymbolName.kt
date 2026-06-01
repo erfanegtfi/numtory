@@ -266,29 +266,3 @@ val cryptoMap = mutableMapOf(
     "CXT" to "CXT",
     "TRIA" to "Tria"
 )
-
-val topSymbols = listOf(
-    "BTC",
-    "ETH",
-    "PAXG",
-    "XAUT",
-    "BNB",
-    "XRP",
-    "SOL",
-    "DOGE",
-    "ADA",
-    "BCH",
-    "TRX",
-    "AVAX",
-    "DOT",
-    "HYPE",
-    "XLM",
-    "LINK",
-    "MATIC",
-    "LTC",
-    "UNI",
-    "TON",
-    "SHIBA",
-    "PEPE",
-    "PUMP",
-)

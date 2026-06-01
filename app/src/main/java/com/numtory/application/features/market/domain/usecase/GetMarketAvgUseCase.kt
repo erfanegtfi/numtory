@@ -8,9 +8,9 @@ class GetMarketAvgUseCase constructor() {
     fun action(
         priceList: List<MarketPrice>,
         displayExchanges: List<Exchanges>,
-    ): Pair<Float, Float> {
-        var averageBuyPrice = 0f
-        var averageSellPrice = 0f
+    ): Pair<Double, Double> {
+        var averageBuyPrice = 0.0
+        var averageSellPrice = 0.0
         var size = 0
 
 
@@ -20,15 +20,15 @@ class GetMarketAvgUseCase constructor() {
         }.forEach { item ->
             if (item.exchangeInfo.hasMarket == true) {
                 // if has quick swap and market we prefer market and skip quick swap
-                if (item.marketPrice != null && item.marketPrice?.toFloat() != 0f) {
+                if (item.marketPrice != null && item.marketPrice?.toDouble() != 0.0) {
                     size++
-                    averageBuyPrice += (item.marketPrice ?: "0").toFloat()
-                    averageSellPrice += (item.marketPrice ?: "0").toFloat()
+                    averageBuyPrice += (item.marketPrice ?: "0").toDouble()
+                    averageSellPrice += (item.marketPrice ?: "0").toDouble()
                 }
             } else {
                 size++
-                averageBuyPrice += (item.finalBuyPrice).toFloat()
-                averageSellPrice += (item.finalSellPrice).toFloat()
+                averageBuyPrice += (item.finalBuyPrice).toDouble()
+                averageSellPrice += (item.finalSellPrice).toDouble()
             }
         }
         if (size == 0) size = 1

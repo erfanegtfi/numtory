@@ -15,18 +15,19 @@ class GetArzyptoPriceUseCase constructor(
 
     fun action(
         currency: String,
-        symbol: String,
+        base: String,
     ): Flow<ApiCallResult<MarketPrice>> {
         val exchangesInfo = marketRepository.getSavedExchangesInfo()
 
-        val flow1 = marketRepository.getArzyptoSwapPrice(currency, "BUY", symbol)
-        val flow2 = marketRepository.getArzyptoSwapPrice(currency, "SELL", symbol)
+        val flow1 = marketRepository.getArzyptoSwapPrice(currency, "BUY", base)
+        val flow2 = marketRepository.getArzyptoSwapPrice(currency, "SELL", base)
 
         return combine(flow1, flow2) { swap, market ->
             Pair(swap, market)
         }.transform { (buyResponse, sellResponse) ->
 
             val swapPrice = MarketPrice(
+                symbol = base,
                 exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.arzypto }
                     ?: ExchangeInfo(
                         exchange = Exchanges.arzypto,

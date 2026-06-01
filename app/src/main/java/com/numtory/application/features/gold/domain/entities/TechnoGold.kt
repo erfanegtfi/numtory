@@ -6,7 +6,7 @@ data class TechnoGold(
 }
 
 data class TechnoGoldPrice(
-    val sellPrice: Int?,
-    val buyPrice: Int?,
+    val sellPrice: Long?,
+    val buyPrice: Long?,
 ) {
 }

@@ -12,17 +12,18 @@ class GetTetherLandPriceUseCase constructor(
     private val marketRepository: MarketRepository,
 ) {
 
-    fun action(): Flow<ApiCallResult<MarketPrice>> {
+    fun action(symbol: String): Flow<ApiCallResult<MarketPrice>> {
         val exchangesInfo = marketRepository.getSavedExchangesInfo()
 
         return marketRepository.getTetherLand().map { response ->
             when (response) {
                 is ApiCallResult.Success -> {
                     val asset =
-                        response.result.firstOrNull { item -> item.symbol?.lowercase() == "usdt" }
+                        response.result.firstOrNull { item -> item.symbol?.lowercase() == symbol.lowercase() }
 
                     ApiCallResult.Success(
                         MarketPrice(
+                            symbol = asset?.symbol,
                             buyPrice = asset?.tomanAmount,
                             sellPrice = asset?.tomanAmount,
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.tetherland }?: ExchangeInfo(

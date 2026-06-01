@@ -40,6 +40,8 @@ data class SarmayexSwapDataModel(
 
 
 data class SarmayexCurrencyDataModel constructor(
+    @SerializedName("symbol")
+    var symbol: String?,
     @SerializedName("sell")
     var sell: SarmayexCurrencyPriceDataModel?,
     @SerializedName("buy")
@@ -47,7 +49,7 @@ data class SarmayexCurrencyDataModel constructor(
 ) {
 
     fun toEntity(): SarmayexCurrency =
-        SarmayexCurrency(sell?.toEntity(), buy?.toEntity())
+        SarmayexCurrency(symbol, sell?.toEntity(), buy?.toEntity())
 }
 
 data class SarmayexCurrencyPriceDataModel constructor(

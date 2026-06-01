@@ -77,6 +77,6 @@ data class GoldMarketPrice constructor(
         }
     val diff: String
         get(): String {
-            return (finalBuyPrice.toFloat() - finalSellPrice.toFloat()).toInt().toString()
+            return (finalBuyPrice.toDouble() - finalSellPrice.toDouble()).toLong().toString()
         }
 }

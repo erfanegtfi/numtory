@@ -13,11 +13,11 @@ class GetTwoxPriceUseCase constructor(
     private val marketRepository: MarketRepository,
 ) {
 
-    fun action(fromCurrency: String, toCurrency: String): Flow<ApiCallResult<MarketPrice>> {
+    fun action(fromCurrency: String, base: String): Flow<ApiCallResult<MarketPrice>> {
         val exchangesInfo = marketRepository.getSavedExchangesInfo()
 
-        val flow1 = marketRepository.getTwoxPrice(fromCurrency, toCurrency)
-        val flow2 = marketRepository.getTwoxPrice(toCurrency, fromCurrency)
+        val flow1 = marketRepository.getTwoxPrice(fromCurrency, base)
+        val flow2 = marketRepository.getTwoxPrice(base, fromCurrency)
 
 
         return combine(flow1, flow2) { buy, sell ->
@@ -36,6 +36,7 @@ class GetTwoxPriceUseCase constructor(
             when (buyPriceResponse) {
                 is ApiCallResult.Success -> {
                     swapPrice.buyPrice = buyPriceResponse.result.displayFee
+                    swapPrice.symbol = base
                 }
 
                 is ApiCallResult.Failure -> {
@@ -46,6 +47,7 @@ class GetTwoxPriceUseCase constructor(
             when (sellPriceResponse) {
                 is ApiCallResult.Success -> {
                     swapPrice.sellPrice = sellPriceResponse.result.displayFee
+                    swapPrice.symbol = base
                 }
 
                 is ApiCallResult.Failure -> {

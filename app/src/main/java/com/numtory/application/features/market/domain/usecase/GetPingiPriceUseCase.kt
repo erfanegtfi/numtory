@@ -12,18 +12,19 @@ class GetPingiPriceUseCase constructor(
     private val marketRepository: MarketRepository,
 ) {
 
-    fun action(market: String): Flow<ApiCallResult<MarketPrice>> {
+    fun action(base: String, quote:String): Flow<ApiCallResult<MarketPrice>> {
         val exchangesInfo = marketRepository.getSavedExchangesInfo()
 
         return marketRepository.getPingi().map { response ->
             when (response) {
                 is ApiCallResult.Success -> {
-                    val tether = response.result.get(market)
+                    val asset = response.result.get("{$base}_$quote")
 
                     ApiCallResult.Success(
                         MarketPrice(
-                            buyPrice = tether?.price,
-                            sellPrice = tether?.price,
+                            symbol = asset?.market,
+                            buyPrice = asset?.price,
+                            sellPrice = asset?.price,
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.pingi } ?: ExchangeInfo(
                                 exchange = Exchanges.pingi,
                                 active = true,

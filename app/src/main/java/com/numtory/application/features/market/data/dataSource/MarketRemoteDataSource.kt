@@ -35,14 +35,16 @@ import kotlin.time.ExperimentalTime
 import com.numtory.application.BuildConfig
 import com.numtory.application.features.market.data.models.ArzinjaDataModel
 import com.numtory.application.features.market.data.models.ArzyptoDataModel
+import com.numtory.application.features.market.data.models.BitPinOTCDataModel
+import com.numtory.application.features.market.data.models.EterexAssetsPriceDataModel
+import com.numtory.application.features.market.data.models.RamzinexCurrenciesDataModel
 import com.numtory.application.features.market.data.models.RamzinexDataModel
 import com.numtory.application.features.market.data.models.TabdealSwapDataModel
-import com.numtory.application.features.market.domain.entities.Arzypto
 import io.ktor.client.request.setBody
 
 interface MarketRemoteDataSource {
-    suspend fun getExchanges(): List<ExchangeInfoDataModel>
-    suspend fun getBitPinPrice(marketId: Int): BitPinDataModel
+    suspend fun getBitPinPrice(marketId: Int): BitPinOTCDataModel
+    suspend fun getBitPinMarketPrice(): List<BitPinDataModel>
     suspend fun getTetherLandPrice(): TetherLandListDataModel
     suspend fun getAbanTetherPrice(): AbanTetherListDataModel
     suspend fun getNobitexMarketPrice(): NobitexMarketListDataModel
@@ -50,6 +52,8 @@ interface MarketRemoteDataSource {
     suspend fun getTabdealSwapPrice(fromCurrency: String, toCurrency: String): TabdealSwapDataModel
 
     suspend fun getTabdealMarketPrice(): TabdealMarketListDataModel
+
+    suspend fun getExchanges(): List<ExchangeInfoDataModel>
 
     suspend fun getBit24SwapPrice(fromCurrency: String, toCurrency: String): Bit24SwapDataModel
 
@@ -67,6 +71,7 @@ interface MarketRemoteDataSource {
     ): PoolenoDataModel
 
     suspend fun getEterexPrice(): EterexPriceGroupsDataModel
+    suspend fun getEterexAssetsPrice(): List<EterexAssetsPriceDataModel>
 
     suspend fun getSarmayexMarketPrice(): SarmayexMarketListDataModel
     suspend fun getSarmayexSwapPrice(market: String): SarmayexSwapDataModel
@@ -82,6 +87,7 @@ interface MarketRemoteDataSource {
         toAmount: Int? = null,
         fromAmount: Int? = null,
     ): RamzinexDataModel
+    suspend fun getRamzinexCurrencies(): RamzinexCurrenciesDataModel
 
     suspend fun getArzinjaPrice(baseCurrency: String, providerType: String): ArzinjaDataModel
 
@@ -97,17 +103,26 @@ class MarketRemoteDataSourceImpl constructor(
     private val gson: Gson
 ) : MarketRemoteDataSource {
 
+
+
+    override suspend fun getBitPinPrice(marketId: Int): BitPinOTCDataModel {
+        val response = httpClient.get("${BuildConfig.BITPIN_URL}$marketId")
+        val json = response.bodyAsText()
+        return gson.fromJson(json, BitPinOTCDataModel::class.java)
+    }
+
+    override suspend fun getBitPinMarketPrice(): List<BitPinDataModel> {
+        val response = httpClient.get(BuildConfig.BITPIN_MARKET_URL)
+        val json = response.bodyAsText()
+        val type = object : TypeToken<List<BitPinDataModel>>() {}.type
+        return gson.fromJson(json, type)
+    }
+
     override suspend fun getExchanges(): List<ExchangeInfoDataModel> {
         val response = httpClient.get(BuildConfig.NUMTORY_EXCHANGES_URL)
         val json = response.bodyAsText()
         val type = object : TypeToken<List<ExchangeInfoDataModel>>() {}.type
         return gson.fromJson(json, type)
-    }
-
-    override suspend fun getBitPinPrice(marketId: Int): BitPinDataModel {
-        val response = httpClient.get("${BuildConfig.BITPIN_URL}$marketId")
-        val json = response.bodyAsText()
-        return gson.fromJson(json, BitPinDataModel::class.java)
     }
 
     override suspend fun getTetherLandPrice(): TetherLandListDataModel {
@@ -255,6 +270,16 @@ class MarketRemoteDataSourceImpl constructor(
         return gson.fromJson(json, EterexPriceGroupsDataModel::class.java)
     }
 
+    override suspend fun getEterexAssetsPrice(): List<EterexAssetsPriceDataModel> {
+        val response =
+            httpClient.get(
+                BuildConfig.ETEREX_PRICE_URL
+            )
+        val json = response.bodyAsText()
+        val type = object : TypeToken<List<EterexAssetsPriceDataModel>>() {}.type
+        return gson.fromJson(json, type)
+    }
+
 
     override suspend fun getSarmayexMarketPrice(): SarmayexMarketListDataModel {
         val response = httpClient.get(BuildConfig.SARMAYEX_MARKET_URL)
@@ -332,6 +357,12 @@ class MarketRemoteDataSourceImpl constructor(
 
         val json = response.bodyAsText()
         return gson.fromJson(json, RamzinexDataModel::class.java)
+    }
+
+    override suspend fun getRamzinexCurrencies(): RamzinexCurrenciesDataModel {
+        val response = httpClient.get(BuildConfig.RAMZINEX_CURRENCIES_URL)
+        val json = response.bodyAsText()
+        return gson.fromJson(json, RamzinexCurrenciesDataModel::class.java)
     }
 
     override suspend fun getArzinjaPrice(

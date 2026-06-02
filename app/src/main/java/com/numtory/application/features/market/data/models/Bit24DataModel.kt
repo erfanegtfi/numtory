@@ -44,16 +44,16 @@ data class Bit24PriceMDataModel constructor(
 
 data class Bit24SwapDataModel(
     @SerializedName("data")
-    val data: Bit24MetasDataModel
+    val data: Bit24MetasDataModel?
 ) {
-    fun toEntity(): Bit24Swap = Bit24Swap(data.toEntity())
+    fun toEntity(): Bit24Swap = Bit24Swap(data?.toEntity())
 }
 
 data class Bit24MetasDataModel(
     @SerializedName("metas")
-    val metas: Bit24MetaPriceDataModel
+    val metas: Bit24MetaPriceDataModel?
 ) {
-    fun toEntity(): Bit24Metas = Bit24Metas(metas.toEntity())
+    fun toEntity(): Bit24Metas = Bit24Metas(metas?.toEntity())
 }
 
 data class Bit24MetaPriceDataModel constructor(

@@ -62,7 +62,7 @@ class GetArzplusPriceUseCase constructor(
                 is ApiCallResult.Success -> {
 
                     val asset =
-                        marketResponse.result.firstOrNull { it.symbol?.lowercase() == base.lowercase() }
+                        marketResponse.result?.firstOrNull { it.symbol?.lowercase() == base.lowercase() }
 
                     val marketPrice = MarketPrice(
                         symbol = asset?.symbol,

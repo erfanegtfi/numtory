@@ -6,10 +6,10 @@ import com.google.gson.annotations.SerializedName
 
 data class ArzplusMarketListDataModel(
     @SerializedName("high_volume")
-    val markets: List<ArzplusMarketItemDataModel>
+    val markets: List<ArzplusMarketItemDataModel>?
 ) {
-    fun toEntity(): List<ArzplusMarketItem> =
-        markets.map { it.toEntity() }
+    fun toEntity(): List<ArzplusMarketItem>? =
+        markets?.map { it.toEntity() }
 }
 
 data class ArzplusMarketItemDataModel constructor(

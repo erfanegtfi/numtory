@@ -63,6 +63,7 @@ android {
         buildConfigField("String", "RAMZINEX_URL", getLocalProperty("RAMZINEX_URL"))
         buildConfigField("String", "RAMZINEX_CURRENCIES_URL", getLocalProperty("RAMZINEX_CURRENCIES_URL"))
         buildConfigField("String", "ARZINJA_URL", getLocalProperty("ARZINJA_URL"))
+        buildConfigField("String", "EXONYX_URL", getLocalProperty("EXONYX_URL"))
         buildConfigField("String", "ARZYPTO_URL", getLocalProperty("ARZYPTO_URL"))
         buildConfigField("String", "DIGIKALA_URL", getLocalProperty("DIGIKALA_URL"))
         buildConfigField("String", "GOLDIKA_URL", getLocalProperty("GOLDIKA_URL"))

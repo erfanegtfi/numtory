@@ -37,6 +37,7 @@ import com.numtory.application.features.market.data.models.ArzinjaDataModel
 import com.numtory.application.features.market.data.models.ArzyptoDataModel
 import com.numtory.application.features.market.data.models.BitPinOTCDataModel
 import com.numtory.application.features.market.data.models.EterexAssetsPriceDataModel
+import com.numtory.application.features.market.data.models.ExonyxDataModel
 import com.numtory.application.features.market.data.models.RamzinexCurrenciesDataModel
 import com.numtory.application.features.market.data.models.RamzinexDataModel
 import com.numtory.application.features.market.data.models.TabdealSwapDataModel
@@ -96,6 +97,8 @@ interface MarketRemoteDataSource {
         side: String,
         symbol: String,
     ): ArzyptoDataModel
+
+    suspend fun getExonyxSwapPrice(): ExonyxDataModel
 }
 
 class MarketRemoteDataSourceImpl constructor(
@@ -398,6 +401,14 @@ class MarketRemoteDataSourceImpl constructor(
 
         val json = response.bodyAsText()
         return gson.fromJson(json, ArzyptoDataModel::class.java)
+    }
+
+    override suspend fun getExonyxSwapPrice(): ExonyxDataModel {
+        val response =
+            httpClient.get(BuildConfig.EXONYX_URL)
+
+        val json = response.bodyAsText()
+        return gson.fromJson(json, ExonyxDataModel::class.java)
     }
 
 }

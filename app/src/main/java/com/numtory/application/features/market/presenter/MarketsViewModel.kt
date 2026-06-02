@@ -26,6 +26,7 @@ import com.numtory.application.features.market.domain.usecase.GetBit24PriceUseCa
 import com.numtory.application.features.market.domain.usecase.GetBitPinPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetCoinkadePriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetEterexPriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetExonyxPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetMarketAvgUseCase
 import com.numtory.application.features.market.domain.usecase.GetNobitexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetPingiPriceUseCase
@@ -81,6 +82,7 @@ constructor(
     private val getUbitexPriceUseCase: GetUbitexPriceUseCase,
     private val getRamzinexPriceUseCase: GetRamzinexPriceUseCase,
     private val getArzinjaPriceUseCase: GetArzinjaPriceUseCase,
+    private val getExonyxPriceUseCase: GetExonyxPriceUseCase,
     private val sortMarketUseCase: SortMarketUseCase,
     private val filterMarketUseCase: FilterMarketUseCase,
     private val removeOutOfRangeExchangesUseCase: RemoveOutOfRangeExchangeUseCase,
@@ -154,7 +156,7 @@ constructor(
             mergedFlow.apply {
                 add(getBitPinPriceUseCase.action(symbol, "IRT"))
                 add(getTetherLandPriceUseCase.action(symbol))
-                add(getNobitexPriceUseCase.action(symbol, "rls"))
+                add(getNobitexPriceUseCase.action(symbol, "IRT", "rls"))
                 add(getTabtealPriceUseCase.action("IRT", symbol))
                 add(getBit24PriceUseCase.action("IRT", symbol))
                 add(getArzplusPriceUseCase.action("IRT", symbol))
@@ -171,6 +173,7 @@ constructor(
                 add(getArzinjaPriceUseCase.action(symbol, "IRT"))
                 add(getRamzinexPriceUseCase.action(symbol, "irr"))
                 add(getArzyptoPriceUseCase.action("TOMAN", symbol))
+                add(getExonyxPriceUseCase.action(symbol))
             }
 //         mergedFlow = merge(
 //            getBitPinPriceUseCase.action(5),
@@ -198,7 +201,7 @@ constructor(
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.tetherland }?.active == true)
                     add(getTetherLandPriceUseCase.action(symbol))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.nobitex }?.active == true)
-                    add(getNobitexPriceUseCase.action(symbol, "rls"))
+                    add(getNobitexPriceUseCase.action(symbol, "IRT", "rls"))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.tabdeal }?.active == true)
                     add(getTabtealPriceUseCase.action("IRT", symbol))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.bit24 }?.active == true)
@@ -231,6 +234,8 @@ constructor(
                     add(getRamzinexPriceUseCase.action(symbol, "irr"))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.arzypto }?.active == true)
                     add(getArzyptoPriceUseCase.action("TOMAN", symbol))
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.exonyx }?.active == true)
+                    add(getExonyxPriceUseCase.action( symbol))
             }
 
         priceJob = viewModelScope.launch {
@@ -244,7 +249,6 @@ constructor(
                                 allMarkets.filterNot { it.exchangeInfo.exchange == response.result.exchangeInfo.exchange }
                                     .toMutableList()
 
-                            Log.v("symbol", symbol)
                             if (response.result.symbol?.lowercase() == symbol.lowercase())
                                 allMarkets.add(response.result)
 

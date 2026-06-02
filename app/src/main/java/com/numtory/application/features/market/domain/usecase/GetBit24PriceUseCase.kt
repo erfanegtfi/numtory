@@ -31,9 +31,9 @@ class GetBit24PriceUseCase constructor(
                             active = true,
                             display = true
                         ),
-                        buyPrice = ((swapResponse.result.data.metas.buyPrice
+                        buyPrice = ((swapResponse.result.data?.metas?.buyPrice
                             ?: "0").toLong() ).toString(),
-                        sellPrice = ((swapResponse.result.data.metas.sellPrice
+                        sellPrice = ((swapResponse.result.data?.metas?.sellPrice
                             ?: "0").toLong() ).toString(),
                         lastRefresh = System.currentTimeMillis()
                     )

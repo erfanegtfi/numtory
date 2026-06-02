@@ -23,13 +23,13 @@ data class Bit24Price constructor(
 /////// swap
 
 data class Bit24Swap(
-    val data: Bit24Metas
+    val data: Bit24Metas?
 ) {
 
 }
 
 data class Bit24Metas(
-    val metas: Bit24MetaPrice
+    val metas: Bit24MetaPrice?
 ) {
 }
 

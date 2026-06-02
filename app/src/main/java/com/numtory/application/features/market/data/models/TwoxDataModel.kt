@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class TwoxDataModel(
     @SerializedName("displayFee")
-    val displayFee: String
+    val displayFee: String?
 ) {
     fun toEntity(): Twox = Twox(displayFee)
 }

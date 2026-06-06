@@ -20,8 +20,8 @@ class GetTalaseaPriceUseCase constructor(
                 is ApiCallResult.Success -> {
                     ApiCallResult.Success(
                         GoldMarketPrice(
-                            buyPrice = ((response.result.price?.toLong() ?: 0) * 1000).toString(),
-                            sellPrice = ((response.result.price?.toLong() ?: 0) * 1000).toString(),
+                            buyPrice = ((response.result.price?.toDouble()?.toLong() ?: 0) * 1000).toString(),
+                            sellPrice = ((response.result.price?.toDouble()?.toLong() ?: 0) * 1000).toString(),
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == GoldExchanges.talasea }
                                 ?: GoldExchangeInfo(
                                     exchange = GoldExchanges.talasea,

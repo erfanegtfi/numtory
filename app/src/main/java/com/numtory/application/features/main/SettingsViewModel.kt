@@ -28,8 +28,8 @@ constructor(
     private val _settingsState = MutableStateFlow<ViewState<AppSettings?>>(ViewState.Init)
     val settingsState: StateFlow<ViewState<AppSettings?>> get() = _settingsState.asStateFlow()
 
-    private val _showSuccessDialog = MutableStateFlow(false)
-    val showSuccessDialog: StateFlow<Boolean> = _showSuccessDialog.asStateFlow()
+    private val _showSuccessDialog = MutableStateFlow(SettingsUiState())
+    val showSuccessDialog: StateFlow<SettingsUiState> = _showSuccessDialog.asStateFlow()
 
 
     init {
@@ -42,9 +42,21 @@ constructor(
                 when (response) {
                     is ApiCallResult.Success -> {
                         _settingsState.value = ViewState.Success(response.result)
-                        if (getAppVersion(context) < (response.result?.version ?: 0) && response.result?.force == true)
-                            _showSuccessDialog.value = true
-                        else _showSuccessDialog.value = false
+                        if ((getAppVersion(context) < (response.result?.version
+                                ?: 0) && response.result?.force == true) || response.result?.block == true
+                        )
+                            _showSuccessDialog.value =
+                                SettingsUiState(
+                                    response.result.versionName ?: "",
+                                    response.result.force ?: false,
+                                    true
+                                )
+                        else _showSuccessDialog.value =
+                            SettingsUiState(
+                                response.result?.versionName ?: "",
+                                response.result?.force ?: false,
+                                false
+                            )
                     }
 
                     is ApiCallResult.Failure -> {
@@ -58,7 +70,7 @@ constructor(
     }
 
     fun closeDialog() {
-        _showSuccessDialog.value = false
+        _showSuccessDialog.value = SettingsUiState(showUpdateDialog = false)
     }
 
 
@@ -68,3 +80,9 @@ constructor(
     }
 
 }
+
+data class SettingsUiState(
+    val serverVersion: String = "1",
+    val force: Boolean = false,
+    val showUpdateDialog: Boolean = false
+)

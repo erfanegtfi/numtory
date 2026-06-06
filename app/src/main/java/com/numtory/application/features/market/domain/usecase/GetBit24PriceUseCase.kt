@@ -32,9 +32,9 @@ class GetBit24PriceUseCase constructor(
                             display = true
                         ),
                         buyPrice = ((swapResponse.result.data?.metas?.buyPrice
-                            ?: "0").toLong() ).toString(),
+                            ?: "0").toDouble().toLong() ).toString(),
                         sellPrice = ((swapResponse.result.data?.metas?.sellPrice
-                            ?: "0").toLong() ).toString(),
+                            ?: "0").toDouble().toLong() ).toString(),
                         lastRefresh = System.currentTimeMillis()
                     )
                     emit(ApiCallResult.Success(swapPrice))

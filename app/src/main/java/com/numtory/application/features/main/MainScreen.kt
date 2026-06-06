@@ -1,6 +1,5 @@
 package com.numtory.application.features.main
 
-import android.provider.CalendarContract
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -33,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
@@ -57,6 +55,8 @@ import com.numtory.application.features.setting.domain.entities.AppSettings
 import com.numtory.application.ui.theme.Secondary
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.MainScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.UpdateAppScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
@@ -75,7 +75,12 @@ sealed class Screen(
         Screen("gold", "مقایسه طلا", Icons.Outlined.BarChart, Icons.Filled.Search)
 
     object GlobalCryptoMarket :
-        Screen("Crypto", "قیمت رمزارزها", Icons.Outlined.CurrencyBitcoin, Icons.Filled.CurrencyBitcoin)
+        Screen(
+            "Crypto",
+            "قیمت رمزارزها",
+            Icons.Outlined.CurrencyBitcoin,
+            Icons.Filled.CurrencyBitcoin
+        )
 }
 
 @Composable
@@ -104,7 +109,7 @@ fun SuccessDialog(
 @Destination<RootGraph>(start = true)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
-fun BottomNavHost(
+fun MainScreen(
     navigator: DestinationsNavigator,
     viewModel: SettingsViewModel = koinViewModel()
 ) {
@@ -117,9 +122,12 @@ fun BottomNavHost(
 //        viewModel.getSettings()
 //    }
 
-    if (dialogMessage)
-        SuccessDialog("آپدیت جدید") {
-            viewModel.closeDialog()
+    if (dialogMessage.showUpdateDialog)
+        navigator.navigate(UpdateAppScreenDestination(dialogMessage.serverVersion)) {
+            if (dialogMessage.force)
+                popUpTo(MainScreenDestination) {
+                    inclusive = true
+                }
         }
 
     when (settings) {

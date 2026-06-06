@@ -8,11 +8,13 @@ data class AppSettingsDataModel(
     val version: Int,
     @SerializedName("force")
     val force: Boolean,
+    @SerializedName("version_name")
+    val versionName: String,
     @SerializedName("block")
     val block: Boolean
 ) {
     fun toEntity(): AppSettings =
-        AppSettings(version, force, block)
+        AppSettings(version, versionName, force, block)
 }
 
 

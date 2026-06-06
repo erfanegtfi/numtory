@@ -30,19 +30,23 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.ui.platform.LocalContext
 import com.eterex.composeui.ButtonComponent
+import com.numtory.application.common.getAppVersion
 import com.numtory.application.common.openDownloadUrl
 import com.numtory.application.ui.theme.Primary
 import com.numtory.application.ui.theme.Secondary
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 
+
+@Destination<RootGraph>
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateAppScreen(
-    onBackPressed: () -> Unit = {},
-    downloadUrl: String = "https://play.google.com/store/apps/details?id=com.example.cryptolist"
+    versionName: String
 ) {
     val context = LocalContext.current
-    var currentVersion by remember { mutableStateOf("2.1.3") }
-    var latestVersion by remember { mutableStateOf("2.2.2") }
+//    var currentVersion by remember { mutableStateOf("2.1.3") }
+    var latestVersion by remember { mutableStateOf(versionName) }
 
 
 
@@ -75,10 +79,10 @@ fun UpdateAppScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
             UpdateAvailableScreen(
-                currentVersion = currentVersion,
+                currentVersion = getAppVersion(context).toString(),
                 latestVersion = latestVersion,
                 onDownloadClick = {
-                    openDownloadUrl(context, downloadUrl)
+                    openDownloadUrl(context, "market://search?q=pub:com.numtory")
                 }
             )
         }
@@ -206,7 +210,7 @@ fun UpdateAvailableScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
-            value = "Download Update"
+            value = "به روز رسانی"
         )
 
         Spacer(modifier = Modifier.height(12.dp))

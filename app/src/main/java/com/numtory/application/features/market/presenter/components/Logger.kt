@@ -4,6 +4,7 @@ import android.util.Log
 import com.numtory.application.common.priceFormatter
 import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.market.domain.entities.MarketPrice
+import kotlin.text.toDouble
 
 fun printLogs(priceList: ViewState<List<MarketPrice>>) {
 
@@ -29,12 +30,12 @@ fun printLogs(priceList: ViewState<List<MarketPrice>>) {
 
         sb.appendLine(
             "میانگین خرید: " + priceFormatter(
-                (averageBuyPrice / priceList.data.size).toLong().toString()
+                (averageBuyPrice / priceList.data.size).toDouble().toLong().toString()
             ),
         )
         sb.appendLine(
             "میانگین فروش: " + priceFormatter(
-                (averageSellPrice / priceList.data.size).toLong().toString()
+                (averageSellPrice / priceList.data.size).toDouble().toLong().toString()
             ),
         )
 

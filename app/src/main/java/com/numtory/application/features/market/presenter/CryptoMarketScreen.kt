@@ -129,7 +129,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
 
     if (showTokenList)
         ShowBottomSheet(onDismiss = {
-            showSheet = false
+            showTokenList = false
         }) { modalBottomSheetState, hide ->
             TokenListBottomSheetScreen(
                 topSymbols,

@@ -33,6 +33,5 @@ val topSymbols = listOf(
     "NOT",
     "HMSTR",
     "SHIBA",
-    "PEPE",
     "PUMP",
 )

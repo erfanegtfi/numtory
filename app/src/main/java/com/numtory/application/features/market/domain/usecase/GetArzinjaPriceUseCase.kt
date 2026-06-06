@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transform
+import kotlin.text.toDouble
 
 class GetArzinjaPriceUseCase constructor(
     private val marketRepository: MarketRepository,
@@ -38,9 +39,9 @@ class GetArzinjaPriceUseCase constructor(
                                     display = true
                                 ),
                             buyPrice = ((asset?.stats?.lastPrice
-                                ?: "0").toLong()).toString(),
+                                ?: "0").toDouble().toLong()).toString(),
                             sellPrice = ((asset?.stats?.lastPrice
-                                ?: "0").toLong()).toString(),
+                                ?: "0").toDouble().toLong()).toString(),
                             lastRefresh = System.currentTimeMillis()
                         )
                         emit(ApiCallResult.Success(swapPrice))
@@ -67,9 +68,9 @@ class GetArzinjaPriceUseCase constructor(
                                     display = true
                                 ),
                             buyPrice = ((asset?.stats?.askPrice
-                                ?: "0").toLong()).toString(),
+                                ?: "0").toDouble().toLong()).toString(),
                             sellPrice = ((asset?.stats?.bidPrice
-                                ?: "0").toLong()).toString(),
+                                ?: "0").toDouble().toLong()).toString(),
                             lastRefresh = System.currentTimeMillis()
                         )
                         emit(ApiCallResult.Success(marketPrice))

@@ -37,7 +37,7 @@ class GetArzplusPriceUseCase constructor(
 
             when (buyResponse) {
                 is ApiCallResult.Success -> {
-                    swapPrice.buyPrice = ((buyResponse.result.price ?: "0").toLong()).toString()
+                    swapPrice.buyPrice = ((buyResponse.result.price ?: "0").toDouble().toLong()).toString()
                     swapPrice.symbol = base
                 }
 
@@ -48,7 +48,7 @@ class GetArzplusPriceUseCase constructor(
 
             when (sellResponse) {
                 is ApiCallResult.Success -> {
-                    swapPrice.sellPrice = ((sellResponse.result.price ?: "0").toLong()).toString()
+                    swapPrice.sellPrice = ((sellResponse.result.price ?: "0").toDouble().toLong()).toString()
                     swapPrice.symbol = base
                     emit(ApiCallResult.Success(swapPrice))
                 }
@@ -74,7 +74,7 @@ class GetArzplusPriceUseCase constructor(
                             ),
                         marketPrice = (
                                 (asset?.priceIrt
-                                    ?: "0").toLong()).toString(),
+                                    ?: "0").toDouble().toLong()).toString(),
                         lastRefresh = System.currentTimeMillis()
                     )
                     emit(ApiCallResult.Success(marketPrice))

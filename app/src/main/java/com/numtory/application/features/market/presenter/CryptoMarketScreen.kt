@@ -81,8 +81,8 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
     var filterParam by remember { mutableStateOf(FilterParams()) }
     var showSheet by remember { mutableStateOf(false) }
     var showTokenList by remember { mutableStateOf(false) }
-    var selectedToken by remember { mutableStateOf(DEFAULT_TOKEN) }
-
+//    var selectedToken by remember { mutableStateOf(DEFAULT_TOKEN) }
+    val selectedToken = viewModel.selectedToken
 //    printLogs(priceList)
 
     DisposableEffect(lifecycleOwner) {
@@ -135,7 +135,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                 topSymbols,
                 hide
             ) { token ->
-                selectedToken = token
+                viewModel.selectToken(token)
                 showTokenList = false
                 viewModel.getPrices(token)
             }
@@ -213,15 +213,15 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                                 GetMarketAverage(
                                     avgBuy,
                                     avgSell,
-                                    cryptoMap[selectedToken] ?: "",
-                                    selectedToken,
-                                    selectedToken,
+                                    cryptoMap[selectedToken.value] ?: "",
+                                    selectedToken.value,
+                                    selectedToken.value,
                                     onChartClicked = {
                                         navigator.navigate(
                                             AppChartWebViewDestination(
                                                 CHART_SCRIPT.replace(
                                                     "{symbol_hear}",
-                                                    "nobitex_spot:USDTIRT"
+                                                    "nobitex_spot:${selectedToken.value}IRT"
                                                 ).trimIndent(),
                                             )
                                         )

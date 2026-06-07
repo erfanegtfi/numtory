@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.numtory.application.data.utils.ApiCallResult
@@ -108,6 +109,13 @@ constructor(
 
     var symbol: String = DEFAULT_TOKEN
     var priceJob :Job? = null
+
+    var selectedToken = mutableStateOf(DEFAULT_TOKEN)
+        private set
+
+    fun selectToken(token: String) {
+        selectedToken.value = token
+    }
 
     init {
         getExchanges()

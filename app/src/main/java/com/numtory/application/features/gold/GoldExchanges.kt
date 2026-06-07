@@ -181,8 +181,14 @@ fun GoldMarketList(
 
                                 val (avgBuy, avgSell) = viewModel.getMarketAverage()
 
-                                Box(
-                                    modifier = Modifier.clickable {
+                                GetMarketAverage(
+                                    avgBuy,
+                                    avgSell,
+                                    "گرم طلا",
+                                    "18 عیار",
+                                    "PAXG",
+                                    onTokenClicked = {},
+                                    onChartClicked = {
                                         navigator.navigate(
                                             AppChartWebViewDestination(
                                                 CHART_SCRIPT.replace(
@@ -191,18 +197,8 @@ fun GoldMarketList(
                                                 ).trimIndent(),
                                             )
                                         )
-                                    },
-                                ) {
-                                    GetMarketAverage(
-                                        avgBuy,
-                                        avgSell,
-                                        "گرم طلا",
-                                        "18 عیار",
-                                        "PAXG",
-                                        onTokenClicked = {},
-                                        onChartClicked = {}
-                                    )
-                                }
+                                    }
+                                )
                             }
                             MarketPriceHeader(
                                 sortField = sortParam.sortField,

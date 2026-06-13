@@ -3,7 +3,7 @@ package com.numtory.application.features.gold.domain.enums
 import com.numtory.application.R
 
 enum class GoldExchanges(val title: String, val logo: Int) {
-    none("", R.drawable.launcher),
+    none("", R.drawable.image_placeholder),
     digikala("دیجی کالا", R.drawable.digigold),
     hamrahgold("همراه گلد", R.drawable.hamrahgold),
     taline("طلاین", R.drawable.taline),

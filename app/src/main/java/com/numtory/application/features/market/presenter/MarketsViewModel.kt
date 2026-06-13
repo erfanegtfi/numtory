@@ -25,6 +25,7 @@ import com.numtory.application.features.market.domain.usecase.GetArzplusPriceUse
 import com.numtory.application.features.market.domain.usecase.GetArzyptoPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBit24PriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBitPinPriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetBitbargPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetCoinkadePriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetEterexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetExonyxPriceUseCase
@@ -82,6 +83,7 @@ constructor(
     private val getSarafPriceUseCase: GetSarafPriceUseCase,
     private val getUbitexPriceUseCase: GetUbitexPriceUseCase,
     private val getRamzinexPriceUseCase: GetRamzinexPriceUseCase,
+    private val getBitbargPriceUseCase: GetBitbargPriceUseCase,
     private val getArzinjaPriceUseCase: GetArzinjaPriceUseCase,
     private val getExonyxPriceUseCase: GetExonyxPriceUseCase,
     private val sortMarketUseCase: SortMarketUseCase,
@@ -180,28 +182,10 @@ constructor(
                 add(getUbitexPriceUseCase.action(symbol, "TMN"))
                 add(getArzinjaPriceUseCase.action(symbol, "IRT"))
                 add(getRamzinexPriceUseCase.action(symbol, "irr"))
+                add(getBitbargPriceUseCase.action(symbol))
                 add(getArzyptoPriceUseCase.action("TOMAN", symbol))
                 add(getExonyxPriceUseCase.action(symbol))
             }
-//         mergedFlow = merge(
-//            getBitPinPriceUseCase.action(5),
-//            getTetherLandPriceUseCase.action(),
-//            getAbanTetherPriceUseCase.action("USDT"),
-//            getNobitexPriceUseCase.action("USDTIRT", "usdt-rls"),
-//            getTabtealPriceUseCase.action("IRT", "USDT"),
-//            getBit24PriceUseCase.action("IRT", "USDT"),
-//            getArzplusPriceUseCase.action("IRT", "USDT"),
-//            getTwoxPriceUseCase.action("IRT", "USDT"),
-//            getCoinkadePriceUseCase.action(),
-//            getPoolenoPriceUseCase.action("USDT", "TMN"),
-//            getEterexPriceUseCase.action("USDT"),
-//            getSarmayexPriceUseCase.action("USDT", "USDT_IRT"),
-//            getPingiPriceUseCase.action("USDT_IRT"),
-//            getWallexPriceUseCase.action("USDT", "TMN"),
-//            getSarafPriceUseCase.action("USDT"),
-//            getUbitexPriceUseCase.action("USDT", "TMN"),
-//            getRamzinexPriceUseCase.action("2", "9"),
-//        )
         else
             mergedFlow.apply {
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.bitpin }?.active == true)
@@ -244,6 +228,8 @@ constructor(
                     add(getArzyptoPriceUseCase.action("TOMAN", symbol))
                 if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.exonyx }?.active == true)
                     add(getExonyxPriceUseCase.action( symbol))
+                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.bitbarg }?.active == true)
+                    add(getBitbargPriceUseCase.action( symbol))
             }
 
         priceJob = viewModelScope.launch {

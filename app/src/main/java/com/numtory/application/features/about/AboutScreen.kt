@@ -98,7 +98,7 @@ fun AboutScreen(navigator: DestinationsNavigator) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.launcher),
+                        painter = painterResource(id = R.drawable.launcher_white),
                         contentDescription = "My Image Description",
                         modifier = Modifier
                             .size(80.dp)  // Fixed size
@@ -136,7 +136,7 @@ fun AboutScreen(navigator: DestinationsNavigator) {
 
             // Description
             DescriptionWithEditOption(
-                description = "اپلیکیشن توکن چند قیمت ارزهای دیجیتال در صرافی های ایرانی را مقایسه می کند. \nتمامی قیمت ها در اپلیکیشن به طور مستقیم از سایت صرافی ها دریافت و نمایش داده می شود. \nاپلیکیشن توکن چند هیچ گونه تغییری در قیمت های نمایش داده شده انجام نمی دهد."
+                description = "اپلیکیشن توکن چند قیمت ارزهای دیجیتال در صرافی های ایرانی را مقایسه می کند. \nقیمت تمامی رمز ارزها و طلا در اپلیکیشن به طور مستقیم از سایت صرافی ها دریافت و نمایش داده می شود.\nقیمت ارز و سکه از طریق سایت های واسط دریافت می شود. \nاپلیکیشن توکن چند هیچ گونه تغییری در قیمت های نمایش داده شده انجام نمی دهد.\nاپلیکیشن توکن چند به طور مستقل هیچ گونه قیمتی را نمایش نمی دهد."
             )
         }
     }

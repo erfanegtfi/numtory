@@ -3,7 +3,7 @@ package com.numtory.application.features.market.domain.enums
 import com.numtory.application.R
 
 enum class Exchanges(val title: String, val logo: Int) {
-    none("", R.drawable.launcher),
+    none("", R.drawable.image_placeholder),
     tetherland("تترلند (سریع)", R.drawable.tetherland),
     abantether("آبان تتر", R.drawable.aban),
     bitpin("بیت پین (سریع)", R.drawable.bitpin),
@@ -31,6 +31,7 @@ enum class Exchanges(val title: String, val logo: Int) {
 	arzinjaMarket("ارزاینجا (بازار)", R.drawable.arzinja),
     arzypto("ارزیپتو (سریع)", R.drawable.arzypto),
     ramzinex("رمزینکس (سریع)", R.drawable.ramzinex),
+    bitbarg("بیت برگ (سریع)", R.drawable.bitbarg),
     exonyx("اکس اونیکس (سریع)", R.drawable.exonyx);
 
 

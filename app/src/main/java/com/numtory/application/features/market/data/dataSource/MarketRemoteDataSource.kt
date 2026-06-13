@@ -36,6 +36,7 @@ import com.numtory.application.BuildConfig
 import com.numtory.application.features.market.data.models.ArzinjaDataModel
 import com.numtory.application.features.market.data.models.ArzyptoDataModel
 import com.numtory.application.features.market.data.models.BitPinOTCDataModel
+import com.numtory.application.features.market.data.models.BitbargDataModel
 import com.numtory.application.features.market.data.models.EterexAssetsPriceDataModel
 import com.numtory.application.features.market.data.models.ExonyxDataModel
 import com.numtory.application.features.market.data.models.RamzinexCurrenciesDataModel
@@ -88,6 +89,7 @@ interface MarketRemoteDataSource {
         toAmount: Int? = null,
         fromAmount: Int? = null,
     ): RamzinexDataModel
+
     suspend fun getRamzinexCurrencies(): RamzinexCurrenciesDataModel
 
     suspend fun getArzinjaPrice(baseCurrency: String, providerType: String): ArzinjaDataModel
@@ -99,13 +101,17 @@ interface MarketRemoteDataSource {
     ): ArzyptoDataModel
 
     suspend fun getExonyxSwapPrice(): ExonyxDataModel
+
+    suspend fun getBitbargPrice(
+        base: String,
+        symbol: String,
+    ): BitbargDataModel
 }
 
 class MarketRemoteDataSourceImpl constructor(
     private val httpClient: HttpClient,
     private val gson: Gson
 ) : MarketRemoteDataSource {
-
 
 
     override suspend fun getBitPinPrice(marketId: Int): BitPinOTCDataModel {
@@ -374,10 +380,10 @@ class MarketRemoteDataSourceImpl constructor(
     ): ArzinjaDataModel {
         val response =
             httpClient.get(BuildConfig.ARZINJA_URL) {
-                    parameter("page", 1)
-                    parameter("per_page", 1)
-                    parameter("base_asset", baseCurrency)
-                    parameter("provider_type", providerType)
+                parameter("page", 1)
+                parameter("per_page", 1)
+                parameter("base_asset", baseCurrency)
+                parameter("provider_type", providerType)
             }
 
         val json = response.bodyAsText()
@@ -391,11 +397,13 @@ class MarketRemoteDataSourceImpl constructor(
     ): ArzyptoDataModel {
         val response =
             httpClient.post(BuildConfig.ARZYPTO_URL) {
-                setBody(mapOf(
-                    "currency" to currency,
-                    "side" to side,
-                    "symbol" to symbol
-                ))
+                setBody(
+                    mapOf(
+                        "currency" to currency,
+                        "side" to side,
+                        "symbol" to symbol
+                    )
+                )
 
             }
 
@@ -409,6 +417,20 @@ class MarketRemoteDataSourceImpl constructor(
 
         val json = response.bodyAsText()
         return gson.fromJson(json, ExonyxDataModel::class.java)
+    }
+
+    override suspend fun getBitbargPrice(
+        base: String,
+        symbol: String
+    ): BitbargDataModel {
+        val response =
+            httpClient.get(BuildConfig.BITBARG_URL) {
+                parameter("base", base)
+                parameter("symbol", symbol)
+            }
+
+        val json = response.bodyAsText()
+        return gson.fromJson(json, BitbargDataModel::class.java)
     }
 
 }

@@ -61,6 +61,7 @@ android {
         buildConfigField("String", "SARAF_URL", getLocalProperty("SARAF_URL"))
         buildConfigField("String", "COINKADE_URL", getLocalProperty("COINKADE_URL"))
         buildConfigField("String", "RAMZINEX_URL", getLocalProperty("RAMZINEX_URL"))
+        buildConfigField("String", "BITBARG_URL", getLocalProperty("BITBARG_URL"))
         buildConfigField("String", "RAMZINEX_CURRENCIES_URL", getLocalProperty("RAMZINEX_CURRENCIES_URL"))
         buildConfigField("String", "ARZINJA_URL", getLocalProperty("ARZINJA_URL"))
         buildConfigField("String", "EXONYX_URL", getLocalProperty("EXONYX_URL"))

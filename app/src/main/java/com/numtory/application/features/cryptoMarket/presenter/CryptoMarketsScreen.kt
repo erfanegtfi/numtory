@@ -304,7 +304,7 @@ fun CryptoListItem(crypto: CryptoMarketPrice) {
                 Text(
                     text = (crypto.name
                         ?: "").replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() },
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

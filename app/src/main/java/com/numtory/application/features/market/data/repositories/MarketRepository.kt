@@ -4,6 +4,7 @@ import com.numtory.application.data.remote.getResult
 import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.market.data.dataSource.MarketRemoteDataSource
 import com.numtory.application.features.market.data.local.ExchangesLocalDataSource
+import com.numtory.application.features.market.data.models.BitbargDataModel
 import com.numtory.application.features.market.data.models.EterexAssetsPriceDataModel
 import com.numtory.application.features.market.data.models.RamzinexCurrenciesDataModel
 import com.numtory.application.features.market.domain.entities.AbanTether
@@ -17,6 +18,7 @@ import com.numtory.application.features.market.domain.entities.Bit24
 import com.numtory.application.features.market.domain.entities.Bit24Swap
 import com.numtory.application.features.market.domain.entities.BitPin
 import com.numtory.application.features.market.domain.entities.BitPinOTC
+import com.numtory.application.features.market.domain.entities.Bitbarg
 import com.numtory.application.features.market.domain.entities.Coinkade
 import com.numtory.application.features.market.domain.entities.EterexAssetsPrice
 import com.numtory.application.features.market.domain.entities.EterexGroups
@@ -103,6 +105,11 @@ interface MarketRepository {
     ): Flow<ApiCallResult<Arzypto>>
 
     fun getExonyxSwapPrice(): Flow<ApiCallResult<List<ExonyxItem>?>>
+
+    fun getBitbargPrice(
+        base: String,
+        symbol: String
+    ): Flow<ApiCallResult<Bitbarg>>
 }
 
 class MarketRepositoryImpl(
@@ -451,5 +458,18 @@ class MarketRepositoryImpl(
         } else if (response is ApiCallResult.Failure)
             emit(ApiCallResult.Failure(response.error))
     }.flowOn(dispatcher)
+
+    override fun getBitbargPrice(
+        base: String,
+        symbol: String
+    ): Flow<ApiCallResult<Bitbarg>> = flow {
+        val response = getResult {
+            marketRemoteDataSource.getBitbargPrice(base, symbol)
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result.toEntity()))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }
 
 }

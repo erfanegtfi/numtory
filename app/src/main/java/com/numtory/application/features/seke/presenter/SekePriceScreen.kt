@@ -216,7 +216,7 @@ fun CryptoListItem(seke: SekePrice) {
                 Text(
                     text = (seke.title
                         ?: "").replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() },
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

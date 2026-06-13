@@ -70,7 +70,7 @@ constructor(
     val timer: State<Int> get() = _timer
 
 
-    var cryptoPrices: List<CryptoMarketPrice> = emptyList()
+    var cryptoPrices: MutableList<CryptoMarketPrice> = mutableListOf()
 
     private val _priceState = MutableStateFlow<ViewState<List<CryptoMarketPrice>>>(ViewState.Init)
     val priceState: StateFlow<ViewState<List<CryptoMarketPrice>>> get() = _priceState.asStateFlow()
@@ -81,13 +81,23 @@ constructor(
     }
 
     fun getPrices() {
-        _priceState.value = ViewState.Loading
+        if (cryptoPrices.isEmpty())
+            _priceState.value = ViewState.Loading
         _timer.intValue = REFRESH_TIMER
         viewModelScope.launch {
             getCryptoGlobalMarketPricesUseCase.action().collect { response ->
                 when (response) {
                     is ApiCallResult.Success -> {
-                        cryptoPrices = response.result.filter { it.symbolUSDT?.contains("_USDT") == true }
+//                        cryptoPrices =  response.result.filter { it.symbolUSDT?.contains("_USDT") == true }
+                        cryptoPrices.clear()
+                        cryptoPrices.addAll(
+                            response.result //.filter { it.symbolUSDT?.contains("_USDT") == true }
+                        )
+
+                        val l =
+                            cryptoPrices.filter { it.symbol?.uppercase() == "PAXG" || it.symbol?.uppercase() == "XAUT" || it.symbol?.uppercase() == "CL" || it.symbol?.uppercase() == "AUXT" || it.symbol?.uppercase() == "COPPER" }
+                        cryptoPrices.removeAll { it.symbol?.uppercase() == "PAXG" || it.symbol?.uppercase() == "XAUT" || it.symbol?.uppercase() == "CL" || it.symbol?.uppercase() == "AUXT" || it.symbol?.uppercase() == "COPPER" || it.symbol?.uppercase() == "USDT" }
+                        cryptoPrices.addAll(1, l)
                         _priceState.value = ViewState.Success(cryptoPrices)
                     }
 
@@ -101,6 +111,13 @@ constructor(
         }
     }
 
+    fun filter(searchQuery: String) {
+        _priceState.value = ViewState.Success(cryptoPrices.filter {
+            it.symbol?.lowercase()
+                ?.contains(searchQuery.lowercase()) == true || it.name?.lowercase()
+                ?.contains(searchQuery.lowercase()) == true
+        })
+    }
 
     private var isRunning = false
     private var timerJob: Job? = null

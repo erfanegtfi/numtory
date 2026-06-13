@@ -1,18 +1,16 @@
-package com.numtory.application.features.cryptoMarket.presenter
+package com.numtory.application.features.seke.presenter
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -49,12 +47,13 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.numtory.application.BuildConfig
+import com.numtory.application.common.formatDuration
 import com.numtory.application.common.priceFormatter
 import com.numtory.application.composeUI.MyImageLoader
 import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.cryptoMarket.domain.entities.CryptoMarketPrice
 import com.numtory.application.features.market.presenter.components.TimerProgressBar
+import com.numtory.application.features.seke.domain.entities.SekePrice
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
@@ -62,63 +61,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CryptoAppBar(
-    onSearch: (String) -> Unit,
-    onClose: () -> Unit,
-) {
-    var searchText by remember { mutableStateOf("") }
-
-    // Search field filling the whole app bar
-    TextField(
-        value = searchText,
-        onValueChange = {
-            searchText = it
-            onSearch(it)
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(59.dp), // Match TopAppBar height
-        placeholder = { Text("جستجو...") },
-        leadingIcon = {
-            // Search icon at the start
-            Icon(
-                Icons.Default.Search,
-                contentDescription = "Search",
-                modifier = Modifier.size(24.dp)
-            )
-        },
-        trailingIcon = {
-            // Close/X icon to exit search
-            IconButton(
-                onClick = {
-                    onClose()
-                    searchText = ""
-                    onSearch("")
-                }
-            ) {
-                Icon(
-                    Icons.Default.Close,
-                    contentDescription = "Close search"
-                )
-            }
-        },
-        colors = TextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-            unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            cursorColor = MaterialTheme.colorScheme.primary
-        ),
-        singleLine = true,
-        shape = RectangleShape // Remove rounded corners
-    )
-
-
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MyTopAppBar(onSearch: () -> Unit) {
+fun MyTopAppBar() {
     return TopAppBar(
         title = {
 
@@ -138,39 +81,24 @@ fun MyTopAppBar(onSearch: () -> Unit) {
             actionIconContentColor = MaterialTheme.colorScheme.onPrimary
         ),
         actions = {
-            IconButton(onClick = { onSearch() }) {
-                Icon(Icons.Default.Search, contentDescription = "Search")
-            }
+
         }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
-fun CryptoListScreen(
+fun SekePriceScreen(
     navigator: DestinationsNavigator,
-    viewModel: CryptoGlobalMarketPriceViewModel = koinViewModel()
+    viewModel: SekePriceViewModel = koinViewModel()
 ) {
-    var isSearching by remember { mutableStateOf(false) }
 
     val priceList by viewModel.priceState.collectAsStateWithLifecycle()
     val pullToRefreshState = rememberPullToRefreshState()
 
     Scaffold(
         topBar = {
-            if (isSearching)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .statusBarsPadding()
-                        .background(MaterialTheme.colorScheme.primary)
-                ) {
-                    CryptoAppBar(onSearch = {
-                        viewModel.filter(it)
-                    }) { isSearching = false }
-                }
-            else MyTopAppBar { isSearching = true }
-
+            MyTopAppBar()
         }
     ) { innerPadding ->
         PullToRefreshBox(
@@ -190,17 +118,6 @@ fun CryptoListScreen(
                     ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-
-                stickyHeader {
-                    Column {
-                        Box(
-                            modifier = Modifier
-                                .height(2.dp)
-                        )
-                        TimerProgressBar(viewModel.timer)
-                    }
-
-                }
 
                 when (priceList) {
                     is ViewState.Init -> {
@@ -230,7 +147,7 @@ fun CryptoListScreen(
                     }
 
                     is ViewState.Success -> {
-                        val items = (priceList as ViewState.Success<List<CryptoMarketPrice>>).data
+                        val items = (priceList as ViewState.Success<List<SekePrice>>).data
                         if (items.isEmpty())
                             item {
                                 Box(
@@ -270,7 +187,12 @@ fun CryptoListScreen(
 }
 
 @Composable
-fun CryptoListItem(crypto: CryptoMarketPrice) {
+fun CryptoListItem(seke: SekePrice) {
+
+    val totalSeconds =
+        (System.currentTimeMillis() - (seke.lastUpdateSec
+            ?: System.currentTimeMillis())) / 1000
+
 
     Row(
         modifier = Modifier
@@ -283,67 +205,33 @@ fun CryptoListItem(crypto: CryptoMarketPrice) {
         ) {
         // Left section: Image, Name & Symbol
         Row(
-            modifier = Modifier.weight(1f),
+
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
 
             ) {
-            // Crypto Icon/Image
-//            MyImageLoader(
-//                BuildConfig.CRYPTO_ICON_URL.replace(
-//                    "{icon}",
-//                    crypto.symbol?.lowercase() ?: ""
-//                )
-//            )
-            MyImageLoader(
-                crypto.image ?: ""
-            )
 
             // Name and Symbol
-            Column() {
+            Column(  modifier = Modifier.weight(1f),) {
                 Text(
-                    text = (crypto.name
+                    text = (seke.title
                         ?: "").replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() },
                     fontSize = 16.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = crypto.symbol?.uppercase() ?: "",
+                    text = "${formatDuration(totalSeconds)} قبل",
                     fontSize = 12.sp,
                     color = Color.Gray
                 )
             }
-        }
 
-        // Right section: Price and Change
-        Column(horizontalAlignment = Alignment.End) {
             Text(
-                text = priceFormatter(crypto.price?:"0"),
+                text = priceFormatter(seke.sell ?: "0"),
                 fontSize = 14.sp,
-            )
-
-            // Price Change with color indicator
-            val changeColor = if (crypto.dayChangePercent >= 0)
-                Color(0xFF4CAF50) else Color(0xFFF44336)
-            val changeSymbol = if (crypto.dayChangePercent >= 0) "▲" else "▼"
-
-            Text(
-                text = "${
-                    String.format(
-                        "%.2f",
-                        kotlin.math.abs(crypto.dayChangePercent)
-                    )
-                }% $changeSymbol  $${
-                    String.format(
-                        "%.2f",
-                        kotlin.math.abs(crypto.dayChangePrice)
-                    )
-                }",
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
-                color = changeColor
             )
         }
     }
+
 }

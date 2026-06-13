@@ -14,10 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CurrencyBitcoin
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.CurrencyBitcoin
 import androidx.compose.material3.AlertDialog
@@ -47,10 +50,12 @@ import androidx.navigation.compose.rememberNavController
 import com.numtory.application.common.cryptoExchangesScreenOpened
 import com.numtory.application.common.globalCryptoMarketExchangesScreenOpened
 import com.numtory.application.common.goldExchangesScreenOpened
+import com.numtory.application.common.sekeScreenOpened
 import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.cryptoMarket.presenter.CryptoListScreen
 import com.numtory.application.features.gold.GoldMarketList
 import com.numtory.application.features.market.presenter.MarketList
+import com.numtory.application.features.seke.presenter.SekePriceScreen
 import com.numtory.application.features.setting.domain.entities.AppSettings
 import com.numtory.application.ui.theme.Secondary
 import com.ramcosta.composedestinations.annotation.Destination
@@ -68,11 +73,15 @@ sealed class Screen(
     val icon: ImageVector,
     val selectedIcon: ImageVector
 ) {
+
     object CryptoExchanges :
         Screen("crypto", "مقایسه تتر", Icons.Outlined.BarChart, Icons.Filled.Home)
 
+    object Seke :
+        Screen("seke", "ارز و سکه", Icons.Outlined.AttachMoney, Icons.Filled.AttachMoney)
+
     object GoldExchanges :
-        Screen("gold", "مقایسه طلا", Icons.Outlined.BarChart, Icons.Filled.Search)
+        Screen("gold", "مقایسه طلا", Icons.Outlined.BarChart, Icons.Filled.BarChart)
 
     object GlobalCryptoMarket :
         Screen(
@@ -180,9 +189,9 @@ fun MainScreen(
                 )
         ) {
             composable(Screen.CryptoExchanges.route) { MarketList(navigator) }
+            composable(Screen.Seke.route) { SekePriceScreen(navigator) }
             composable(Screen.GoldExchanges.route) { GoldMarketList(navigator) }
             composable(Screen.GlobalCryptoMarket.route) { CryptoListScreen(navigator) }
-//            composable(Screen.GlobalCryptoMarket.route) { UpdateAppScreen() }
         }
     }
 }
@@ -226,6 +235,22 @@ fun BottomNavigationBar(navController: NavHostController) {
                 onClick = {
                     cryptoExchangesScreenOpened()
                     navController.navigate(Screen.CryptoExchanges.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+            )
+
+            Material2NavigationBarItem(
+                icon = Screen.Seke.icon,
+                label = Screen.Seke.title,
+                selected = currentRoute == Screen.Seke.route,
+                onClick = {
+                    sekeScreenOpened()
+                    navController.navigate(Screen.Seke.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }

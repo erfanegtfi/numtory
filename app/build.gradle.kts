@@ -79,6 +79,7 @@ android {
         buildConfigField("String", "APP_SETTINGS_URL", getLocalProperty("APP_SETTINGS_URL"))
         buildConfigField("String", "CRYPTO_ICON_URL", getLocalProperty("CRYPTO_ICON_URL"))
         buildConfigField("String", "CRYPTO_GLOBAL_MARKET_URL", getLocalProperty("CRYPTO_GLOBAL_MARKET_URL"))
+        buildConfigField("String", "SEKE_URL", getLocalProperty("SEKE_URL"))
 
     }
 

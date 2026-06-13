@@ -27,7 +27,7 @@ class CryptoGlobalMarketRepositoryImpl(
 
     override fun getCryptoPrices(): Flow<ApiCallResult<List<CryptoMarketPrice>>> = flow {
         val response = getResult {
-            marketRemoteDataSource.getCryptoGlobalMarketPrices()
+            marketRemoteDataSource.getCryptoGlobalMarketPrices(1)
         }
         if (response is ApiCallResult.Success) {
             emit(ApiCallResult.Success(response.result.map { it.toEntity() }))

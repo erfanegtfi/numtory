@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import java.text.DecimalFormat
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Locale
 import kotlin.let
 import kotlin.math.log10
 import kotlin.math.pow
@@ -45,6 +47,12 @@ fun formatDuration(totalSeconds: Long?): String {
         minutes > 0 -> "${minutes} دقیقه"
         else -> "کمتر از یک دقیقه"
     }
+}
+
+fun stringToMillisSimple(dateTimeString: String?): Long {
+    if(dateTimeString==null) return 0L
+    val format = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+    return format.parse(dateTimeString)?.time ?: 0L
 }
 
 fun getAppVersion(context: Context): Int {

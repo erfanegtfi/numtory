@@ -9,6 +9,8 @@ import com.numtory.application.features.gold.presenter.di.goldMarketPresenterMod
 import com.numtory.application.features.main.di.settingsPresenterModule
 import com.numtory.application.features.market.data.di.marketDataModule
 import com.numtory.application.features.market.presenter.di.marketPresenterModule
+import com.numtory.application.features.seke.data.di.sekeDataModule
+import com.numtory.application.features.seke.presenter.di.sekePresenterModule
 import com.numtory.application.features.setting.data.di.settingsDataModule
 import io.adtrace.sdk.AdTrace
 import io.adtrace.sdk.AdTraceConfig
@@ -39,7 +41,9 @@ class App : Application() {
                 settingsDataModule,
                 settingsPresenterModule,
                 cryptoGlobalMarketDataModule,
-                cryptoGlobalMarketPresenterModule
+                cryptoGlobalMarketPresenterModule,
+                sekeDataModule,
+                sekePresenterModule
             )
         }
     }

@@ -180,13 +180,15 @@ fun GoldMarketList(
                             if (priceList is ViewState.Success<List<GoldMarketPrice>>) {
 
                                 val (avgBuy, avgSell) = viewModel.getMarketAverage()
+                                Box(modifier = Modifier.height( 2.dp))
+                                TimerProgressBar(viewModel.timer)
 
                                 GetMarketAverage(
                                     avgBuy,
                                     avgSell,
                                     "گرم طلا",
                                     "18 عیار",
-                                    "PAXG",
+                                    "GOL",
                                     onTokenClicked = {},
                                     onChartClicked = {
                                         navigator.navigate(
@@ -206,7 +208,6 @@ fun GoldMarketList(
                             ) { sortField, sortOrder ->
                                 viewModel.sort(sortField, sortOrder)
                             }
-                            TimerProgressBar(viewModel.timer)
                         }
 
                     }

@@ -26,8 +26,8 @@ android {
         applicationId = "com.numtory"
         minSdk = 23
         targetSdk = 36
-        versionCode = 7
-        versionName = "1.4.1"
+        versionCode = 8
+        versionName = "1.5.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -75,11 +75,13 @@ android {
         buildConfigField("String", "TALASEA_URL", getLocalProperty("TALASEA_URL"))
         buildConfigField("String", "WALLGOLD_URL", getLocalProperty("WALLGOLD_URL"))
         buildConfigField("String", "MILLI_URL", getLocalProperty("MILLI_URL"))
+        buildConfigField("String", "ECOGOLD_URL", getLocalProperty("ECOGOLD_URL"))
         buildConfigField("String", "TECHNO_GOLD_URL", getLocalProperty("TECHNO_GOLD_URL"))
         buildConfigField("String", "DARIC_URL", getLocalProperty("DARIC_URL"))
         buildConfigField("String", "APP_SETTINGS_URL", getLocalProperty("APP_SETTINGS_URL"))
         buildConfigField("String", "CRYPTO_ICON_URL", getLocalProperty("CRYPTO_ICON_URL"))
         buildConfigField("String", "CRYPTO_GLOBAL_MARKET_URL", getLocalProperty("CRYPTO_GLOBAL_MARKET_URL"))
+        buildConfigField("String", "SEKE_ICON_URL", getLocalProperty("SEKE_ICON_URL"))
         buildConfigField("String", "SEKE_URL", getLocalProperty("SEKE_URL"))
 
     }

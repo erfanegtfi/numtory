@@ -1,6 +1,7 @@
 package com.numtory.application.features.seke.presenter
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.numtory.application.BuildConfig
 import com.numtory.application.common.formatDuration
 import com.numtory.application.common.priceFormatter
 import com.numtory.application.composeUI.MyImageLoader
@@ -67,7 +69,7 @@ fun MyTopAppBar() {
 
             // Normal title
             Text(
-                text = "قیمت رمز ارزها",
+                text = "قیمت ارز و سکه",
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = MaterialTheme.colorScheme.onPrimary
                 )
@@ -151,9 +153,8 @@ fun SekePriceScreen(
                         if (items.isEmpty())
                             item {
                                 Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .height(300.dp)
+                                    modifier = Modifier.fillParentMaxSize(),
+                                    contentAlignment = Alignment.Center
                                 ) {
                                     Text(
                                         "موردی پیدا نشد",
@@ -165,7 +166,6 @@ fun SekePriceScreen(
                             itemsIndexed(items) { index, itemState ->
                                 CryptoListItem(
                                     itemState
-//                                modifier = Modifier.background(if (index % 2 == 0) Gray0 else Color.White)
                                 )
                             }
                     }
@@ -210,6 +210,13 @@ fun CryptoListItem(seke: SekePrice) {
             horizontalArrangement = Arrangement.spacedBy(12.dp),
 
             ) {
+
+            MyImageLoader(
+                BuildConfig.SEKE_ICON_URL.replace(
+                    "{icon}",
+                    seke.symbol?.uppercase()?:""
+                )
+            )
 
             // Name and Symbol
             Column(  modifier = Modifier.weight(1f),) {

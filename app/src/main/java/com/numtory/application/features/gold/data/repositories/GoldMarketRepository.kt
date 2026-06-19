@@ -4,6 +4,7 @@ import com.numtory.application.data.remote.getResult
 import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.gold.data.dataSource.GoldMarketRemoteDataSource
 import com.numtory.application.features.gold.data.local.GoldExchangesLocalDataSource
+import com.numtory.application.features.gold.data.models.EcoGoldDataModel
 import com.numtory.application.features.gold.data.models.HamrahGoldDataModel
 import com.numtory.application.features.gold.data.models.MelliGoldDataModel
 import com.numtory.application.features.gold.data.models.MilliDataModel
@@ -11,6 +12,7 @@ import com.numtory.application.features.gold.data.models.TlynDataModel
 import com.numtory.application.features.gold.data.models.WallGoldDataModel
 import com.numtory.application.features.gold.domain.entities.Daric
 import com.numtory.application.features.gold.domain.entities.Digikala
+import com.numtory.application.features.gold.domain.entities.EcoGold
 import com.numtory.application.features.gold.domain.entities.GoldExchangeInfo
 import com.numtory.application.features.gold.domain.entities.Goldika
 import com.numtory.application.features.gold.domain.entities.HamrahGold
@@ -39,6 +41,7 @@ interface GoldMarketRepository {
     fun getMilliPrice(): Flow<ApiCallResult<Milli>>
     fun getTechnoGoldPrice(): Flow<ApiCallResult<TechnoGold>>
     fun getDaricPrice(symbol: String): Flow<ApiCallResult<Daric>>
+     fun getEcoGoldPrice(): Flow<ApiCallResult<EcoGold>>
 }
 
 class GoldMarketRepositoryImpl(
@@ -163,5 +166,15 @@ class GoldMarketRepositoryImpl(
             emit(ApiCallResult.Failure(response.error))
     }.flowOn(dispatcher)
 
+
+    override fun getEcoGoldPrice(): Flow<ApiCallResult<EcoGold>> = flow {
+        val response = getResult {
+            marketRemoteDataSource.getEcoGoldPrice()
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result.toEntity()))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }.flowOn(dispatcher)
 
 }

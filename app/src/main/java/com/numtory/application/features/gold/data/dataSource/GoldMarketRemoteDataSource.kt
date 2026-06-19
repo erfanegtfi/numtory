@@ -8,6 +8,7 @@ import io.ktor.client.statement.bodyAsText
 import com.numtory.application.BuildConfig
 import com.numtory.application.features.gold.data.models.DaricDataModel
 import com.numtory.application.features.gold.data.models.DigikalaDataModel
+import com.numtory.application.features.gold.data.models.EcoGoldDataModel
 import com.numtory.application.features.gold.data.models.GoldExchangeInfoDataModel
 import com.numtory.application.features.gold.data.models.GoldikaDataModel
 import com.numtory.application.features.gold.data.models.HamrahGoldDataModel
@@ -32,6 +33,7 @@ interface GoldMarketRemoteDataSource {
     suspend fun getMilliPrice(): MilliDataModel
     suspend fun getTechnoGoldPrice(): TechnoGoldDataModel
     suspend fun getDaricPrice(symbol: String): DaricDataModel
+    suspend fun getEcoGoldPrice(): EcoGoldDataModel
 
 }
 
@@ -111,5 +113,11 @@ class GoldMarketRemoteDataSourceImpl constructor(
         val response = httpClient.get("${BuildConfig.DARIC_URL}$symbol")
         val json = response.bodyAsText()
         return gson.fromJson(json, DaricDataModel::class.java)
+    }
+
+    override suspend fun getEcoGoldPrice(): EcoGoldDataModel {
+        val response = httpClient.get(BuildConfig.ECOGOLD_URL)
+        val json = response.bodyAsText()
+        return gson.fromJson(json, EcoGoldDataModel::class.java)
     }
 }

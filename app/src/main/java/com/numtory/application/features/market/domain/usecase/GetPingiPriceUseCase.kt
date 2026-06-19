@@ -18,11 +18,11 @@ class GetPingiPriceUseCase constructor(
         return marketRepository.getPingi().map { response ->
             when (response) {
                 is ApiCallResult.Success -> {
-                    val asset = response.result.get("{$base}_$quote")
+                    val asset = response.result["${base}_$quote"]
 
                     ApiCallResult.Success(
                         MarketPrice(
-                            symbol = asset?.market,
+                            symbol = base,
                             buyPrice = asset?.price,
                             sellPrice = asset?.price,
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.pingi } ?: ExchangeInfo(

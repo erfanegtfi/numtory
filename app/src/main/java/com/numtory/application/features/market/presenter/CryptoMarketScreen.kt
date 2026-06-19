@@ -208,8 +208,8 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                             if (priceList is ViewState.Success<List<MarketPrice>>) {
 
                                 val (avgBuy, avgSell) = viewModel.getMarketAverage()
-
-
+                                Box(modifier = Modifier.height( 2.dp))
+                                TimerProgressBar(viewModel.timer)
                                 GetMarketAverage(
                                     avgBuy,
                                     avgSell,
@@ -238,7 +238,6 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                             ) { sortField, sortOrder ->
                                 viewModel.sort(sortField, sortOrder)
                             }
-                            TimerProgressBar(viewModel.timer)
                         }
 
                     }

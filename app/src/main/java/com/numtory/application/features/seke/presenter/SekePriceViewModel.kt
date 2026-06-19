@@ -28,7 +28,6 @@ constructor(
 
     ) : ViewModel() {
 
-    var cryptoPrices: MutableList<SekePrice> = mutableListOf()
 
     private val _priceState = MutableStateFlow<ViewState<List<SekePrice>>>(ViewState.Init)
     val priceState: StateFlow<ViewState<List<SekePrice>>> get() = _priceState.asStateFlow()
@@ -47,7 +46,7 @@ constructor(
                     }
 
                     is ApiCallResult.Failure -> {
-//                        _priceState.value = ViewState.Failure(response.error)
+                        _priceState.value = ViewState.Failure(response.error)
                     }
 
                 }

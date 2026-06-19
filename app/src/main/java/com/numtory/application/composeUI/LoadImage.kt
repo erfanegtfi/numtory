@@ -1,5 +1,6 @@
 package com.numtory.application.composeUI
 
+import android.util.Log
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -18,7 +19,6 @@ import org.koin.compose.koinInject
 @Composable
 fun MyImageLoader(url: String, width: Int = 28, height: Int = 28, modifier: Modifier = Modifier) {
     val imageLoader = koinInject<ImageLoader>()
-
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(url)

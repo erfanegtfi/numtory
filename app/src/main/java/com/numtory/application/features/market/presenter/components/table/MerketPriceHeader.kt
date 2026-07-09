@@ -1,4 +1,4 @@
-package com.numtory.application.features.market.presenter.components
+package com.numtory.application.features.market.presenter.components.table
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,12 +17,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.numtory.application.features.market.domain.enums.SortField
 import com.numtory.application.features.market.domain.enums.SortOrder
-import com.numtory.application.features.market.domain.usecase.SortParams
 import com.numtory.application.ui.theme.Secondary
 
 @Composable
@@ -38,7 +36,7 @@ fun MarketPriceHeader(sortField: SortField, sortOrder: SortOrder,  onSortChanged
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Box(modifier = Modifier.width(38.dp))
-        Text("صرافی", modifier = Modifier.weight(1.2f), textAlign = TextAlign.Right)
+        Text("صرافی", modifier = Modifier.weight(1f), textAlign = TextAlign.Right)
         Box(modifier = Modifier.width(12.dp))
 
         SortableHeader(
@@ -86,7 +84,7 @@ fun MarketPriceHeader(sortField: SortField, sortOrder: SortOrder,  onSortChanged
 
         Text(
             "کارمزد",
-            modifier = Modifier.width(55.dp),
+            modifier = Modifier.width(60.dp),
             textAlign = TextAlign.Center
         )
     }

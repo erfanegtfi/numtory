@@ -36,7 +36,7 @@ fun GoldPriceItem(item: GoldMarketPrice, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 6.dp, end = 6.dp, top = 2.dp, bottom = 2.dp),
+            .padding(start = 2.dp, end = 2.dp, top = 2.dp, bottom = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -49,7 +49,7 @@ fun GoldPriceItem(item: GoldMarketPrice, modifier: Modifier = Modifier) {
             contentScale = ContentScale.Fit
         )
         Column(
-            modifier = Modifier.weight(1.2f),
+            modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.Start
         ) {
             Text(
@@ -89,7 +89,7 @@ fun GoldPriceItem(item: GoldMarketPrice, modifier: Modifier = Modifier) {
         )
 
         Column(
-            modifier = Modifier.width(52.dp),
+            modifier = Modifier.width(60.dp),
             horizontalAlignment = Alignment.Start
         ) {
             Text(

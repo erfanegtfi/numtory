@@ -1,4 +1,4 @@
-package com.numtory.application.features.market.presenter.components
+package com.numtory.application.features.market.presenter.components.table
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -32,7 +32,7 @@ fun CryptoPriceItem(item: MarketPrice, modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = 6.dp, end = 6.dp, top = 2.dp, bottom = 2.dp),
+            .padding(start = 1.dp, end = 2.dp, top = 2.dp, bottom = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -45,7 +45,7 @@ fun CryptoPriceItem(item: MarketPrice, modifier: Modifier = Modifier) {
             contentScale = ContentScale.Fit
         )
         Column(
-            modifier = Modifier.weight(1.2f),
+            modifier = Modifier.weight(1f),
             horizontalAlignment = Alignment.Start
         ) {
             Text(
@@ -66,7 +66,7 @@ fun CryptoPriceItem(item: MarketPrice, modifier: Modifier = Modifier) {
         }
 
         Text(
-            priceFormatter((item.finalSellPrice.toDouble().toLong().toString())).take(10),
+            priceFormatter((item.finalSellPrice.toDouble().toLong().toString())).take(12),
             modifier = Modifier.weight(1f),
             overflow = TextOverflow.Clip,
             maxLines = 1,
@@ -76,7 +76,7 @@ fun CryptoPriceItem(item: MarketPrice, modifier: Modifier = Modifier) {
 
 
         Text(
-            priceFormatter((item.finalBuyPrice.toDouble().toLong().toString())).take(10),
+            priceFormatter((item.finalBuyPrice.toDouble().toLong().toString())).take(12),
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
             overflow = TextOverflow.Clip,
@@ -86,7 +86,7 @@ fun CryptoPriceItem(item: MarketPrice, modifier: Modifier = Modifier) {
         )
 
         Column(
-            modifier = Modifier.width(52.dp),
+            modifier = Modifier.width(60.dp),
             horizontalAlignment = Alignment.Start
         ) {
             Text(
@@ -101,7 +101,7 @@ fun CryptoPriceItem(item: MarketPrice, modifier: Modifier = Modifier) {
 
             if (item.addFee == true)
                 Text(
-                    priceFormatter(item.diff),
+                    priceFormatter(item.diff).take(8),
                     style = MaterialTheme.typography.bodyMedium
                 )
         }

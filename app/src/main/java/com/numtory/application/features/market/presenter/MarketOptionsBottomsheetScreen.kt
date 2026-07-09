@@ -1,4 +1,4 @@
-package com.numtory.application.features.market.presenter.components
+package com.numtory.application.features.market.presenter
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -38,10 +38,10 @@ import com.numtory.application.R
 import com.numtory.application.common.onlyShowMarketsCheckbox
 import com.numtory.application.common.exchangesSettingScreenOpened
 import com.numtory.application.common.showFeeCheckbox
+import com.numtory.application.composeUI.BottomSheetAppbar
 import com.numtory.application.composeUI.MyCheckbox
 import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.enums.Exchanges
-import com.numtory.application.ui.theme.MyApplicationTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -149,40 +149,6 @@ fun setAll(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BottomSheetAppbar(hide: () -> Unit, title: String) {
-    Row(
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
-    ) {
-
-        IconButton(
-            onClick = {
-                hide()
-            }
-        ) {
-            Icon(
-                painterResource(id = R.drawable.ic_close),
-                tint = Color.Black,
-                modifier = Modifier
-                    .padding(start = 16.dp)
-                    .size(18.dp),
-                contentDescription = R.drawable.ic_close.toString()
-            )
-        }
-
-        Text(
-            title,
-            modifier = Modifier.padding(end = 16.dp),
-            fontSize = 16.sp
-        )
-    }
-}
-
 
 @Composable
 fun ExchangesListWithSelectAll(
@@ -246,13 +212,5 @@ fun ExchangeRow(
         Text(
             text = info.exchange.title,
         )
-    }
-}
-
-@Preview
-@Composable
-fun AssetOptionsBottomSheetScreenPreview() {
-    MyApplicationTheme {
-//        AssetOptionsBottomSheetScreen(emptyList(), false, hide = {}, onSubmit = { a, b -> })
     }
 }

@@ -78,8 +78,10 @@ constructor(
     var allMarkets: MutableList<GoldMarketPrice> = mutableListOf()
     var validMarkets: List<GoldMarketPrice> = emptyList()
 
-    private var sortParams: SortGoldParams = SortGoldParams()
-    private var filterParams: FilterGoldParams = FilterGoldParams()
+    var sortParams: SortGoldParams = SortGoldParams()
+        private set
+    var filterParams: FilterGoldParams = FilterGoldParams()
+        private set
 
     var appExchangesInfo: List<GoldExchangeInfo>? = null
 
@@ -119,7 +121,6 @@ constructor(
             _priceState.value = ViewState.Loading
 
         val userExchanges = getUserExchanges()
-        filterParams.addFee = exchangesLocalDataSource.addFee()
         val mergedFlow = mutableListOf<Flow<ApiCallResult<GoldMarketPrice>>>()
 
         if (appExchangesInfo?.isNotEmpty() != true)
@@ -198,18 +199,7 @@ constructor(
                                     markets = allMarkets,
                                 )
                             )
-
-                            filterParams.markets = validMarkets
-                            filterParams.userExchanges = userExchanges
-                            filterParams.exchangesInfo = appExchangesInfo
-                            validMarkets = filterMarketUseCase.action(filterParams)
-                            sortParams.markets = validMarkets
-
-                            _priceState.update { currentList ->
-
-                                ViewState.Success(sortMarketUseCase.action(sortParams))
-
-                            }
+                            emitData()
                         }
 
                         is ApiCallResult.Failure -> {
@@ -225,18 +215,29 @@ constructor(
 //
 
     fun sort(sortField: SortField, sortOrder: SortOrder) {
-        _priceState.update {
-            sortParams.markets = validMarkets
-            sortParams.sortField = sortField
-            sortParams.sortOrder = sortOrder
-            ViewState.Success(sortMarketUseCase.action(sortParams))
-        }
+        sortParams.sortField = sortField
+        sortParams.sortOrder = sortOrder
+        emitData()
+
     }
 
     fun filter() {
+        emitData()
+    }
+
+    fun emitData() {
         _priceState.update {
+            //
             filterParams.markets = validMarkets
-            ViewState.Success(filterMarketUseCase.action(filterParams))
+            filterParams.addFee = exchangesLocalDataSource.addFee()
+            filterParams.userExchanges = getUserExchanges()
+            filterParams.exchangesInfo = appExchangesInfo
+            validMarkets =  filterMarketUseCase.action(filterParams)
+            //
+            sortParams.markets = validMarkets
+            validMarkets = sortMarketUseCase.action(sortParams)
+
+            ViewState.Success(validMarkets)
         }
     }
 
@@ -247,6 +248,7 @@ constructor(
 
     fun saveAddFee(addFee: Boolean) {
         exchangesLocalDataSource.saveAddFee(addFee)
+        filter()
     }
 
     fun getAddFee(): Boolean {
@@ -255,6 +257,7 @@ constructor(
 
     fun saveDisplayExchanges(exchanges: List<GoldExchanges>) {
         exchangesLocalDataSource.saveUserGoldExchanges(exchanges)
+        filter()
     }
 
     fun getUserExchanges(): List<GoldExchanges> {

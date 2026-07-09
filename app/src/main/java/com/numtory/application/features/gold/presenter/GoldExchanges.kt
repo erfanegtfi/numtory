@@ -1,8 +1,6 @@
-package com.numtory.application.features.gold
+package com.numtory.application.features.gold.presenter
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -25,7 +23,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,25 +33,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.numtory.application.R
+import com.numtory.application.composeUI.ObserveMarketLifecycle
 import com.numtory.application.composeUI.ShowBottomSheet
 import com.numtory.application.features.base.ViewState
-import com.numtory.application.features.chart.AppChartWebView
 import com.numtory.application.features.gold.domain.entities.GoldMarketPrice
-import com.numtory.application.features.gold.domain.usecase.FilterGoldParams
-import com.numtory.application.features.gold.domain.usecase.SortGoldParams
-import com.numtory.application.features.gold.presenter.GoldMarketsViewModel
 import com.numtory.application.features.gold.presenter.components.GoldAssetOptionsBottomSheetScreen
 import com.numtory.application.features.gold.presenter.components.GoldPriceItem
 import com.numtory.application.features.market.presenter.components.GetMarketAverage
-import com.numtory.application.features.market.presenter.components.MarketPriceHeader
+import com.numtory.application.features.market.presenter.components.table.MarketPriceHeader
 import com.numtory.application.features.market.presenter.components.TimerProgressBar
 import com.numtory.application.ui.theme.CHART_SCRIPT
-import com.numtory.application.ui.theme.Primary
 import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -72,37 +63,16 @@ fun GoldMarketList(
     val priceList by viewModel.priceState.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
     val pullToRefreshState = rememberPullToRefreshState()
-    var sortParam by remember { mutableStateOf(SortGoldParams()) }
-    var filterParam by remember { mutableStateOf(FilterGoldParams()) }
     var showSheet by remember { mutableStateOf(false) }
 
 //    printLogs(priceList)
 
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_RESUME -> {
-                    viewModel.startTimer()
-                }
 
-                Lifecycle.Event.ON_PAUSE -> {
-                    viewModel.stopTimer()
-                }
-
-                else -> {}
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-
-//    LaunchedEffect( 12) {
-//            viewModel.getPrices()
-//    }
+    ObserveMarketLifecycle(
+        lifecycleOwner = lifecycleOwner,
+        onResume = viewModel::startTimer,
+        onPause = viewModel::stopTimer
+    )
 
 
     if (showSheet)
@@ -203,8 +173,8 @@ fun GoldMarketList(
                                 )
                             }
                             MarketPriceHeader(
-                                sortField = sortParam.sortField,
-                                sortOrder = sortParam.sortOrder,
+                                sortField = viewModel.sortParams.sortField,
+                                sortOrder = viewModel.sortParams.sortOrder,
                             ) { sortField, sortOrder ->
                                 viewModel.sort(sortField, sortOrder)
                             }

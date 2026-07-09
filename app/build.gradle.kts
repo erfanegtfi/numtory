@@ -83,6 +83,8 @@ android {
         buildConfigField("String", "CRYPTO_GLOBAL_MARKET_URL", getLocalProperty("CRYPTO_GLOBAL_MARKET_URL"))
         buildConfigField("String", "SEKE_ICON_URL", getLocalProperty("SEKE_ICON_URL"))
         buildConfigField("String", "SEKE_URL", getLocalProperty("SEKE_URL"))
+        buildConfigField("String", "ZARMINEX_URL", getLocalProperty("ZARMINEX_URL"))
+        buildConfigField("String", "NOGHRESEA_URL", getLocalProperty("NOGHRESEA_URL"))
 
     }
 

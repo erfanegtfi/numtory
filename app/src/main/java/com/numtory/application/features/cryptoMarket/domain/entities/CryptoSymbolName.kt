@@ -1,5 +1,8 @@
 package com.numtory.application.features.cryptoMarket.domain.entities
 
+import com.numtory.application.ui.theme.GOLD
+import com.numtory.application.ui.theme.SILVER
+
 val cryptoMap = mutableMapOf(
     "BTC" to "Bitcoin",
     "ETH" to "Ethereum",
@@ -266,3 +269,8 @@ val cryptoMap = mutableMapOf(
     "CXT" to "CXT",
     "TRIA" to "Tria"
 )
+
+val metalMap = mutableMapOf(
+    GOLD to "طلا 18 عیار",
+    SILVER to "نقره",
+    )

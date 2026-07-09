@@ -4,6 +4,8 @@ package com.numtory.application.ui.theme
 const val REFRESH_TIMER = 130
 const val PERCENT = 0.1
 const val DEFAULT_TOKEN =  "USDT"
+const val GOLD =  "GOLD"
+const val SILVER =  "SILVER"
 
 const val CHART_SCRIPT = """
 <div id="bitycle-ac-widget" style="width: 100%; height: 100%"></div>

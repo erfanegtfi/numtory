@@ -9,6 +9,7 @@ import com.numtory.application.features.market.data.repositories.MarketRepositor
 import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.features.market.domain.enums.Exchanges
+import com.numtory.application.ui.theme.GOLD
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -24,6 +25,7 @@ class GetDigikalaPriceUseCase constructor(
                 is ApiCallResult.Success -> {
                     ApiCallResult.Success(
                         GoldMarketPrice(
+                            symbol = GOLD,
                             buyPrice = ((response.result.gold18?.price ?: 0) * 100).toString(),
                             sellPrice = ((response.result.gold18?.price ?: 0) * 100).toString(),
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == GoldExchanges.digikala }

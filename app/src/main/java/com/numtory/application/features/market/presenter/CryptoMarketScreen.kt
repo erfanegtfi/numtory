@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,17 +27,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.numtory.application.R
 import com.ramcosta.composedestinations.generated.destinations.AboutScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.numtory.application.composeUI.ShowBottomSheet
 import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.cryptoMarket.domain.entities.cryptoMap
 import com.numtory.application.features.market.domain.entities.MarketPrice
-import com.numtory.application.features.market.domain.enums.topSymbols
+import com.numtory.application.features.market.domain.enums.topCryptoSymbols
 import com.numtory.application.features.market.presenter.components.table.CryptoPriceItem
 import com.numtory.application.features.market.presenter.components.GetMarketAverage
 import com.numtory.application.features.market.presenter.components.table.MarketPriceHeader
@@ -46,6 +44,7 @@ import com.numtory.application.features.market.presenter.components.TimerProgres
 import com.numtory.application.features.market.presenter.components.appbar.MarketTopBar
 import com.numtory.application.ui.theme.CHART_SCRIPT
 import com.numtory.application.composeUI.ObserveMarketLifecycle
+import com.numtory.application.features.market.presenter.components.appbar.TopBarAction
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
 
@@ -90,7 +89,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
             showTokenList = false
         }) { modalBottomSheetState, hide ->
             TokenListBottomSheetScreen(
-                topSymbols,
+                topCryptoSymbols,
                 hide
             ) { token ->
                 viewModel.selectToken(token)
@@ -103,11 +102,22 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
         topBar = {
             MarketTopBar(
                 selectedToken = viewModel.selectedToken.value,
-                onAboutClick = {
-                    navigator.navigate(AboutScreenDestination)
-                },
-                onSettingClick = {
-                    showSheet = true
+                actions = {
+                    TopBarAction(
+                        icon = R.drawable.ic_about,
+                        contentDescription = "About",
+                        onClick = {
+                            navigator.navigate(AboutScreenDestination)
+                        }
+                    )
+
+                    TopBarAction(
+                        icon = R.drawable.ic_setting,
+                        contentDescription = "Settings",
+                        onClick = {
+                            showSheet = true
+                        }
+                    )
                 }
             )
         },

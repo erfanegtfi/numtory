@@ -1,6 +1,9 @@
 package com.numtory.application.features.market.domain.enums
 
-val topSymbols = listOf(
+import com.numtory.application.ui.theme.GOLD
+import com.numtory.application.ui.theme.SILVER
+
+val topCryptoSymbols = listOf(
     "USDT",
     "BTC",
     "ETH",
@@ -29,9 +32,14 @@ val topSymbols = listOf(
     "XMR",
     "ZEC",
     "UNI",
-    "TON",
+    "GRAM",
     "NOT",
     "HMSTR",
     "SHIBA",
     "PUMP",
+)
+
+val topMetalSymbols = listOf(
+    GOLD,
+    SILVER,
 )

@@ -5,6 +5,7 @@ import com.numtory.application.features.gold.data.repositories.GoldMarketReposit
 import com.numtory.application.features.gold.domain.entities.GoldExchangeInfo
 import com.numtory.application.features.gold.domain.entities.GoldMarketPrice
 import com.numtory.application.features.gold.domain.enums.GoldExchanges
+import com.numtory.application.ui.theme.GOLD
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -20,6 +21,7 @@ class GetGoldikaPriceUseCase constructor(
                 is ApiCallResult.Success -> {
                     ApiCallResult.Success(
                         GoldMarketPrice(
+                            symbol = GOLD,
                             buyPrice = ((response.result.data?.price?.buy ?: 0) / 10).toString(),
                             sellPrice = ((response.result.data?.price?.sell ?: 0) / 10).toString(),
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == GoldExchanges.goldika }

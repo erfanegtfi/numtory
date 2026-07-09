@@ -1,4 +1,4 @@
-package com.numtory.application.features.market.presenter
+package com.numtory.application.features.gold.presenter
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -34,7 +34,7 @@ fun TokenListBottomSheetScreen(
     Column(
         modifier = Modifier.fillMaxWidth(),
     ) {
-        BottomSheetAppbar(hide, title = "رمزارزها")
+        BottomSheetAppbar(hide, title = "فلزات")
         Box(modifier = Modifier.height(16.dp))
 
 

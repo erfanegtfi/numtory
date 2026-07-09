@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ContentCopy
@@ -84,7 +86,8 @@ fun AboutScreen(navigator: DestinationsNavigator) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // Profile Header
@@ -136,7 +139,14 @@ fun AboutScreen(navigator: DestinationsNavigator) {
 
             // Description
             DescriptionWithEditOption(
-                description = "اپلیکیشن توکن چند قیمت ارزهای دیجیتال در صرافی های ایرانی را مقایسه می کند. \nقیمت تمامی رمز ارزها و طلا در اپلیکیشن به طور مستقیم از سایت صرافی ها دریافت و نمایش داده می شود.\nاپلیکیشن توکن چند هیچ گونه تغییری در قیمت های نمایش داده شده انجام نمی دهد.\nاپلیکیشن توکن چند به طور مستقل هیچ گونه قیمتی را نمایش نمی دهد و مسئولیتی در قبال هیچ یک از قیمت های نمایش داده شده در اپلیکیشن ندارد."
+                description = """
+-  اپلیکیشن توکن چند قیمت ارزهای دیجیتال در صرافی های ایرانی را مقایسه می کند.
+-  نمایش نام صرافی و پلتفرم ها به معنای تایید آن ها نیست و تحقیق در مورد اعتبار سایت ها بر عهده کاربر است.
+-  قیمت تمامی رمز ارزها و طلا در اپلیکیشن به طور مستقیم از سایت صرافی ها دریافت و نمایش داده می شود.
+-  اپلیکیشن توکن چند هیچ گونه تغییری در قیمت های نمایش داده شده انجام نمی دهد.
+-  اپلیکیشن توکن چند به طور مستقل هیچ گونه قیمتی را نمایش نمی دهد و مسئولیتی در قبال هیچ یک از قیمت های نمایش داده شده در اپلیکیشن ندارد.
+-  کارمزد نمایش داده شده برای هر پلتفرم کارمز حداکثری است و ممکن است بر اساس سطوح کاربری تغییر کند. بهتر است کارمزد دقیق تر را در سایت پلتفرم مورد نظر بررسی کنید.
+                """.trimIndent()
             )
         }
     }

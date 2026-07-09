@@ -3,6 +3,7 @@ package com.numtory.application.features.gold.presenter;
 import android.annotation.SuppressLint
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.numtory.application.data.utils.ApiCallResult
@@ -22,10 +23,12 @@ import com.numtory.application.features.gold.domain.usecase.GetGoldikaPriceUseCa
 import com.numtory.application.features.gold.domain.usecase.GetHamrahGoldPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetMelliGoldPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetMilliPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetNoghreseaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetTalaseaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetTechnoGoldPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetTlynPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetWallGoldPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetZarminexPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveInvalidGoldExchangeUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveInvalidGoldExchangesParams
 import com.numtory.application.features.gold.domain.usecase.RemoveOutOfRangeGoldExchangeUseCase
@@ -34,7 +37,9 @@ import com.numtory.application.features.gold.domain.usecase.SortGoldMarketUseCas
 import com.numtory.application.features.gold.domain.usecase.SortGoldParams
 import com.numtory.application.features.market.domain.enums.SortField
 import com.numtory.application.features.market.domain.enums.SortOrder
+import com.numtory.application.ui.theme.GOLD
 import com.numtory.application.ui.theme.REFRESH_TIMER
+import com.numtory.application.ui.theme.SILVER
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
@@ -46,6 +51,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Collections
 
 @ExperimentalCoroutinesApi
 @SuppressLint("CheckResult")
@@ -62,6 +68,8 @@ constructor(
     private val getTechnoGoldPriceUseCase: GetTechnoGoldPriceUseCase,
     private val getDaricPriceUseCase: GetDaricPriceUseCase,
     private val getEcoGoldPriceUseCase: GetEcoGoldPriceUseCase,
+    private val getZarminexPriceUseCase: GetZarminexPriceUseCase,
+    private val getNoghreseaPriceUseCase: GetNoghreseaPriceUseCase,
 
     private val sortMarketUseCase: SortGoldMarketUseCase,
     private val filterMarketUseCase: FilterGoldMarketUseCase,
@@ -74,6 +82,7 @@ constructor(
 
     private val _timer = mutableIntStateOf(REFRESH_TIMER)
     val timer: State<Int> get() = _timer
+    var priceJob :Job? = null
 
     var allMarkets: MutableList<GoldMarketPrice> = mutableListOf()
     var validMarkets: List<GoldMarketPrice> = emptyList()
@@ -84,9 +93,17 @@ constructor(
         private set
 
     var appExchangesInfo: List<GoldExchangeInfo>? = null
+    var symbol: String = GOLD
 
     private val _priceState = MutableStateFlow<ViewState<List<GoldMarketPrice>>>(ViewState.Init)
     val priceState: StateFlow<ViewState<List<GoldMarketPrice>>> get() = _priceState.asStateFlow()
+
+    var selectedToken = mutableStateOf(GOLD)
+        private set
+
+    fun selectToken(token: String) {
+        selectedToken.value = token
+    }
 
     init {
         getExchanges()
@@ -112,7 +129,14 @@ constructor(
         }
     }
 
-    fun getPrices() {
+    fun getPrices(symbol: String = this.symbol) {
+        if (this.symbol != symbol) {
+            allMarkets.clear()
+            validMarkets = Collections.emptyList()
+            priceJob?.cancel()
+        }
+
+        this.symbol = symbol
         getExchanges()
         _timer.intValue = REFRESH_TIMER
 
@@ -125,45 +149,66 @@ constructor(
 
         if (appExchangesInfo?.isNotEmpty() != true)
             mergedFlow.apply {
-                add(getDigikalaPriceUseCase.action())
-                add(getGoldikaPriceUseCase.action())
-                add(getHamrahGoldPriceUseCase.action())
-                add(getTlynPriceUseCase.action())
-                add(getMelliGoldPriceUseCase.action())
-                add(getTalaseaPriceUseCase.action())
-                add(getWallGoldPriceUseCase.action())
-                add(getMilliPriceUseCase.action())
-                add(getTechnoGoldPriceUseCase.action())
-                add(getDaricPriceUseCase.action("GOLD18TMN"))
-                add(getEcoGoldPriceUseCase.action("GOLD18-IRT"))
+                if (symbol == GOLD) {
+                    add(getDigikalaPriceUseCase.action())
+                    add(getGoldikaPriceUseCase.action())
+                    add(getHamrahGoldPriceUseCase.action())
+                    add(getTlynPriceUseCase.action())
+                    add(getMelliGoldPriceUseCase.action())
+                    add(getTalaseaPriceUseCase.action())
+                    add(getWallGoldPriceUseCase.action())
+                    add(getMilliPriceUseCase.action())
+                    add(getTechnoGoldPriceUseCase.action())
+                    add(getZarminexPriceUseCase.action())
+                    add(getDaricPriceUseCase.action("GOLD18TMN"))
+                    add(getEcoGoldPriceUseCase.action("GOLD18-IRT"))
+                }
+                if (symbol == SILVER) {
+                    add(getDaricPriceUseCase.action("SILVERTMN"))
+                    add(getEcoGoldPriceUseCase.action("SILVER999-IRT"))
+                    add(getNoghreseaPriceUseCase.action())
+                }
             }
         else
             mergedFlow.apply {
-                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.digikala }?.active == true)
-                    add(getDigikalaPriceUseCase.action())
-                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.goldika }?.active == true)
-                    add(getGoldikaPriceUseCase.action())
-                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.taline }?.active == true)
-                    add(getTlynPriceUseCase.action())
-                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.hamrahgold }?.active == true)
-                    add(getHamrahGoldPriceUseCase.action())
-                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.melligold }?.active == true)
-                    add(getMelliGoldPriceUseCase.action())
-                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.talasea }?.active == true)
-                    add(getTalaseaPriceUseCase.action())
-                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.wallgold }?.active == true)
-                    add(getWallGoldPriceUseCase.action())
-                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.milli }?.active == true)
-                    add(getMilliPriceUseCase.action())
-                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.technoGold }?.active == true)
-                    add(getTechnoGoldPriceUseCase.action())
-                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.daric }?.active == true)
-                    add(getDaricPriceUseCase.action("GOLD18TMN"))
-                if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.ecogold }?.active == true)
-                    add(getEcoGoldPriceUseCase.action("GOLD18-IRT"))
+                if (symbol == GOLD) {
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.digikala }?.active == true)
+                        add(getDigikalaPriceUseCase.action())
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.goldika }?.active == true)
+                        add(getGoldikaPriceUseCase.action())
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.taline }?.active == true)
+                        add(getTlynPriceUseCase.action())
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.hamrahgold }?.active == true)
+                        add(getHamrahGoldPriceUseCase.action())
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.melligold }?.active == true)
+                        add(getMelliGoldPriceUseCase.action())
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.talasea }?.active == true)
+                        add(getTalaseaPriceUseCase.action())
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.wallgold }?.active == true)
+                        add(getWallGoldPriceUseCase.action())
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.milli }?.active == true)
+                        add(getMilliPriceUseCase.action())
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.technoGold }?.active == true)
+                        add(getTechnoGoldPriceUseCase.action())
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.zarminex }?.active == true)
+                        add(getZarminexPriceUseCase.action())
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.daric }?.active == true)
+                        add(getDaricPriceUseCase.action("GOLD18TMN"))
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.ecogold }?.active == true)
+                        add(getEcoGoldPriceUseCase.action("GOLD18-IRT"))
+                }
+
+                if (symbol == SILVER) {
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.daric }?.active == true)
+                        add(getDaricPriceUseCase.action("SILVERTMN"))
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.ecogold }?.active == true)
+                        add(getEcoGoldPriceUseCase.action("SILVER999-IRT"))
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.noghresea }?.active == true)
+                        add(getNoghreseaPriceUseCase.action())
+                }
             }
 
-        viewModelScope.launch {
+        priceJob = viewModelScope.launch {
             merge(*mergedFlow.toTypedArray())
 //            mergedFlow
                 .collect { response ->
@@ -174,7 +219,8 @@ constructor(
                                 allMarkets.filterNot { it.exchangeInfo.exchange == response.result.exchangeInfo.exchange }
                                     .toMutableList()
 
-                            allMarkets.add(response.result)
+                            if (response.result.symbol?.lowercase()?.contains(symbol.lowercase()) == true)
+                                allMarkets.add(response.result)
 
                             allMarkets = removeInvalidExchangeUseCase.action(
                                 RemoveInvalidGoldExchangesParams(
@@ -232,7 +278,7 @@ constructor(
             filterParams.addFee = exchangesLocalDataSource.addFee()
             filterParams.userExchanges = getUserExchanges()
             filterParams.exchangesInfo = appExchangesInfo
-            validMarkets =  filterMarketUseCase.action(filterParams)
+            validMarkets = filterMarketUseCase.action(filterParams)
             //
             sortParams.markets = validMarkets
             validMarkets = sortMarketUseCase.action(sortParams)

@@ -1,6 +1,7 @@
 package com.numtory.application.features.market.presenter.components.appbar
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -20,8 +21,7 @@ import com.numtory.application.R
 @Composable
 fun MarketTopBar(
     selectedToken: String,
-    onAboutClick: () -> Unit,
-    onSettingClick: () -> Unit,
+    actions: @Composable RowScope.() -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -37,24 +37,12 @@ fun MarketTopBar(
                 style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
             )
         },
-        actions = {
-            TopBarAction(
-                icon = R.drawable.ic_about,
-                contentDescription = "About",
-                onClick = onAboutClick
-            )
-
-            TopBarAction(
-                icon = R.drawable.ic_setting,
-                contentDescription = "Settings",
-                onClick = onSettingClick
-            )
-        }
+        actions = actions
     )
 }
 
 @Composable
-private fun TopBarAction(
+fun TopBarAction(
     @DrawableRes icon: Int,
     contentDescription: String,
     onClick: () -> Unit,

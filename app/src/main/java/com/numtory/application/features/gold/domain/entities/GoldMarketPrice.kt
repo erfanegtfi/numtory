@@ -1,6 +1,7 @@
 package com.numtory.application.features.gold.domain.entities
 
 data class GoldMarketPrice constructor(
+    var symbol: String? = null,
     var sellPrice: String? = null,
     var buyPrice: String? = null,
     var marketPrice: String? = null,

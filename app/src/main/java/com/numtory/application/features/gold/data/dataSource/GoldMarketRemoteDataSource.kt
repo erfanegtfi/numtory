@@ -14,10 +14,12 @@ import com.numtory.application.features.gold.data.models.GoldikaDataModel
 import com.numtory.application.features.gold.data.models.HamrahGoldDataModel
 import com.numtory.application.features.gold.data.models.MelliGoldDataModel
 import com.numtory.application.features.gold.data.models.MilliDataModel
+import com.numtory.application.features.gold.data.models.NoghreSeaDataModel
 import com.numtory.application.features.gold.data.models.TalaSeaDataModel
 import com.numtory.application.features.gold.data.models.TechnoGoldDataModel
 import com.numtory.application.features.gold.data.models.TlynDataModel
 import com.numtory.application.features.gold.data.models.WallGoldDataModel
+import com.numtory.application.features.gold.data.models.ZarminexDataModel
 import io.ktor.client.request.parameter
 import io.ktor.http.parameters
 
@@ -34,6 +36,8 @@ interface GoldMarketRemoteDataSource {
     suspend fun getTechnoGoldPrice(): TechnoGoldDataModel
     suspend fun getDaricPrice(symbol: String): DaricDataModel
     suspend fun getEcoGoldPrice(): EcoGoldDataModel
+    suspend fun getZarminexPrice(): ZarminexDataModel
+    suspend fun getNoghreseaPrice(): NoghreSeaDataModel
 
 }
 
@@ -119,5 +123,17 @@ class GoldMarketRemoteDataSourceImpl constructor(
         val response = httpClient.get(BuildConfig.ECOGOLD_URL)
         val json = response.bodyAsText()
         return gson.fromJson(json, EcoGoldDataModel::class.java)
+    }
+
+    override suspend fun getZarminexPrice(): ZarminexDataModel {
+        val response = httpClient.get(BuildConfig.ZARMINEX_URL)
+        val json = response.bodyAsText()
+        return gson.fromJson(json, ZarminexDataModel::class.java)
+    }
+
+    override suspend fun getNoghreseaPrice(): NoghreSeaDataModel {
+        val response = httpClient.get(BuildConfig.NOGHRESEA_URL)
+        val json = response.bodyAsText()
+        return gson.fromJson(json, NoghreSeaDataModel::class.java)
     }
 }

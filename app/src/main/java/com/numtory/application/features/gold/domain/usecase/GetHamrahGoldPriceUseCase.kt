@@ -7,6 +7,7 @@ import com.numtory.application.features.gold.data.repositories.GoldMarketReposit
 import com.numtory.application.features.gold.domain.entities.GoldExchangeInfo
 import com.numtory.application.features.gold.domain.entities.GoldMarketPrice
 import com.numtory.application.features.gold.domain.enums.GoldExchanges
+import com.numtory.application.ui.theme.GOLD
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -23,6 +24,7 @@ class GetHamrahGoldPriceUseCase constructor(
                     if (response.result.buy?.isNotEmpty() == true && response.result.sell?.isNotEmpty() == true)
                         ApiCallResult.Success(
                             GoldMarketPrice(
+                                symbol = GOLD,
                                 buyPrice = (response.result.buy.first() / 10).toString(),
                                 sellPrice = (response.result.sell.first() / 10).toString(),
                                 exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == GoldExchanges.hamrahgold }

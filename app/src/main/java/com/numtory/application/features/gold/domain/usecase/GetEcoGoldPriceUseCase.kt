@@ -7,6 +7,7 @@ import com.numtory.application.features.gold.data.repositories.GoldMarketReposit
 import com.numtory.application.features.gold.domain.entities.GoldExchangeInfo
 import com.numtory.application.features.gold.domain.entities.GoldMarketPrice
 import com.numtory.application.features.gold.domain.enums.GoldExchanges
+import com.numtory.application.ui.theme.GOLD
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
@@ -26,6 +27,7 @@ class GetEcoGoldPriceUseCase constructor(
 
                     ApiCallResult.Success(
                         GoldMarketPrice(
+                            symbol = symbol,
                             buyPrice = (asset?.buyPrice).toString(),
                             sellPrice = (asset?.sellPrice).toString(),
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == GoldExchanges.ecogold }

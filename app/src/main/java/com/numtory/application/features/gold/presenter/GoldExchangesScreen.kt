@@ -39,13 +39,20 @@ import com.numtory.application.R
 import com.numtory.application.composeUI.ObserveMarketLifecycle
 import com.numtory.application.composeUI.ShowBottomSheet
 import com.numtory.application.features.base.ViewState
+import com.numtory.application.features.cryptoMarket.domain.entities.cryptoMap
+import com.numtory.application.features.cryptoMarket.domain.entities.metalMap
 import com.numtory.application.features.gold.domain.entities.GoldMarketPrice
 import com.numtory.application.features.gold.presenter.components.GoldAssetOptionsBottomSheetScreen
 import com.numtory.application.features.gold.presenter.components.GoldPriceItem
+import com.numtory.application.features.market.domain.enums.topMetalSymbols
+import com.numtory.application.features.market.presenter.TokenListBottomSheetScreen
 import com.numtory.application.features.market.presenter.components.GetMarketAverage
 import com.numtory.application.features.market.presenter.components.table.MarketPriceHeader
 import com.numtory.application.features.market.presenter.components.TimerProgressBar
+import com.numtory.application.features.market.presenter.components.appbar.MarketTopBar
+import com.numtory.application.features.market.presenter.components.appbar.TopBarAction
 import com.numtory.application.ui.theme.CHART_SCRIPT
+import com.ramcosta.composedestinations.generated.destinations.AboutScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -64,6 +71,8 @@ fun GoldMarketList(
     val lifecycleOwner = LocalLifecycleOwner.current
     val pullToRefreshState = rememberPullToRefreshState()
     var showSheet by remember { mutableStateOf(false) }
+    var showTokenList by remember { mutableStateOf(false) }
+    val selectedToken = viewModel.selectedToken
 
 //    printLogs(priceList)
 
@@ -90,38 +99,35 @@ fun GoldMarketList(
             }
         }
 
+    if (showTokenList)
+        ShowBottomSheet(onDismiss = {
+            showTokenList = false
+        }) { modalBottomSheetState, hide ->
+            TokenListBottomSheetScreen(
+                topMetalSymbols,
+                hide
+            ) { token ->
+                viewModel.selectToken(token)
+                showTokenList = false
+                viewModel.getPrices(token)
+            }
+        }
+
     Scaffold(
         topBar = {
-            TopAppBar(
-//                modifier = Modifier
-////                    .height(90.dp)
-//                    .background(Primary),
-                title = {
-                    Text(
-                        text = "مقایسه قیمت طلا",
-//                            modifier = Modifier.align(Alignment.CenterStart),
-                        style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(// Use 'surface' instead of 'primary' for the app bar background
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-
+            MarketTopBar(
+                selectedToken = viewModel.selectedToken.value,
                 actions = {
-                    IconButton(onClick = {
-                        showSheet = true
-                    }) {
-                        Icon(
-                            modifier = Modifier.padding(9.dp),
-                            painter = painterResource(id = R.drawable.ic_setting),
-                            contentDescription = "Menu"
-                        )
-                    }
-
+                    TopBarAction(
+                        icon = R.drawable.ic_setting,
+                        contentDescription = "Settings",
+                        onClick = {
+                            showSheet = true
+                        }
+                    )
                 }
             )
+
         },
 //        modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
@@ -150,16 +156,18 @@ fun GoldMarketList(
                             if (priceList is ViewState.Success<List<GoldMarketPrice>>) {
 
                                 val (avgBuy, avgSell) = viewModel.getMarketAverage()
-                                Box(modifier = Modifier.height( 2.dp))
+                                Box(modifier = Modifier.height(2.dp))
                                 TimerProgressBar(viewModel.timer)
 
                                 GetMarketAverage(
                                     avgBuy,
                                     avgSell,
-                                    "گرم طلا",
-                                    "18 عیار",
-                                    "GOL",
-                                    onTokenClicked = {},
+                                    metalMap[selectedToken.value] ?: "",
+                                    selectedToken.value,
+                                    selectedToken.value,
+                                    onTokenClicked = {
+                                        showTokenList = true
+                                    },
                                     onChartClicked = {
                                         navigator.navigate(
                                             AppChartWebViewDestination(

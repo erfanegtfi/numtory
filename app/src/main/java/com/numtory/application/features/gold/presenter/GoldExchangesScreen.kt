@@ -219,6 +219,14 @@ fun GoldMarketList(
 
                         is ViewState.Success -> {
                             val items = (priceList as ViewState.Success<List<GoldMarketPrice>>).data
+                            // best sell = highest price you get when selling;
+                            // best buy = lowest price you pay when buying
+                            val bestSell = items
+                                .mapNotNull { it.finalSellPrice.toDoubleOrNull()?.takeIf { v -> v > 0 } }
+                                .maxOrNull()
+                            val bestBuy = items
+                                .mapNotNull { it.finalBuyPrice.toDoubleOrNull()?.takeIf { v -> v > 0 } }
+                                .minOrNull()
                             if (items.isEmpty())
                                 item {
                                     Box(
@@ -235,7 +243,11 @@ fun GoldMarketList(
                             else
                                 itemsIndexed(items) { index, itemState ->
                                     GoldPriceItem(
-                                        itemState
+                                        itemState,
+                                        isBestSell = bestSell != null &&
+                                                itemState.finalSellPrice.toDoubleOrNull() == bestSell,
+                                        isBestBuy = bestBuy != null &&
+                                                itemState.finalBuyPrice.toDoubleOrNull() == bestBuy,
 //                                modifier = Modifier.background(if (index % 2 == 0) Gray0 else Color.White)
                                     )
                                 }

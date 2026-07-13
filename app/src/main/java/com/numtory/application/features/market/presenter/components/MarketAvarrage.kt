@@ -28,7 +28,6 @@ import com.numtory.application.BuildConfig
 import com.numtory.application.R
 import com.numtory.application.common.priceFormatter
 import com.numtory.application.composeUI.MyImageLoader
-import com.numtory.application.ui.theme.White
 
 @Composable
 fun GetMarketAverage(
@@ -43,7 +42,7 @@ fun GetMarketAverage(
 
     Row(
         modifier = Modifier
-            .background(White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)

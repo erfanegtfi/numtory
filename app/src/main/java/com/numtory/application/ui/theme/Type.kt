@@ -10,6 +10,8 @@ import androidx.compose.ui.unit.sp
 import com.numtory.application.R
 import com.numtory.application.ui.theme.textBlack
 import com.numtory.application.ui.theme.textGray
+import com.numtory.application.ui.theme.textGrayDark
+import com.numtory.application.ui.theme.textWhite
 
 val CustomFontFamily = FontFamily(
     Font(R.font.vazirmatn_light, FontWeight.Light),
@@ -109,67 +111,74 @@ val lightTypography = Typography(
 )
 
 val darkTypography = Typography(
+    headlineMedium = TextStyle(
+        fontFamily = CustomFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+        fontStyle = FontStyle.Normal,
+        color = textWhite,
+    ),
     titleLarge = TextStyle(
         fontFamily = CustomFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Bold,
         fontSize = 18.sp,
         fontStyle = FontStyle.Normal,
-        color = textBlack,
+        color = textWhite,
     ),
     titleMedium = TextStyle(
         fontFamily = CustomFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
         fontStyle = FontStyle.Normal,
-        color = textBlack,
+        color = textWhite,
     ),
     titleSmall = TextStyle(
         fontFamily = CustomFontFamily,
-        fontWeight = FontWeight.Medium,
+        fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
         fontStyle = FontStyle.Normal,
-        color = textBlack,
+        color = textWhite,
     ),
     bodyLarge = TextStyle(
         fontFamily = CustomFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         fontStyle = FontStyle.Normal,
-        color = textBlack,
+        color = textWhite,
     ),
     bodyMedium = TextStyle(
         fontFamily = CustomFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         fontStyle = FontStyle.Normal,
-        color = textBlack,
+        color = textWhite,
     ),
     bodySmall = TextStyle(
         fontFamily = CustomFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
         fontStyle = FontStyle.Normal,
-        color = textBlack,
+        color = textWhite,
     ),
     labelLarge = TextStyle(
         fontFamily = CustomFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
+        fontSize = 12.sp,
         fontStyle = FontStyle.Normal,
-        color = textBlack,
+        color = textGrayDark,
     ),
     labelMedium = TextStyle(
         fontFamily = CustomFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 12.sp,
+        fontSize = 10.sp,
         fontStyle = FontStyle.Normal,
-        color = textBlack,
+        color = textGrayDark,
     ),
     labelSmall = TextStyle(
         fontFamily = CustomFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 10.sp,
+        fontSize = 8.sp,
         fontStyle = FontStyle.Normal,
-        color = textBlack,
+        color = textGrayDark,
     )
 )

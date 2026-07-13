@@ -14,4 +14,6 @@ object PreferencesConstants {
 
         const val GLOBAL_CRYPTO_SYMBOLS = "global_crypto_symbols"
 
+        const val DARK_THEME = "dark_theme"
+
 }

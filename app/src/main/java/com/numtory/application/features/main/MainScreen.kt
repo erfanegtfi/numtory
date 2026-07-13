@@ -52,7 +52,6 @@ import com.numtory.application.features.cryptoMarket.presenter.CryptoListScreen
 import com.numtory.application.features.gold.presenter.GoldMarketList
 import com.numtory.application.features.market.presenter.MarketList
 import com.numtory.application.features.setting.domain.entities.AppSettings
-import com.numtory.application.ui.theme.Secondary
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.MainScreenDestination
@@ -183,7 +182,7 @@ fun BottomNavigationBar(navController: NavHostController) {
     val currentRoute = navBackStackEntry?.destination?.route
 
     NavigationBar(
-        containerColor = Secondary, //MaterialTheme.colorScheme.surface
+        containerColor = MaterialTheme.colorScheme.surface,
         tonalElevation = 8.dp,
         modifier = Modifier.height(115.dp),
     ) {

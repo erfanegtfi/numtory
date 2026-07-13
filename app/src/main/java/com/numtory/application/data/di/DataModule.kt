@@ -63,6 +63,8 @@ val dataModule = module {
         Session(get())
     }
 
+    single { com.numtory.application.ui.theme.ThemeManager(get()) }
+
 
     single<CoroutineDispatcher>(qualifier = named("IO")) { Dispatchers.IO }
     single<CoroutineDispatcher>(qualifier = named("Default")) { Dispatchers.Default }

@@ -11,8 +11,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -45,8 +50,11 @@ import com.numtory.application.features.market.presenter.components.appbar.Marke
 import com.numtory.application.ui.theme.CHART_SCRIPT
 import com.numtory.application.composeUI.ObserveMarketLifecycle
 import com.numtory.application.features.market.presenter.components.appbar.TopBarAction
+import com.numtory.application.ui.theme.ThemeManager
+import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 //@Destination<RootGraph>(start = true)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -55,6 +63,7 @@ import org.koin.androidx.compose.koinViewModel
 fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = koinViewModel()) {
 
     val priceList by viewModel.priceState.collectAsStateWithLifecycle()
+    val themeManager = koinInject<ThemeManager>()
     val lifecycleOwner = LocalLifecycleOwner.current
     val pullToRefreshState = rememberPullToRefreshState()
     var showSheet by remember { mutableStateOf(false) }
@@ -103,6 +112,14 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
             MarketTopBar(
                 selectedToken = viewModel.selectedToken.value,
                 actions = {
+                    IconButton(onClick = { themeManager.toggle() }) {
+                        Icon(
+                            imageVector = if (themeManager.isDarkTheme)
+                                Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                            contentDescription = "Toggle theme"
+                        )
+                    }
+
                     TopBarAction(
                         icon = R.drawable.ic_about,
                         contentDescription = "About",
@@ -158,7 +175,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                                     selectedToken.value,
                                     onChartClicked = {
                                         navigator.navigate(
-                                            _root_ide_package_.com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination(
+                                            AppChartWebViewDestination(
                                                 CHART_SCRIPT.replace(
                                                     "{symbol_hear}",
                                                     "nobitex_spot:${selectedToken.value}IRT"
@@ -211,6 +228,14 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
 
                         is ViewState.Success -> {
                             val items = (priceList as ViewState.Success<List<MarketPrice>>).data
+                            // best sell = highest price you get when selling;
+                            // best buy = lowest price you pay when buying
+                            val bestSell = items
+                                .mapNotNull { it.finalSellPrice.toDoubleOrNull()?.takeIf { v -> v > 0 } }
+                                .maxOrNull()
+                            val bestBuy = items
+                                .mapNotNull { it.finalBuyPrice.toDoubleOrNull()?.takeIf { v -> v > 0 } }
+                                .minOrNull()
                             if (items.isEmpty())
                                 item {
                                     Box(
@@ -227,7 +252,11 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                             else
                                 itemsIndexed(items) { index, itemState ->
                                     CryptoPriceItem(
-                                        itemState
+                                        itemState,
+                                        isBestSell = bestSell != null &&
+                                                itemState.finalSellPrice.toDoubleOrNull() == bestSell,
+                                        isBestBuy = bestBuy != null &&
+                                                itemState.finalBuyPrice.toDoubleOrNull() == bestBuy,
                                     )
                                 }
                         }

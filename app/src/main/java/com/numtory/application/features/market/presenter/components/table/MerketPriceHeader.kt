@@ -21,7 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.numtory.application.features.market.domain.enums.SortField
 import com.numtory.application.features.market.domain.enums.SortOrder
-import com.numtory.application.ui.theme.Secondary
 
 @Composable
 fun MarketPriceHeader(sortField: SortField, sortOrder: SortOrder,  onSortChanged:(sortField: SortField, sortOrder: SortOrder) -> Unit) {
@@ -31,7 +30,7 @@ fun MarketPriceHeader(sortField: SortField, sortOrder: SortOrder,  onSortChanged
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Secondary)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(8.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {

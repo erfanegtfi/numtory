@@ -20,9 +20,11 @@ import com.numtory.application.common.appOpened
 import com.numtory.application.features.chart.AppChartWebView
 import com.numtory.application.ui.theme.CHART_SCRIPT
 import com.numtory.application.ui.theme.MyApplicationTheme
+import com.numtory.application.ui.theme.ThemeManager
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import io.adtrace.sdk.AdTrace
+import org.koin.compose.koinInject
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
@@ -32,8 +34,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         appOpened()
         setContent {
-            MyApplicationTheme {
-                ApplyStatusBarTheme()
+            val themeManager = koinInject<ThemeManager>()
+            MyApplicationTheme(darkTheme = themeManager.isDarkTheme) {
+                ApplyStatusBarTheme(darkTheme = themeManager.isDarkTheme)
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
@@ -68,14 +71,15 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun ApplyStatusBarTheme() {
+fun ApplyStatusBarTheme(darkTheme: Boolean = false) {
     val view = LocalView.current
 
     SideEffect {
         val window = (view.context as ComponentActivity).window
         val insetsController = WindowInsetsControllerCompat(window, view)
 
-        // Set status bar icon colors (light or dark based on background)
+        // The top app bar is always the (indigo) primary color, so keep light
+        // status-bar icons regardless of theme. Kept as a param for flexibility.
         insetsController.isAppearanceLightStatusBars = false
     }
 }

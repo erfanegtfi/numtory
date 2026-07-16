@@ -18,6 +18,7 @@ import com.numtory.application.features.gold.domain.usecase.GetAppGoldExchangesU
 import com.numtory.application.features.gold.domain.usecase.GetDaricPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetDigikalaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetEcoGoldPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetGeramiPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldMarketAvgUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldikaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetHamrahGoldPriceUseCase
@@ -28,6 +29,7 @@ import com.numtory.application.features.gold.domain.usecase.GetTalaseaPriceUseCa
 import com.numtory.application.features.gold.domain.usecase.GetTechnoGoldPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetTlynPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetWallGoldPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetZarafzaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetZarminexPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveInvalidGoldExchangeUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveInvalidGoldExchangesParams
@@ -70,6 +72,8 @@ constructor(
     private val getEcoGoldPriceUseCase: GetEcoGoldPriceUseCase,
     private val getZarminexPriceUseCase: GetZarminexPriceUseCase,
     private val getNoghreseaPriceUseCase: GetNoghreseaPriceUseCase,
+    private val getGeramiPriceUseCase: GetGeramiPriceUseCase,
+    private val getZarafzaPriceUseCase: GetZarafzaPriceUseCase,
 
     private val sortMarketUseCase: SortGoldMarketUseCase,
     private val filterMarketUseCase: FilterGoldMarketUseCase,
@@ -162,11 +166,14 @@ constructor(
                     add(getZarminexPriceUseCase.action())
                     add(getDaricPriceUseCase.action("GOLD18TMN"))
                     add(getEcoGoldPriceUseCase.action("GOLD18-IRT"))
+                    add(getGeramiPriceUseCase.action(GOLD))
+                    add(getZarafzaPriceUseCase.action())
                 }
                 if (symbol == SILVER) {
                     add(getDaricPriceUseCase.action("SILVERTMN"))
                     add(getEcoGoldPriceUseCase.action("SILVER999-IRT"))
                     add(getNoghreseaPriceUseCase.action())
+                    add(getGeramiPriceUseCase.action(SILVER))
                 }
             }
         else
@@ -196,6 +203,10 @@ constructor(
                         add(getDaricPriceUseCase.action("GOLD18TMN"))
                     if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.ecogold }?.active == true)
                         add(getEcoGoldPriceUseCase.action("GOLD18-IRT"))
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.gerami }?.active == true)
+                        add(getGeramiPriceUseCase.action(GOLD))
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.zarafza }?.active == true)
+                        add(getZarafzaPriceUseCase.action())
                 }
 
                 if (symbol == SILVER) {
@@ -205,6 +216,8 @@ constructor(
                         add(getEcoGoldPriceUseCase.action("SILVER999-IRT"))
                     if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.noghresea }?.active == true)
                         add(getNoghreseaPriceUseCase.action())
+                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.gerami }?.active == true)
+                        add(getGeramiPriceUseCase.action(SILVER))
                 }
             }
 

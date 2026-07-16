@@ -7,6 +7,7 @@ import com.numtory.application.features.gold.domain.usecase.GetAppGoldExchangesU
 import com.numtory.application.features.gold.domain.usecase.GetDaricPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetDigikalaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetEcoGoldPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetGeramiPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldMarketAvgUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldikaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetHamrahGoldPriceUseCase
@@ -17,6 +18,7 @@ import com.numtory.application.features.gold.domain.usecase.GetTalaseaPriceUseCa
 import com.numtory.application.features.gold.domain.usecase.GetTechnoGoldPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetTlynPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetWallGoldPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetZarafzaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetZarminexPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveInvalidGoldExchangeUseCase
 import com.numtory.application.features.gold.domain.usecase.RemoveOutOfRangeGoldExchangeUseCase
@@ -40,6 +42,8 @@ val goldMarketPresenterModule = module {
     factory { GetEcoGoldPriceUseCase(get<GoldMarketRepository>()) }
     factory { GetZarminexPriceUseCase(get<GoldMarketRepository>()) }
     factory { GetNoghreseaPriceUseCase(get<GoldMarketRepository>()) }
+    factory { GetGeramiPriceUseCase(get<GoldMarketRepository>()) }
+    factory { GetZarafzaPriceUseCase(get<GoldMarketRepository>()) }
     factory { SortGoldMarketUseCase() }
     factory { FilterGoldMarketUseCase() }
     factory { GetAppGoldExchangesUseCase(get()) }
@@ -51,6 +55,8 @@ val goldMarketPresenterModule = module {
 
     viewModel {
         GoldMarketsViewModel(
+            get(),
+            get(),
             get(),
             get(),
             get(),

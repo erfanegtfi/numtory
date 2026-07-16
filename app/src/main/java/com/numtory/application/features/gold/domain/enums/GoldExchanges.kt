@@ -16,6 +16,8 @@ enum class GoldExchanges(val title: String, val logo: Int) {
     ecogold("اکو گلد", R.drawable.ecogold),
     zarminex("زرمینکس", R.drawable.zarminex),
     noghresea("نقره سی", R.drawable.noghresea),
+    gerami("گرمی", R.drawable.gerami),
+    zarafza("زرافرا", R.drawable.zarafza),
     goldika("گلدیکا", R.drawable.goldika);
 
 

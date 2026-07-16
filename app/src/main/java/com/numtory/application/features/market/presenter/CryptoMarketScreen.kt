@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.ManageSearch
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -51,7 +52,11 @@ import com.numtory.application.ui.theme.CHART_SCRIPT
 import com.numtory.application.composeUI.ObserveMarketLifecycle
 import com.numtory.application.features.market.presenter.components.appbar.TopBarAction
 import com.numtory.application.ui.theme.ThemeManager
+import com.numtory.application.common.exchangeScannerScreenOpened
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination
+import com.ramcosta.composedestinations.generated.destinations.ScanScreenDestination
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -112,6 +117,16 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
             MarketTopBar(
                 selectedToken = viewModel.selectedToken.value,
                 actions = {
+                    IconButton(onClick = {
+                        exchangeScannerScreenOpened()
+                        navigator.navigate(ScanScreenDestination)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.ManageSearch,
+                            contentDescription = "BSC Scanner"
+                        )
+                    }
+
                     IconButton(onClick = { themeManager.toggle() }) {
                         Icon(
                             imageVector = if (themeManager.isDarkTheme)

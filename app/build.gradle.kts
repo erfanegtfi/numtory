@@ -85,6 +85,8 @@ android {
         buildConfigField("String", "SEKE_URL", getLocalProperty("SEKE_URL"))
         buildConfigField("String", "ZARMINEX_URL", getLocalProperty("ZARMINEX_URL"))
         buildConfigField("String", "NOGHRESEA_URL", getLocalProperty("NOGHRESEA_URL"))
+        buildConfigField("String", "GERAMI_URL", getLocalProperty("GERAMI_URL"))
+        buildConfigField("String", "ZARAFZA_URL", getLocalProperty("ZARAFZA_URL"))
 
     }
 

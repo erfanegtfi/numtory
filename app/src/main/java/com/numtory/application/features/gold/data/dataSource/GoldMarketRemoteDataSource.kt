@@ -9,6 +9,8 @@ import com.numtory.application.BuildConfig
 import com.numtory.application.features.gold.data.models.DaricDataModel
 import com.numtory.application.features.gold.data.models.DigikalaDataModel
 import com.numtory.application.features.gold.data.models.EcoGoldDataModel
+import com.numtory.application.features.gold.data.models.GeramiDataModel
+import com.numtory.application.features.gold.data.models.GeramiPairDataModel
 import com.numtory.application.features.gold.data.models.GoldExchangeInfoDataModel
 import com.numtory.application.features.gold.data.models.GoldikaDataModel
 import com.numtory.application.features.gold.data.models.HamrahGoldDataModel
@@ -19,6 +21,7 @@ import com.numtory.application.features.gold.data.models.TalaSeaDataModel
 import com.numtory.application.features.gold.data.models.TechnoGoldDataModel
 import com.numtory.application.features.gold.data.models.TlynDataModel
 import com.numtory.application.features.gold.data.models.WallGoldDataModel
+import com.numtory.application.features.gold.data.models.ZarafzaDataModel
 import com.numtory.application.features.gold.data.models.ZarminexDataModel
 import io.ktor.client.request.parameter
 import io.ktor.http.parameters
@@ -38,6 +41,8 @@ interface GoldMarketRemoteDataSource {
     suspend fun getEcoGoldPrice(): EcoGoldDataModel
     suspend fun getZarminexPrice(): ZarminexDataModel
     suspend fun getNoghreseaPrice(): NoghreSeaDataModel
+    suspend fun getGeramiPrice(): GeramiDataModel
+    suspend fun getZarafzaPrice(): ZarafzaDataModel
 
 }
 
@@ -135,5 +140,19 @@ class GoldMarketRemoteDataSourceImpl constructor(
         val response = httpClient.get(BuildConfig.NOGHRESEA_URL)
         val json = response.bodyAsText()
         return gson.fromJson(json, NoghreSeaDataModel::class.java)
+    }
+
+    override suspend fun getGeramiPrice(): GeramiDataModel {
+        val response = httpClient.get(BuildConfig.GERAMI_URL)
+        val json = response.bodyAsText()
+        val type = object : TypeToken<List<GeramiPairDataModel>>() {}.type
+        val pairs = gson.fromJson<List<GeramiPairDataModel>>(json, type)
+        return GeramiDataModel(pairs)
+    }
+
+    override suspend fun getZarafzaPrice(): ZarafzaDataModel {
+        val response = httpClient.get(BuildConfig.ZARAFZA_URL)
+        val json = response.bodyAsText()
+        return gson.fromJson(json, ZarafzaDataModel::class.java)
     }
 }

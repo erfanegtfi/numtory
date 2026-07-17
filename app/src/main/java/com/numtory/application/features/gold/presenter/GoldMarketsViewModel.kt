@@ -51,9 +51,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Collections
+
+private const val DARIC_GOLD = "GOLD18TMN"
+private const val DARIC_SILVER = "SILVERTMN"
+private const val ECOGOLD_GOLD = "GOLD18-IRT"
+private const val ECOGOLD_SILVER = "SILVER999-IRT"
 
 @ExperimentalCoroutinesApi
 @SuppressLint("CheckResult")
@@ -84,30 +87,35 @@ constructor(
     private val removeInvalidExchangeUseCase: RemoveInvalidGoldExchangeUseCase,
 ) : ViewModel() {
 
-    private val _timer = mutableIntStateOf(REFRESH_TIMER)
-    val timer: State<Int> get() = _timer
-    var priceJob :Job? = null
+    private class PriceSource(
+        val exchange: GoldExchanges,
+        val open: () -> Flow<ApiCallResult<GoldMarketPrice>>,
+    )
 
-    var allMarkets: MutableList<GoldMarketPrice> = mutableListOf()
-    var validMarkets: List<GoldMarketPrice> = emptyList()
-
-    var sortParams: SortGoldParams = SortGoldParams()
-        private set
-    var filterParams: FilterGoldParams = FilterGoldParams()
-        private set
-
-    var appExchangesInfo: List<GoldExchangeInfo>? = null
-    var symbol: String = GOLD
+    // region State
 
     private val _priceState = MutableStateFlow<ViewState<List<GoldMarketPrice>>>(ViewState.Init)
     val priceState: StateFlow<ViewState<List<GoldMarketPrice>>> get() = _priceState.asStateFlow()
 
-    var selectedToken = mutableStateOf(GOLD)
-        private set
+    private val _timer = mutableIntStateOf(REFRESH_TIMER)
+    val timer: State<Int> get() = _timer
 
-    fun selectToken(token: String) {
-        selectedToken.value = token
-    }
+    private val _selectedToken = mutableStateOf(GOLD)
+    val selectedToken: State<String> get() = _selectedToken
+
+    var sortParams: SortGoldParams = SortGoldParams()
+        private set
+    private var filterParams: FilterGoldParams = FilterGoldParams()
+
+    private var allMarkets: MutableList<GoldMarketPrice> = mutableListOf()
+
+    private var validMarkets: List<GoldMarketPrice> = emptyList()
+
+    private var appExchangesInfo: List<GoldExchangeInfo>? = null
+    private var symbol: String = GOLD
+
+    private var priceJob: Job? = null
+    private var timerJob: Job? = null
 
     init {
         getExchanges()
@@ -115,248 +123,187 @@ constructor(
         startTimer()
     }
 
-    fun getExchanges() {
-        viewModelScope.launch {
-            getAppExchangesUseCase.action().collect { response ->
-                when (response) {
-                    is ApiCallResult.Success -> {
-                        appExchangesInfo = response.result
-//                        getPrices()
-                    }
-
-                    is ApiCallResult.Failure -> {
-                    }
-
-                }
-
-            }
-        }
+    fun selectToken(token: String) {
+        _selectedToken.value = token
     }
 
     fun getPrices(symbol: String = this.symbol) {
         if (this.symbol != symbol) {
             allMarkets.clear()
-            validMarkets = Collections.emptyList()
+            validMarkets = emptyList()
             priceJob?.cancel()
         }
-
         this.symbol = symbol
+
         getExchanges()
         _timer.intValue = REFRESH_TIMER
-
 
         if (_priceState.value is ViewState.Init)
             _priceState.value = ViewState.Loading
 
         val userExchanges = getUserExchanges()
-        val mergedFlow = mutableListOf<Flow<ApiCallResult<GoldMarketPrice>>>()
-
-        if (appExchangesInfo?.isNotEmpty() != true)
-            mergedFlow.apply {
-                if (symbol == GOLD) {
-                    add(getDigikalaPriceUseCase.action())
-                    add(getGoldikaPriceUseCase.action())
-                    add(getHamrahGoldPriceUseCase.action())
-                    add(getTlynPriceUseCase.action())
-                    add(getMelliGoldPriceUseCase.action())
-                    add(getTalaseaPriceUseCase.action())
-                    add(getWallGoldPriceUseCase.action())
-                    add(getMilliPriceUseCase.action())
-                    add(getTechnoGoldPriceUseCase.action())
-                    add(getZarminexPriceUseCase.action())
-                    add(getDaricPriceUseCase.action("GOLD18TMN"))
-                    add(getEcoGoldPriceUseCase.action("GOLD18-IRT"))
-                    add(getGeramiPriceUseCase.action(GOLD))
-                    add(getZarafzaPriceUseCase.action())
-                }
-                if (symbol == SILVER) {
-                    add(getDaricPriceUseCase.action("SILVERTMN"))
-                    add(getEcoGoldPriceUseCase.action("SILVER999-IRT"))
-                    add(getNoghreseaPriceUseCase.action())
-                    add(getGeramiPriceUseCase.action(SILVER))
-                }
-            }
-        else
-            mergedFlow.apply {
-                if (symbol == GOLD) {
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.digikala }?.active == true)
-                        add(getDigikalaPriceUseCase.action())
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.goldika }?.active == true)
-                        add(getGoldikaPriceUseCase.action())
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.taline }?.active == true)
-                        add(getTlynPriceUseCase.action())
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.hamrahgold }?.active == true)
-                        add(getHamrahGoldPriceUseCase.action())
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.melligold }?.active == true)
-                        add(getMelliGoldPriceUseCase.action())
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.talasea }?.active == true)
-                        add(getTalaseaPriceUseCase.action())
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.wallgold }?.active == true)
-                        add(getWallGoldPriceUseCase.action())
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.milli }?.active == true)
-                        add(getMilliPriceUseCase.action())
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.technoGold }?.active == true)
-                        add(getTechnoGoldPriceUseCase.action())
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.zarminex }?.active == true)
-                        add(getZarminexPriceUseCase.action())
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.daric }?.active == true)
-                        add(getDaricPriceUseCase.action("GOLD18TMN"))
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.ecogold }?.active == true)
-                        add(getEcoGoldPriceUseCase.action("GOLD18-IRT"))
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.gerami }?.active == true)
-                        add(getGeramiPriceUseCase.action(GOLD))
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.zarafza }?.active == true)
-                        add(getZarafzaPriceUseCase.action())
-                }
-
-                if (symbol == SILVER) {
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.daric }?.active == true)
-                        add(getDaricPriceUseCase.action("SILVERTMN"))
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.ecogold }?.active == true)
-                        add(getEcoGoldPriceUseCase.action("SILVER999-IRT"))
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.noghresea }?.active == true)
-                        add(getNoghreseaPriceUseCase.action())
-                    if (appExchangesInfo?.firstOrNull { it.exchange == GoldExchanges.gerami }?.active == true)
-                        add(getGeramiPriceUseCase.action(SILVER))
-                }
-            }
-
         priceJob = viewModelScope.launch {
-            merge(*mergedFlow.toTypedArray())
-//            mergedFlow
-                .collect { response ->
-                    when (response) {
-                        is ApiCallResult.Success -> {
-
-                            allMarkets =
-                                allMarkets.filterNot { it.exchangeInfo.exchange == response.result.exchangeInfo.exchange }
-                                    .toMutableList()
-
-                            if (response.result.symbol?.lowercase()?.contains(symbol.lowercase()) == true)
-                                allMarkets.add(response.result)
-
-                            allMarkets = removeInvalidExchangeUseCase.action(
-                                RemoveInvalidGoldExchangesParams(
-//                                    exchangesInfo = exchangesInfo,
-                                    markets = allMarkets
-                                )
-                            ).toMutableList()
-
-                            // get avg from all of exchanges, so bad price will be detected better.
-                            // we do not use add exchanges in avg,
-                            // if first exchange price was out of range, avg will be invalid and broke other prices
-                            val (avgBuy, avgSell) = getMarketAvgUseCase.action(
-                                allMarkets,
-                                userExchanges
-                            )
-
-
-                            validMarkets = removeOutOfRangeExchangesUseCase.action(
-                                RemoveOutOfRangeGoldExchangesParams(
-                                    avgSell = avgSell,
-                                    avgBuy = avgBuy,
-                                    markets = allMarkets,
-                                )
-                            )
-                            emitData()
-                        }
-
-                        is ApiCallResult.Failure -> {
-//                        _priceState.update { currentList ->
-//                            currentList + ViewState.Failure(error = response.error)
-//                        }
-                        }
-
-                    }
-                }
+            priceFlowsFor(symbol).merge().collect { response ->
+                if (response is ApiCallResult.Success)
+                    onPriceReceived(response.result, symbol, userExchanges)
+                // Failures are ignored on purpose: a single exchange going down
+                // must not replace the list that the other exchanges already filled.
+            }
         }
     }
-//
 
     fun sort(sortField: SortField, sortOrder: SortOrder) {
         sortParams.sortField = sortField
         sortParams.sortOrder = sortOrder
         emitData()
-
     }
 
     fun filter() {
         emitData()
     }
 
-    fun emitData() {
-        _priceState.update {
-            //
-            filterParams.markets = validMarkets
-            filterParams.addFee = exchangesLocalDataSource.addFee()
-            filterParams.userExchanges = getUserExchanges()
-            filterParams.exchangesInfo = appExchangesInfo
-            validMarkets = filterMarketUseCase.action(filterParams)
-            //
-            sortParams.markets = validMarkets
-            validMarkets = sortMarketUseCase.action(sortParams)
-
-            ViewState.Success(validMarkets)
-        }
-    }
-
-    fun getMarketAverage(): Pair<Double, Double> {
-        val userExchanges = getUserExchanges()
-        return getMarketAvgUseCase.action(validMarkets, userExchanges)
-    }
+    fun getMarketAverage(): Pair<Double, Double> =
+        getMarketAvgUseCase.action(validMarkets, getUserExchanges())
 
     fun saveAddFee(addFee: Boolean) {
         exchangesLocalDataSource.saveAddFee(addFee)
         filter()
     }
 
-    fun getAddFee(): Boolean {
-        return exchangesLocalDataSource.addFee()
-    }
+    fun getAddFee(): Boolean = exchangesLocalDataSource.addFee()
 
     fun saveDisplayExchanges(exchanges: List<GoldExchanges>) {
         exchangesLocalDataSource.saveUserGoldExchanges(exchanges)
         filter()
     }
 
-    fun getUserExchanges(): List<GoldExchanges> {
-        // if user exchanges was null, we show all exchanges from Exchanges enum
-        return exchangesLocalDataSource.getUserGoldExchanges() ?: GoldExchanges.entries
-    }
+    fun getUserExchanges(): List<GoldExchanges> =
+        exchangesLocalDataSource.getUserGoldExchanges() ?: GoldExchanges.entries
 
-    fun getActiveExchangesInfo(): List<GoldExchangeInfo> {
-        return exchangesLocalDataSource.getGoldExchangesInfo()?.filter {
-            it.active && it.display
-        } ?: emptyList()
-    }
+    fun getActiveExchangesInfo(): List<GoldExchangeInfo> =
+        exchangesLocalDataSource.getGoldExchangesInfo()
+            ?.filter { it.active && it.display }
+            ?: emptyList()
 
-    private var isRunning = false
-    private var timerJob: Job? = null
     fun startTimer() {
-        if (isRunning) return
-        isRunning = true
+        if (timerJob != null) return
         timerJob = viewModelScope.launch {
-
             while (true) {
                 _timer.intValue = _timer.intValue - 1
                 delay(1000)
-                if (_timer.intValue == 0) {
-                    getPrices()
-                }
+                if (_timer.intValue == 0) getPrices()
             }
         }
     }
 
     fun stopTimer() {
-        isRunning = false
         timerJob?.cancel()
         timerJob = null
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        viewModelScope.cancel()
-        stopTimer()
+    private fun getExchanges() {
+        viewModelScope.launch {
+            getAppExchangesUseCase.action().collect { response ->
+                if (response is ApiCallResult.Success) appExchangesInfo = response.result
+            }
+        }
     }
 
+    private fun priceSourcesFor(symbol: String): List<PriceSource> = when (symbol) {
+        GOLD -> listOf(
+            PriceSource(GoldExchanges.digikala) { getDigikalaPriceUseCase.action() },
+            PriceSource(GoldExchanges.goldika) { getGoldikaPriceUseCase.action() },
+            PriceSource(GoldExchanges.taline) { getTlynPriceUseCase.action() },
+            PriceSource(GoldExchanges.hamrahgold) { getHamrahGoldPriceUseCase.action() },
+            PriceSource(GoldExchanges.melligold) { getMelliGoldPriceUseCase.action() },
+            PriceSource(GoldExchanges.talasea) { getTalaseaPriceUseCase.action() },
+            PriceSource(GoldExchanges.wallgold) { getWallGoldPriceUseCase.action() },
+            PriceSource(GoldExchanges.milli) { getMilliPriceUseCase.action() },
+            PriceSource(GoldExchanges.technoGold) { getTechnoGoldPriceUseCase.action() },
+            PriceSource(GoldExchanges.zarminex) { getZarminexPriceUseCase.action() },
+            PriceSource(GoldExchanges.daric) { getDaricPriceUseCase.action(DARIC_GOLD) },
+            PriceSource(GoldExchanges.ecogold) { getEcoGoldPriceUseCase.action(ECOGOLD_GOLD) },
+            PriceSource(GoldExchanges.gerami) { getGeramiPriceUseCase.action(GOLD) },
+            PriceSource(GoldExchanges.zarafza) { getZarafzaPriceUseCase.action() },
+        )
+
+        SILVER -> listOf(
+            PriceSource(GoldExchanges.daric) { getDaricPriceUseCase.action(DARIC_SILVER) },
+            PriceSource(GoldExchanges.ecogold) { getEcoGoldPriceUseCase.action(ECOGOLD_SILVER) },
+            PriceSource(GoldExchanges.noghresea) { getNoghreseaPriceUseCase.action() },
+            PriceSource(GoldExchanges.gerami) { getGeramiPriceUseCase.action(SILVER) },
+        )
+
+        else -> emptyList()
+    }
+
+    /**
+     * Until the app exchange config arrives we query every source; once it is known,
+     * only the exchanges the backend marked active are queried.
+     */
+    private fun priceFlowsFor(symbol: String): List<Flow<ApiCallResult<GoldMarketPrice>>> {
+        val exchangesInfo = appExchangesInfo
+        return priceSourcesFor(symbol)
+            .filter { source ->
+                exchangesInfo.isNullOrEmpty() ||
+                        exchangesInfo.firstOrNull { it.exchange == source.exchange }?.active == true
+            }
+            .map { it.open() }
+    }
+
+    // endregion
+
+    // region Pipeline
+
+    private fun onPriceReceived(
+        price: GoldMarketPrice,
+        symbol: String,
+        userExchanges: List<GoldExchanges>,
+    ) {
+        allMarkets = allMarkets
+            .filterNot { it.exchangeInfo.exchange == price.exchangeInfo.exchange }
+            .toMutableList()
+
+        if (price.symbol?.lowercase()?.contains(symbol.lowercase()) == true)
+            allMarkets.add(price)
+
+        allMarkets = removeInvalidExchangeUseCase
+            .action(RemoveInvalidGoldExchangesParams(markets = allMarkets))
+            .toMutableList()
+
+        // Average over every exchange, not just the user's, so a bad price stands out.
+        // Adding exchanges into the average would let one out-of-range first price
+        // skew it and drag the rest of the list out with it.
+        val (avgBuy, avgSell) = getMarketAvgUseCase.action(allMarkets, userExchanges)
+
+        validMarkets = removeOutOfRangeExchangesUseCase.action(
+            RemoveOutOfRangeGoldExchangesParams(
+                avgSell = avgSell,
+                avgBuy = avgBuy,
+                markets = allMarkets,
+            )
+        )
+        emitData()
+    }
+
+    private fun emitData() {
+        filterParams.markets = validMarkets
+        filterParams.addFee = exchangesLocalDataSource.addFee()
+        filterParams.userExchanges = getUserExchanges()
+        filterParams.exchangesInfo = appExchangesInfo
+        validMarkets = filterMarketUseCase.action(filterParams)
+
+        sortParams.markets = validMarkets
+        validMarkets = sortMarketUseCase.action(sortParams)
+
+        _priceState.value = ViewState.Success(validMarkets)
+    }
+
+    // endregion
+
+    override fun onCleared() {
+        super.onCleared()
+        stopTimer()
+        viewModelScope.cancel()
+    }
 }

@@ -1,11 +1,9 @@
 package com.numtory.application.features.market.presenter;
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.numtory.application.data.utils.ApiCallResult
@@ -58,9 +56,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Collections.emptyList
+
+/** Quote currencies, spelled the way each exchange's own API expects them. */
+private const val IRT = "IRT"
+private const val TMN = "TMN"
+private const val TOMAN = "TOMAN"
+private const val RLS = "rls"
+private const val IRR = "irr"
 
 @ExperimentalCoroutinesApi
 @SuppressLint("CheckResult")
@@ -96,31 +99,40 @@ constructor(
     private val removeInvalidExchangeUseCase: RemoveInvalidExchangeUseCase,
 ) : ViewModel() {
 
-    private val _timer = mutableIntStateOf(REFRESH_TIMER)
-    val timer: State<Int> get() = _timer
+    /** One exchange's price stream, kept lazy so it is only started once the exchange is known to be active. */
+    private class PriceSource(
+        val exchange: Exchanges,
+        val open: () -> Flow<ApiCallResult<MarketPrice>>,
+    )
 
-    var allMarkets: MutableList<MarketPrice> = mutableListOf()
-    var validMarkets: List<MarketPrice> = emptyList()
-
-    var sortParams: SortParams = SortParams()
-        private set
-    var filterParams: FilterParams = FilterParams()
-        private set
-
-    var appExchangesInfo: List<ExchangeInfo>? = null
+    // region State
 
     private val _priceState = MutableStateFlow<ViewState<List<MarketPrice>>>(ViewState.Init)
     val priceState: StateFlow<ViewState<List<MarketPrice>>> get() = _priceState.asStateFlow()
 
-    var symbol: String = DEFAULT_TOKEN
-    var priceJob :Job? = null
+    private val _timer = mutableIntStateOf(REFRESH_TIMER)
+    val timer: State<Int> get() = _timer
 
-    var selectedToken = mutableStateOf(DEFAULT_TOKEN)
+    private val _selectedToken = mutableStateOf(DEFAULT_TOKEN)
+    val selectedToken: State<String> get() = _selectedToken
+
+    var sortParams: SortParams = SortParams()
         private set
+    private var filterParams: FilterParams = FilterParams()
 
-    fun selectToken(token: String) {
-        selectedToken.value = token
-    }
+    /** Every price received so far for [symbol], one entry per exchange. */
+    private var allMarkets: MutableList<MarketPrice> = mutableListOf()
+
+    /** [allMarkets] after the out-of-range, filter and sort passes — this is what the UI renders. */
+    private var validMarkets: List<MarketPrice> = emptyList()
+
+    private var appExchangesInfo: List<ExchangeInfo>? = null
+    private var symbol: String = DEFAULT_TOKEN
+
+    private var priceJob: Job? = null
+    private var timerJob: Job? = null
+
+    // endregion
 
     init {
         getExchanges()
@@ -128,22 +140,10 @@ constructor(
         startTimer()
     }
 
-    fun getExchanges() {
-        viewModelScope.launch {
-            getAppExchangesUseCase.action().collect { response ->
-                when (response) {
-                    is ApiCallResult.Success -> {
-                        appExchangesInfo = response.result
-//                        getPrices()
-                    }
+    // region Public API
 
-                    is ApiCallResult.Failure -> {
-                    }
-
-                }
-
-            }
-        }
+    fun selectToken(token: String) {
+        _selectedToken.value = token
     }
 
     fun getPrices(symbol: String = this.symbol) {
@@ -152,141 +152,24 @@ constructor(
             validMarkets = emptyList()
             priceJob?.cancel()
         }
-
         this.symbol = symbol
+
         getExchanges()
         _timer.intValue = REFRESH_TIMER
-
 
         if (_priceState.value is ViewState.Init)
             _priceState.value = ViewState.Loading
 
         val userExchanges = getUserExchanges()
-//        filterParams.addFee = exchangesLocalDataSource.addFee()
-        val mergedFlow = mutableListOf<Flow<ApiCallResult<MarketPrice>>>()
-
-        if (appExchangesInfo?.isNotEmpty() != true)
-            mergedFlow.apply {
-                add(getBitPinPriceUseCase.action(symbol, "IRT"))
-                add(getTetherLandPriceUseCase.action(symbol))
-                add(getNobitexPriceUseCase.action(symbol, "IRT", "rls"))
-                add(getTabtealPriceUseCase.action("IRT", symbol))
-                add(getBit24PriceUseCase.action("IRT", symbol))
-                add(getArzplusPriceUseCase.action("IRT", symbol))
-                add(getTwoxPriceUseCase.action("IRT", symbol))
-                add(getCoinkadePriceUseCase.action(symbol))
-                add(getPoolenoPriceUseCase.action(symbol, "TMN"))
-                add(getEterexPriceUseCase.action(symbol))
-                add(getPingiPriceUseCase.action(symbol, "IRT"))
-                add(getWallexPriceUseCase.action(symbol, "TMN"))
-                add(getAbanTetherPriceUseCase.action(symbol))
-                add(getSarmayexPriceUseCase.action(symbol, "IRT"))
-                add(getSarafPriceUseCase.action(symbol))
-                add(getUbitexPriceUseCase.action(symbol, "TMN"))
-                add(getArzinjaPriceUseCase.action(symbol, "IRT"))
-                add(getRamzinexPriceUseCase.action(symbol, "irr"))
-                add(getBitbargPriceUseCase.action(symbol))
-                add(getArzyptoPriceUseCase.action("TOMAN", symbol))
-                add(getExonyxPriceUseCase.action(symbol))
-            }
-        else
-            mergedFlow.apply {
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.bitpin }?.active == true)
-                    add(getBitPinPriceUseCase.action(symbol, "IRT"))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.tetherland }?.active == true)
-                    add(getTetherLandPriceUseCase.action(symbol))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.nobitex }?.active == true)
-                    add(getNobitexPriceUseCase.action(symbol, "IRT", "rls"))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.tabdeal }?.active == true)
-                    add(getTabtealPriceUseCase.action("IRT", symbol))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.bit24 }?.active == true)
-                    add(getBit24PriceUseCase.action("IRT", symbol))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.arzplus }?.active == true)
-                    add(getArzplusPriceUseCase.action("IRT", symbol))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.twox }?.active == true)
-                    add(getTwoxPriceUseCase.action("IRT", symbol))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.coinkade }?.active == true)
-                    add(getCoinkadePriceUseCase.action(symbol))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.pooleno }?.active == true)
-                    add(getPoolenoPriceUseCase.action(symbol, "TMN"))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.eterex }?.active == true)
-                    add(getEterexPriceUseCase.action(symbol))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.pingi }?.active == true)
-                    add(getPingiPriceUseCase.action(symbol, "IRT"))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.wallex }?.active == true)
-                    add(getWallexPriceUseCase.action(symbol, "TMN"))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.abantether }?.active == true)
-                    add(getAbanTetherPriceUseCase.action(symbol))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.sarmayex }?.active == true)
-                    add(getSarmayexPriceUseCase.action(symbol, "IRT"))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.saraf }?.active == true)
-                    add(getSarafPriceUseCase.action(symbol))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.ubitex }?.active == true)
-                    add(getUbitexPriceUseCase.action(symbol, "TMN"))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.arzinja }?.active == true)
-                    add(getArzinjaPriceUseCase.action(symbol, "IRT"))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.ramzinex }?.active == true)
-                    add(getRamzinexPriceUseCase.action(symbol, "irr"))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.arzypto }?.active == true)
-                    add(getArzyptoPriceUseCase.action("TOMAN", symbol))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.exonyx }?.active == true)
-                    add(getExonyxPriceUseCase.action( symbol))
-                if (appExchangesInfo?.firstOrNull { it.exchange == Exchanges.bitbarg }?.active == true)
-                    add(getBitbargPriceUseCase.action( symbol))
-            }
-
         priceJob = viewModelScope.launch {
-            merge(*mergedFlow.toTypedArray())
-//            mergedFlow
-                .collect { response ->
-                    when (response) {
-                        is ApiCallResult.Success -> {
-
-                            allMarkets =
-                                allMarkets.filterNot { it.exchangeInfo.exchange == response.result.exchangeInfo.exchange }
-                                    .toMutableList()
-
-                            if (response.result.symbol?.lowercase() == symbol.lowercase())
-                                allMarkets.add(response.result)
-
-                            allMarkets = removeInvalidExchangeUseCase.action(
-                                RemoveInvalidExchangesParams(
-//                                    exchangesInfo = exchangesInfo,
-                                    markets = allMarkets
-                                )
-                            ).toMutableList()
-
-                            // get avg from all of exchanges, so bad price will be detected better.
-                            // we do not use add exchanges in avg,
-                            // if first exchange price was out of range, avg will be invalid and broke other prices
-                            val (avgBuy, avgSell) = getMarketAvgUseCase.action(
-                                allMarkets,
-                                userExchanges
-                            )
-
-
-                            validMarkets = removeOutOfRangeExchangesUseCase.action(
-                                RemoveOutOfRangeExchangesParams(
-                                    avgSell = avgSell,
-                                    avgBuy = avgBuy,
-                                    markets = allMarkets,
-                                )
-                            )
-
-                            emitData()
-                        }
-
-                        is ApiCallResult.Failure -> {
-//                        _priceState.update { currentList ->
-//                            currentList + ViewState.Failure(error = response.error)
-//                        }
-                        }
-
-                    }
-                }
+            priceFlowsFor(symbol).merge().collect { response ->
+                if (response is ApiCallResult.Success)
+                    onPriceReceived(response.result, symbol, userExchanges)
+                // Failures are ignored on purpose: a single exchange going down
+                // must not replace the list that the other exchanges already filled.
+            }
         }
     }
-//
 
     fun sort(sortField: SortField, sortOrder: SortOrder) {
         sortParams.sortField = sortField
@@ -296,83 +179,151 @@ constructor(
 
     fun filter() {
         emitData()
-
     }
 
-
-    fun emitData() {
-        _priceState.update {
-            //
-            filterParams.markets = validMarkets
-            filterParams.addFee = exchangesLocalDataSource.addFee()
-            filterParams.userExchanges = getUserExchanges()
-            filterParams.exchangesInfo = appExchangesInfo
-            validMarkets =  filterMarketUseCase.action(filterParams)
-            //
-            sortParams.markets = validMarkets
-            validMarkets = sortMarketUseCase.action(sortParams)
-
-            ViewState.Success(validMarkets)
-        }
-    }
-
-    fun getMarketAverage(): Pair<Double, Double> {
-        val userExchanges = getUserExchanges()
-        return getMarketAvgUseCase.action(validMarkets, userExchanges)
-    }
+    fun getMarketAverage(): Pair<Double, Double> =
+        getMarketAvgUseCase.action(validMarkets, getUserExchanges())
 
     fun saveAddFee(addFee: Boolean) {
         exchangesLocalDataSource.saveAddFee(addFee)
         filter()
     }
 
-    fun getAddFee(): Boolean {
-        return exchangesLocalDataSource.addFee()
-    }
+    fun getAddFee(): Boolean = exchangesLocalDataSource.addFee()
 
     fun saveDisplayExchanges(exchanges: List<Exchanges>) {
         exchangesLocalDataSource.saveUserExchanges(exchanges)
         filter()
     }
 
-    fun getUserExchanges(): List<Exchanges> {
-        // if user exchanges was null, we show all exchanges from Exchanges enum
-        return exchangesLocalDataSource.getUserExchanges() ?: Exchanges.entries
-    }
+    /** Falls back to every known exchange, because a null selection means "the user hasn't narrowed it down". */
+    fun getUserExchanges(): List<Exchanges> =
+        exchangesLocalDataSource.getUserExchanges() ?: Exchanges.entries
 
-    fun getActiveExchangesInfo(): List<ExchangeInfo> {
-        return exchangesLocalDataSource.getExchangesInfo()?.filter {
-            it.active && it.display
-        } ?: emptyList()
-    }
+    fun getActiveExchangesInfo(): List<ExchangeInfo> =
+        exchangesLocalDataSource.getExchangesInfo()
+            ?.filter { it.active && it.display }
+            ?: emptyList()
 
-    private var isRunning = false
-    private var timerJob: Job? = null
     fun startTimer() {
-        if (isRunning) return
-        isRunning = true
+        if (timerJob != null) return
         timerJob = viewModelScope.launch {
-
             while (true) {
                 _timer.intValue = _timer.intValue - 1
                 delay(1000)
-                if (_timer.intValue == 0) {
-                    getPrices(symbol)
-                }
+                if (_timer.intValue == 0) getPrices(symbol)
             }
         }
     }
 
     fun stopTimer() {
-        isRunning = false
         timerJob?.cancel()
         timerJob = null
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        viewModelScope.cancel()
-        stopTimer()
+    // endregion
+
+    // region Price sources
+
+    private fun getExchanges() {
+        viewModelScope.launch {
+            getAppExchangesUseCase.action().collect { response ->
+                if (response is ApiCallResult.Success) appExchangesInfo = response.result
+            }
+        }
     }
 
+    private fun priceSourcesFor(symbol: String): List<PriceSource> = listOf(
+        PriceSource(Exchanges.bitpin) { getBitPinPriceUseCase.action(symbol, IRT) },
+        PriceSource(Exchanges.tetherland) { getTetherLandPriceUseCase.action(symbol) },
+        PriceSource(Exchanges.nobitex) { getNobitexPriceUseCase.action(symbol, IRT, RLS) },
+        PriceSource(Exchanges.tabdeal) { getTabtealPriceUseCase.action(IRT, symbol) },
+        PriceSource(Exchanges.bit24) { getBit24PriceUseCase.action(IRT, symbol) },
+        PriceSource(Exchanges.arzplus) { getArzplusPriceUseCase.action(IRT, symbol) },
+        PriceSource(Exchanges.twox) { getTwoxPriceUseCase.action(IRT, symbol) },
+        PriceSource(Exchanges.coinkade) { getCoinkadePriceUseCase.action(symbol) },
+        PriceSource(Exchanges.pooleno) { getPoolenoPriceUseCase.action(symbol, TMN) },
+        PriceSource(Exchanges.eterex) { getEterexPriceUseCase.action(symbol) },
+        PriceSource(Exchanges.pingi) { getPingiPriceUseCase.action(symbol, IRT) },
+        PriceSource(Exchanges.wallex) { getWallexPriceUseCase.action(symbol, TMN) },
+        PriceSource(Exchanges.abantether) { getAbanTetherPriceUseCase.action(symbol) },
+        PriceSource(Exchanges.sarmayex) { getSarmayexPriceUseCase.action(symbol, IRT) },
+        PriceSource(Exchanges.saraf) { getSarafPriceUseCase.action(symbol) },
+        PriceSource(Exchanges.ubitex) { getUbitexPriceUseCase.action(symbol, TMN) },
+        PriceSource(Exchanges.arzinja) { getArzinjaPriceUseCase.action(symbol, IRT) },
+        PriceSource(Exchanges.ramzinex) { getRamzinexPriceUseCase.action(symbol, IRR) },
+        PriceSource(Exchanges.bitbarg) { getBitbargPriceUseCase.action(symbol) },
+        PriceSource(Exchanges.arzypto) { getArzyptoPriceUseCase.action(TOMAN, symbol) },
+        PriceSource(Exchanges.exonyx) { getExonyxPriceUseCase.action(symbol) },
+    )
+
+    /**
+     * Until the app exchange config arrives we query every source; once it is known,
+     * only the exchanges the backend marked active are queried.
+     */
+    private fun priceFlowsFor(symbol: String): List<Flow<ApiCallResult<MarketPrice>>> {
+        val exchangesInfo = appExchangesInfo
+        return priceSourcesFor(symbol)
+            .filter { source ->
+                exchangesInfo.isNullOrEmpty() ||
+                        exchangesInfo.firstOrNull { it.exchange == source.exchange }?.active == true
+            }
+            .map { it.open() }
+    }
+
+    // endregion
+
+    // region Pipeline
+
+    private fun onPriceReceived(
+        price: MarketPrice,
+        symbol: String,
+        userExchanges: List<Exchanges>,
+    ) {
+        allMarkets = allMarkets
+            .filterNot { it.exchangeInfo.exchange == price.exchangeInfo.exchange }
+            .toMutableList()
+
+        if (price.symbol?.lowercase() == symbol.lowercase())
+            allMarkets.add(price)
+
+        allMarkets = removeInvalidExchangeUseCase
+            .action(RemoveInvalidExchangesParams(markets = allMarkets))
+            .toMutableList()
+
+        // Average over every exchange, not just the user's, so a bad price stands out.
+        // Adding exchanges into the average would let one out-of-range first price
+        // skew it and drag the rest of the list out with it.
+        val (avgBuy, avgSell) = getMarketAvgUseCase.action(allMarkets, userExchanges)
+
+        validMarkets = removeOutOfRangeExchangesUseCase.action(
+            RemoveOutOfRangeExchangesParams(
+                avgSell = avgSell,
+                avgBuy = avgBuy,
+                markets = allMarkets,
+            )
+        )
+        emitData()
+    }
+
+    private fun emitData() {
+        filterParams.markets = validMarkets
+        filterParams.addFee = exchangesLocalDataSource.addFee()
+        filterParams.userExchanges = getUserExchanges()
+        filterParams.exchangesInfo = appExchangesInfo
+        validMarkets = filterMarketUseCase.action(filterParams)
+
+        sortParams.markets = validMarkets
+        validMarkets = sortMarketUseCase.action(sortParams)
+
+        _priceState.value = ViewState.Success(validMarkets)
+    }
+
+    // endregion
+
+    override fun onCleared() {
+        super.onCleared()
+        stopTimer()
+        viewModelScope.cancel()
+    }
 }

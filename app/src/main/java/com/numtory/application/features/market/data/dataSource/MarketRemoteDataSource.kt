@@ -39,10 +39,14 @@ import com.numtory.application.features.market.data.models.BitPinOTCDataModel
 import com.numtory.application.features.market.data.models.BitbargDataModel
 import com.numtory.application.features.market.data.models.EterexAssetsPriceDataModel
 import com.numtory.application.features.market.data.models.ExonyxDataModel
+import com.numtory.application.features.market.data.models.AsacoineDataModel
+import com.numtory.application.features.market.data.models.MorbitDataModel
 import com.numtory.application.features.market.data.models.RamzinexCurrenciesDataModel
 import com.numtory.application.features.market.data.models.RamzinexDataModel
 import com.numtory.application.features.market.data.models.TabdealSwapDataModel
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.readBytes
+import io.ktor.http.HttpHeaders
 
 interface MarketRemoteDataSource {
     suspend fun getBitPinPrice(marketId: Int): BitPinOTCDataModel
@@ -106,6 +110,10 @@ interface MarketRemoteDataSource {
         base: String,
         symbol: String,
     ): BitbargDataModel
+
+    suspend fun getMorbitPrice(symbol: String): MorbitDataModel
+
+    suspend fun getAsacoinePrice(): AsacoineDataModel
 }
 
 class MarketRemoteDataSourceImpl constructor(
@@ -431,6 +439,27 @@ class MarketRemoteDataSourceImpl constructor(
 
         val json = response.bodyAsText()
         return gson.fromJson(json, BitbargDataModel::class.java)
+    }
+
+    override suspend fun getMorbitPrice(symbol: String): MorbitDataModel {
+        val response =
+            httpClient.get("${BuildConfig.MORBIT_URL}${symbol.lowercase()}/otcprices")
+
+        val json = response.bodyAsText()
+        return gson.fromJson(json, MorbitDataModel::class.java)
+    }
+
+    override suspend fun getAsacoinePrice(): AsacoineDataModel {
+        val response = httpClient.get(BuildConfig.ASACOINE_URL){
+//            header("Accept-Charset", "UTF-8")
+//            header("Content-Type", "application/json; charset=UTF-8")
+            header(HttpHeaders.Accept, "application/json")
+            header(HttpHeaders.ContentType, "application/json")
+            header(HttpHeaders.AcceptCharset, "UTF-8")
+        }
+
+        val json = response.bodyAsText()
+        return gson.fromJson(json, AsacoineDataModel::class.java)
     }
 
 }

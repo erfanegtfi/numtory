@@ -29,6 +29,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,6 +52,7 @@ import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.cryptoMarket.presenter.CryptoListScreen
 import com.numtory.application.features.gold.presenter.GoldMarketList
 import com.numtory.application.features.market.presenter.MarketList
+import com.numtory.application.features.notification.data.DeepLinkRouter
 import com.numtory.application.features.setting.domain.entities.AppSettings
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
@@ -59,6 +61,7 @@ import com.ramcosta.composedestinations.generated.destinations.UpdateAppScreenDe
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 // Define your screen destinations
 sealed class Screen(
@@ -84,6 +87,17 @@ sealed class Screen(
             Icons.Outlined.CurrencyBitcoin,
             Icons.Filled.CurrencyBitcoin
         )
+
+    companion object {
+        /**
+         * Resolves a `route` push-payload value to a tab. Matching is case-sensitive on purpose:
+         * CryptoExchanges ("crypto") and GlobalCryptoMarket ("Crypto") differ only by case, so a
+         * lenient match would silently send every payload to whichever is listed first.
+         */
+        fun fromRoute(route: String): Screen? =
+            listOf(CryptoExchanges, GoldExchanges, GlobalCryptoMarket)
+                .firstOrNull { it.route == route }
+    }
 }
 
 @Composable
@@ -120,6 +134,22 @@ fun MainScreen(
 
     val settings by viewModel.settingsState.collectAsStateWithLifecycle()
     val dialogMessage by viewModel.showSuccessDialog.collectAsStateWithLifecycle()
+
+    val deepLinkRouter = koinInject<DeepLinkRouter>()
+    val pendingRoute by deepLinkRouter.route.collectAsStateWithLifecycle()
+
+    LaunchedEffect(pendingRoute) {
+        val route = pendingRoute ?: return@LaunchedEffect
+        Screen.fromRoute(route)?.let { screen ->
+            navController.navigate(screen.route) {
+                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                launchSingleTop = true
+                restoreState = true
+            }
+        }
+        // Consume regardless, so an unknown route does not re-trigger on every recomposition.
+        deepLinkRouter.consume()
+    }
 
 //    LaunchedEffect(12) {
 //        viewModel.getSettings()

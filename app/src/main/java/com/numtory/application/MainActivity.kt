@@ -1,5 +1,6 @@
 package com.numtory.application
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.ComponentActivity
@@ -18,25 +19,34 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowInsetsControllerCompat
 import com.numtory.application.common.appOpened
 import com.numtory.application.features.chart.AppChartWebView
+import com.numtory.application.features.notification.data.DeepLinkRouter
+import com.numtory.application.features.notification.data.PushConstants
+import com.numtory.application.features.notification.presenter.RequestNotificationPermission
 import com.numtory.application.ui.theme.CHART_SCRIPT
 import com.numtory.application.ui.theme.MyApplicationTheme
 import com.numtory.application.ui.theme.ThemeManager
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.generated.NavGraphs
 import io.adtrace.sdk.AdTrace
+import org.koin.android.ext.android.inject
 import org.koin.compose.koinInject
 import java.util.Locale
 
 class MainActivity : ComponentActivity() {
+
+    private val deepLinkRouter: DeepLinkRouter by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         forceRTL()
         enableEdgeToEdge()
         appOpened()
+        handleDeepLink(intent)
         setContent {
             val themeManager = koinInject<ThemeManager>()
             MyApplicationTheme(darkTheme = themeManager.isDarkTheme) {
                 ApplyStatusBarTheme(darkTheme = themeManager.isDarkTheme)
+                RequestNotificationPermission()
                 CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                     Surface(
                         modifier = Modifier.fillMaxSize(),
@@ -49,6 +59,20 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    /**
+     * Fires for taps while the activity is already alive — launchMode is singleTop, so a tap
+     * reuses this instance rather than delivering the route through onCreate.
+     */
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleDeepLink(intent)
+    }
+
+    private fun handleDeepLink(intent: Intent?) {
+        deepLinkRouter.push(intent?.getStringExtra(PushConstants.KEY_ROUTE))
     }
 
     private fun forceRTL() {

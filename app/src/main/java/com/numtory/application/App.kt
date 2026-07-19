@@ -9,6 +9,8 @@ import com.numtory.application.features.gold.presenter.di.goldMarketPresenterMod
 import com.numtory.application.features.main.di.settingsPresenterModule
 import com.numtory.application.features.market.data.di.marketDataModule
 import com.numtory.application.features.market.presenter.di.marketPresenterModule
+import com.numtory.application.features.notification.data.NotificationPresenter
+import com.numtory.application.features.notification.di.notificationModule
 import com.numtory.application.features.scan.data.di.scanDataModule
 import com.numtory.application.features.scan.presenter.di.scanPresenterModule
 import com.numtory.application.features.seke.data.di.sekeDataModule
@@ -17,11 +19,14 @@ import com.numtory.application.features.setting.data.di.settingsDataModule
 import io.adtrace.sdk.AdTrace
 import io.adtrace.sdk.AdTraceConfig
 import io.adtrace.sdk.LogLevel
+import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 
 class App : Application() {
+
+    private val notificationPresenter: NotificationPresenter by inject()
 
     override fun onCreate() {
         super.onCreate()
@@ -47,9 +52,14 @@ class App : Application() {
                 sekeDataModule,
                 sekePresenterModule,
                 scanDataModule,
-                scanPresenterModule
+                scanPresenterModule,
+                notificationModule
             )
         }
+
+        // The channel must exist before the first notification arrives, including ones FCM renders
+        // itself while the app is backgrounded.
+        notificationPresenter.createChannel()
     }
 
     private class AdTraceLifecycleCallbacks : Application.ActivityLifecycleCallbacks {

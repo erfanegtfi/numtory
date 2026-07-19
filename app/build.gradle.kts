@@ -16,6 +16,7 @@ plugins {
 //    id("kotlin-kapt")
     id("com.google.devtools.ksp") version ("2.2.20-2.0.3")
 //    id(libs.plugins.devtools.ksp)
+    alias(libs.plugins.google.services)
 }
 
 android {
@@ -87,6 +88,8 @@ android {
         buildConfigField("String", "NOGHRESEA_URL", getLocalProperty("NOGHRESEA_URL"))
         buildConfigField("String", "GERAMI_URL", getLocalProperty("GERAMI_URL"))
         buildConfigField("String", "ZARAFZA_URL", getLocalProperty("ZARAFZA_URL"))
+        buildConfigField("String", "MORBIT_URL", getLocalProperty("MORBIT_URL"))
+        buildConfigField("String", "ASACOINE_URL", getLocalProperty("ASACOINE_URL"))
 
     }
 
@@ -149,6 +152,9 @@ dependencies {
     implementation(libs.koin.androidx.compose)
 
     implementation(libs.slf4j.simple)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
 
     implementation(libs.android.sdk)
     implementation(libs.installreferrer)

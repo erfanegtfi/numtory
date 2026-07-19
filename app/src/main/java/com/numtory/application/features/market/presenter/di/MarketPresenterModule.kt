@@ -8,6 +8,7 @@ import com.numtory.application.features.market.domain.usecase.GetArz3PriceUseCas
 import com.numtory.application.features.market.domain.usecase.GetArzinjaPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetArzplusPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetArzyptoPriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetAsacoinePriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBit24PriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBitPinPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetBitbargPriceUseCase
@@ -15,6 +16,7 @@ import com.numtory.application.features.market.domain.usecase.GetCoinkadePriceUs
 import com.numtory.application.features.market.domain.usecase.GetEterexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetExonyxPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetMarketAvgUseCase
+import com.numtory.application.features.market.domain.usecase.GetMorbitPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetNobitexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetPingiPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetPoolenoPriceUseCase
@@ -56,6 +58,8 @@ val marketPresenterModule = module {
     factory { GetArzyptoPriceUseCase(get<MarketRepository>()) }
     factory { GetExonyxPriceUseCase(get<MarketRepository>()) }
     factory { GetBitbargPriceUseCase(get<MarketRepository>()) }
+    factory { GetMorbitPriceUseCase(get<MarketRepository>()) }
+    factory { GetAsacoinePriceUseCase(get<MarketRepository>()) }
     factory { SortMarketUseCase() }
     factory { FilterMarketUseCase() }
     factory { RemoveOutOfRangeExchangeUseCase() }
@@ -66,6 +70,8 @@ val marketPresenterModule = module {
 //    viewModel<MarketsViewModel>{ MarketsViewModel(get<GetBitPinPriceUseCase>()) }
     viewModel {
         MarketsViewModel(
+            get(),
+            get(),
             get(),
             get(),
             get(),

@@ -27,6 +27,8 @@ import com.numtory.application.features.market.domain.usecase.GetBitbargPriceUse
 import com.numtory.application.features.market.domain.usecase.GetCoinkadePriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetEterexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetExonyxPriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetAsacoinePriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetMorbitPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetMarketAvgUseCase
 import com.numtory.application.features.market.domain.usecase.GetNobitexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetPingiPriceUseCase
@@ -90,6 +92,8 @@ constructor(
     private val getBitbargPriceUseCase: GetBitbargPriceUseCase,
     private val getArzinjaPriceUseCase: GetArzinjaPriceUseCase,
     private val getExonyxPriceUseCase: GetExonyxPriceUseCase,
+    private val getMorbitPriceUseCase: GetMorbitPriceUseCase,
+    private val getAsacoinePriceUseCase: GetAsacoinePriceUseCase,
     private val sortMarketUseCase: SortMarketUseCase,
     private val filterMarketUseCase: FilterMarketUseCase,
     private val removeOutOfRangeExchangesUseCase: RemoveOutOfRangeExchangeUseCase,
@@ -255,6 +259,8 @@ constructor(
         PriceSource(Exchanges.bitbarg) { getBitbargPriceUseCase.action(symbol) },
         PriceSource(Exchanges.arzypto) { getArzyptoPriceUseCase.action(TOMAN, symbol) },
         PriceSource(Exchanges.exonyx) { getExonyxPriceUseCase.action(symbol) },
+        PriceSource(Exchanges.morbit) { getMorbitPriceUseCase.action(symbol, IRT) },
+        PriceSource(Exchanges.asacoine) { getAsacoinePriceUseCase.action(symbol, TMN) },
     )
 
     /**

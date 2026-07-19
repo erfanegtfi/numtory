@@ -2,6 +2,8 @@
 agp = "8.13.2"
 androidSdk = "2.6.0"
 coilCompose = "3.4.0"
+firebaseBom = "34.4.0"
+googleServices = "4.4.4"
 installreferrer = "2.2"
 kotlin = "2.2.20"
 coreKtx = "1.17.0"
@@ -42,6 +44,8 @@ androidx-compose-material-icons-extended = { group = "androidx.compose.material"
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coilCompose" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilCompose" }
 coil-svg = { module = "io.coil-kt:coil3-svg", version.ref = "coilCompose" }
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 installreferrer = { module = "com.android.installreferrer:installreferrer", version.ref = "installreferrer" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serialization-json" }
@@ -77,4 +81,5 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 devtools-ksp = { id = "com.google.devtools.ksp" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
 

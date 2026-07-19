@@ -16,4 +16,6 @@ object PreferencesConstants {
 
         const val DARK_THEME = "dark_theme"
 
+        const val PUSH_TOKEN = "push_token"
+
 }

@@ -32,7 +32,9 @@ enum class Exchanges(val title: String, val logo: Int) {
     arzypto("ارزیپتو (سریع)", R.drawable.arzypto),
     ramzinex("رمزینکس (سریع)", R.drawable.ramzinex),
     bitbarg("بیت برگ (سریع)", R.drawable.bitbarg),
-    exonyx("اکس اونیکس (سریع)", R.drawable.exonyx);
+    exonyx("اکس اونیکس (سریع)", R.drawable.exonyx),
+    morbit("موربیت (سریع)", R.drawable.morbit),
+    asacoine("آساکوین (سریع)", R.drawable.asacoin);
 
 
     companion object {

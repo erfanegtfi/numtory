@@ -35,7 +35,7 @@ class GetPoolenoPriceUseCase constructor(
 
             when (buyPriceResponse) {
                 is ApiCallResult.Success -> {
-                    swapPrice.buyPrice = buyPriceResponse.result.payload?.rate
+                    swapPrice.buyPrice = buyPriceResponse.result.rate
                     swapPrice.symbol = baseCurrency
                 }
 
@@ -46,7 +46,7 @@ class GetPoolenoPriceUseCase constructor(
 
             when (sellPriceResponse) {
                 is ApiCallResult.Success -> {
-                    swapPrice.sellPrice = sellPriceResponse.result.payload?.rate
+                    swapPrice.sellPrice = sellPriceResponse.result.rate
                     swapPrice.symbol = baseCurrency
                 }
 

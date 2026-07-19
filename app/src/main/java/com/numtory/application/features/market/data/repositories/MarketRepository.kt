@@ -9,6 +9,7 @@ import com.numtory.application.features.market.data.models.EterexAssetsPriceData
 import com.numtory.application.features.market.data.models.RamzinexCurrenciesDataModel
 import com.numtory.application.features.market.domain.entities.AbanTether
 import com.numtory.application.features.market.domain.entities.Arz3CoinItem
+import com.numtory.application.features.market.domain.entities.Asacoine
 import com.numtory.application.features.market.domain.entities.ArzinjaItem
 import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.entities.ArzplusMarketItem
@@ -23,6 +24,7 @@ import com.numtory.application.features.market.domain.entities.Coinkade
 import com.numtory.application.features.market.domain.entities.EterexAssetsPrice
 import com.numtory.application.features.market.domain.entities.EterexGroups
 import com.numtory.application.features.market.domain.entities.ExonyxItem
+import com.numtory.application.features.market.domain.entities.Morbit
 import com.numtory.application.features.market.domain.entities.Nobitex
 import com.numtory.application.features.market.domain.entities.NobitexMarket
 import com.numtory.application.features.market.domain.entities.PingiItem
@@ -105,6 +107,10 @@ interface MarketRepository {
     ): Flow<ApiCallResult<Arzypto>>
 
     fun getExonyxSwapPrice(): Flow<ApiCallResult<List<ExonyxItem>?>>
+
+    fun getMorbitPrice(symbol: String): Flow<ApiCallResult<Morbit>>
+
+    fun getAsacoinePrice(): Flow<ApiCallResult<Asacoine>>
 
     fun getBitbargPrice(
         base: String,
@@ -452,6 +458,26 @@ class MarketRepositoryImpl(
     override fun getExonyxSwapPrice(): Flow<ApiCallResult<List<ExonyxItem>?>> = flow {
         val response = getResult {
             marketRemoteDataSource.getExonyxSwapPrice()
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result.toEntity()))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }.flowOn(dispatcher)
+
+    override fun getMorbitPrice(symbol: String): Flow<ApiCallResult<Morbit>> = flow {
+        val response = getResult {
+            marketRemoteDataSource.getMorbitPrice(symbol)
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result.toEntity()))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }.flowOn(dispatcher)
+
+    override fun getAsacoinePrice(): Flow<ApiCallResult<Asacoine>> = flow {
+        val response = getResult {
+            marketRemoteDataSource.getAsacoinePrice()
         }
         if (response is ApiCallResult.Success) {
             emit(ApiCallResult.Success(response.result.toEntity()))

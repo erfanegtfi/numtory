@@ -5,11 +5,6 @@ import com.numtory.application.features.market.domain.entities.MarketPrice
 
 class GetBestPriceUseCase constructor() {
 
-    /**
-     * The best of both sides across the list: the least you pay to buy and the most
-     * you get for selling, each with the exchange offering it. Either side is null
-     * while no exchange has quoted a usable price.
-     */
     fun action(priceList: List<MarketPrice>): BestPrices {
         val bestBuy = priceList
             .mapNotNull { market ->

@@ -62,7 +62,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 
-/** Quote currencies, spelled the way each exchange's own API expects them. */
 private const val IRT = "IRT"
 private const val TMN = "TMN"
 private const val TOMAN = "TOMAN"
@@ -106,7 +105,6 @@ constructor(
     private val removeInvalidExchangeUseCase: RemoveInvalidExchangeUseCase,
 ) : ViewModel() {
 
-    /** One exchange's price stream, kept lazy so it is only started once the exchange is known to be active. */
     private class PriceSource(
         val exchange: Exchanges,
         val open: () -> Flow<ApiCallResult<MarketPrice>>,
@@ -127,10 +125,8 @@ constructor(
         private set
     private var filterParams: FilterParams = FilterParams()
 
-    /** Every price received so far for [symbol], one entry per exchange. */
     private var allMarkets: MutableList<MarketPrice> = mutableListOf()
 
-    /** [allMarkets] after the out-of-range, filter and sort passes — this is what the UI renders. */
     private var validMarkets: List<MarketPrice> = emptyList()
 
     private var appExchangesInfo: List<ExchangeInfo>? = null
@@ -184,14 +180,13 @@ constructor(
         emitData()
     }
 
-    fun filter() {
+    private fun filter() {
         emitData()
     }
 
     fun getMarketAverage(): Pair<Double, Double> =
         getMarketAvgUseCase.action(validMarkets, getUserExchanges())
 
-    /** Best buy and best sell over the rendered list, each with the exchange offering it. */
     fun getBestPrices(): BestPrices =
         getBestPriceUseCase.action(validMarkets)
 
@@ -207,7 +202,6 @@ constructor(
         filter()
     }
 
-    /** Falls back to every known exchange, because a null selection means "the user hasn't narrowed it down". */
     fun getUserExchanges(): List<Exchanges> =
         exchangesLocalDataSource.getUserExchanges() ?: Exchanges.entries
 

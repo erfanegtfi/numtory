@@ -72,7 +72,7 @@ sealed class Screen(
 ) {
 
     object CryptoExchanges :
-        Screen("crypto", "مقایسه تتر", Icons.Outlined.BarChart, Icons.Filled.Home)
+        Screen("crypto", "مقایسه قیمت", Icons.Outlined.BarChart, Icons.Filled.Home)
 
 //    object Seke :
 //        Screen("seke", "ارز و سکه", Icons.Outlined.AttachMoney, Icons.Filled.AttachMoney)
@@ -162,25 +162,6 @@ fun MainScreen(
                     inclusive = true
                 }
         }
-
-    when (settings) {
-        is ViewState.Init -> {
-
-        }
-
-        is ViewState.Failure -> {
-
-        }
-
-        ViewState.Loading -> {
-
-        }
-
-        is ViewState.Success<AppSettings?> -> {
-
-        }
-
-    }
 
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) }

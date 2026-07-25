@@ -57,7 +57,7 @@ import com.numtory.application.common.exchangeScannerScreenOpened
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination
-import com.ramcosta.composedestinations.generated.destinations.ScanScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.NetworkScanScreenDestination
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -125,11 +125,11 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                 actions = {
                     IconButton(onClick = {
                         exchangeScannerScreenOpened()
-                        navigator.navigate(ScanScreenDestination)
+                        navigator.navigate(NetworkScanScreenDestination)
                     }) {
                         Icon(
                             imageVector = Icons.Filled.ManageSearch,
-                            contentDescription = "BSC Scanner"
+                            contentDescription = "Network Scanner"
                         )
                     }
 

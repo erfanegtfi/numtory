@@ -19,6 +19,7 @@ import com.numtory.application.features.gold.domain.usecase.GetDaricPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetDigikalaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetEcoGoldPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGeramiPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetGoldBestPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldMarketAvgUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldikaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetHamrahGoldPriceUseCase
@@ -37,6 +38,7 @@ import com.numtory.application.features.gold.domain.usecase.RemoveOutOfRangeGold
 import com.numtory.application.features.gold.domain.usecase.RemoveOutOfRangeGoldExchangesParams
 import com.numtory.application.features.gold.domain.usecase.SortGoldMarketUseCase
 import com.numtory.application.features.gold.domain.usecase.SortGoldParams
+import com.numtory.application.features.market.domain.entities.BestPrices
 import com.numtory.application.features.market.domain.enums.SortField
 import com.numtory.application.features.market.domain.enums.SortOrder
 import com.numtory.application.ui.theme.GOLD
@@ -82,6 +84,7 @@ constructor(
     private val filterMarketUseCase: FilterGoldMarketUseCase,
     private val removeOutOfRangeExchangesUseCase: RemoveOutOfRangeGoldExchangeUseCase,
     private val getMarketAvgUseCase: GetGoldMarketAvgUseCase,
+    private val getBestPriceUseCase: GetGoldBestPriceUseCase,
     private val exchangesLocalDataSource: GoldExchangesLocalDataSource,
     private val getAppExchangesUseCase: GetAppGoldExchangesUseCase,
     private val removeInvalidExchangeUseCase: RemoveInvalidGoldExchangeUseCase,
@@ -164,6 +167,10 @@ constructor(
 
     fun getMarketAverage(): Pair<Double, Double> =
         getMarketAvgUseCase.action(validMarkets, getUserExchanges())
+
+    /** Best buy and best sell over the rendered list, each with the exchange offering it. */
+    fun getBestPrices(): BestPrices =
+        getBestPriceUseCase.action(validMarkets)
 
     fun saveAddFee(addFee: Boolean) {
         exchangesLocalDataSource.saveAddFee(addFee)

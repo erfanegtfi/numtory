@@ -7,10 +7,10 @@ import com.numtory.application.features.market.domain.entities.SarafPrice
 
 data class SarafPriceDataModel(
     @SerializedName("price")
-    val price: SarafItemsDataModel
+    val price: SarafItemsDataModel?
 ) {
     fun toEntity(): SarafPrice =
-        SarafPrice(price.toEntity())
+        SarafPrice(price?.toEntity())
 }
 
 data class SarafItemsDataModel(

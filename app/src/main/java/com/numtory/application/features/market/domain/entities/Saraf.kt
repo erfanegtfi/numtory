@@ -1,7 +1,7 @@
 package com.numtory.application.features.market.domain.entities
 
 data class SarafPrice(
-    val price: SarafItems
+    val price: SarafItems?
 ) {
 }
 data class SarafItems(

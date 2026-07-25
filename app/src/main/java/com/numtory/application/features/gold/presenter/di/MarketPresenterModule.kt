@@ -8,6 +8,7 @@ import com.numtory.application.features.gold.domain.usecase.GetDaricPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetDigikalaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetEcoGoldPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGeramiPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetGoldBestPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldMarketAvgUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldikaPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.GetHamrahGoldPriceUseCase
@@ -49,12 +50,14 @@ val goldMarketPresenterModule = module {
     factory { GetAppGoldExchangesUseCase(get()) }
     factory { RemoveOutOfRangeGoldExchangeUseCase() }
     factory { GetGoldMarketAvgUseCase() }
+    factory { GetGoldBestPriceUseCase() }
     factory { GoldExchangesLocalDataSourceImpl(get()) }
     factory { GetAppExchangesUseCase(get()) }
     factory { RemoveInvalidGoldExchangeUseCase() }
 
     viewModel {
         GoldMarketsViewModel(
+            get(),
             get(),
             get(),
             get(),

@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.market.data.local.ExchangesLocalDataSource
+import com.numtory.application.features.market.domain.entities.BestPrices
 import com.numtory.application.features.market.domain.entities.ExchangeInfo
 import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.features.market.domain.enums.Exchanges
@@ -28,6 +29,7 @@ import com.numtory.application.features.market.domain.usecase.GetCoinkadePriceUs
 import com.numtory.application.features.market.domain.usecase.GetEterexPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetExonyxPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetAsacoinePriceUseCase
+import com.numtory.application.features.market.domain.usecase.GetBestPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetMorbitPriceUseCase
 import com.numtory.application.features.market.domain.usecase.GetMarketAvgUseCase
 import com.numtory.application.features.market.domain.usecase.GetNobitexPriceUseCase
@@ -98,6 +100,7 @@ constructor(
     private val filterMarketUseCase: FilterMarketUseCase,
     private val removeOutOfRangeExchangesUseCase: RemoveOutOfRangeExchangeUseCase,
     private val getMarketAvgUseCase: GetMarketAvgUseCase,
+    private val getBestPriceUseCase: GetBestPriceUseCase,
     private val exchangesLocalDataSource: ExchangesLocalDataSource,
     private val getAppExchangesUseCase: GetAppExchangesUseCase,
     private val removeInvalidExchangeUseCase: RemoveInvalidExchangeUseCase,
@@ -187,6 +190,10 @@ constructor(
 
     fun getMarketAverage(): Pair<Double, Double> =
         getMarketAvgUseCase.action(validMarkets, getUserExchanges())
+
+    /** Best buy and best sell over the rendered list, each with the exchange offering it. */
+    fun getBestPrices(): BestPrices =
+        getBestPriceUseCase.action(validMarkets)
 
     fun saveAddFee(addFee: Boolean) {
         exchangesLocalDataSource.saveAddFee(addFee)

@@ -31,8 +31,6 @@ import com.numtory.application.composeUI.MyImageLoader
 
 @Composable
 fun GetMarketAverage(
-    averageBuyPrice: Double,
-    averageSellPrice: Double,
     title: String,
     subtitle: String,
     symbol: String,
@@ -87,18 +85,18 @@ fun GetMarketAverage(
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             // Buy Price
-            PriceChip(
-                label = "میانگین خرید",
-                value = priceFormatter(averageBuyPrice.toLong().toString()),
-                color = Color(0xFF10B981) // Green
-            )
-
-            // Sell Price
-            PriceChip(
-                label = "میانگین فروش",
-                value = priceFormatter(averageSellPrice.toLong().toString()),
-                color = Color(0xFFEF4444) // Red
-            )
+//            PriceChip(
+//                label = "میانگین خرید",
+//                value = priceFormatter(averageBuyPrice.toLong().toString()),
+//                color = Color(0xFF10B981) // Green
+//            )
+//
+//            // Sell Price
+//            PriceChip(
+//                label = "میانگین فروش",
+//                value = priceFormatter(averageSellPrice.toLong().toString()),
+//                color = Color(0xFFEF4444) // Red
+//            )
         }
     }
 }

@@ -47,6 +47,7 @@ import com.numtory.application.features.gold.presenter.components.GoldPriceItem
 import com.numtory.application.features.market.domain.enums.topMetalSymbols
 import com.numtory.application.features.market.presenter.TokenListBottomSheetScreen
 import com.numtory.application.features.market.presenter.components.GetMarketAverage
+import com.numtory.application.features.market.presenter.components.MarketStatsRow
 import com.numtory.application.features.market.presenter.components.table.MarketPriceHeader
 import com.numtory.application.features.market.presenter.components.TimerProgressBar
 import com.numtory.application.features.market.presenter.components.appbar.MarketTopBar
@@ -73,6 +74,11 @@ fun GoldMarketList(
     var showSheet by remember { mutableStateOf(false) }
     var showTokenList by remember { mutableStateOf(false) }
     val selectedToken = viewModel.selectedToken
+
+    // Read here, in the composable body, so that a new price list recomposes the whole
+    // screen and the best-price lookup below is re-evaluated along with it.
+    val marketItems = (priceList as? ViewState.Success<List<GoldMarketPrice>>)?.data.orEmpty()
+    val bestPrices = viewModel.getBestPrices()
 
 //    printLogs(priceList)
 
@@ -160,8 +166,6 @@ fun GoldMarketList(
                                 TimerProgressBar(viewModel.timer)
 
                                 GetMarketAverage(
-                                    avgBuy,
-                                    avgSell,
                                     metalMap[selectedToken.value] ?: "",
                                     selectedToken.value,
                                     selectedToken.value,
@@ -178,6 +182,12 @@ fun GoldMarketList(
                                             )
                                         )
                                     }
+                                )
+
+                                MarketStatsRow(
+                                    averageBuyPrice = avgBuy,
+                                    averageSellPrice = avgSell,
+                                    bestPrices = bestPrices,
                                 )
                             }
                             MarketPriceHeader(
@@ -218,15 +228,7 @@ fun GoldMarketList(
                         }
 
                         is ViewState.Success -> {
-                            val items = (priceList as ViewState.Success<List<GoldMarketPrice>>).data
-                            // best sell = highest price you get when selling;
-                            // best buy = lowest price you pay when buying
-                            val bestSell = items
-                                .mapNotNull { it.finalSellPrice.toDoubleOrNull()?.takeIf { v -> v > 0 } }
-                                .maxOrNull()
-                            val bestBuy = items
-                                .mapNotNull { it.finalBuyPrice.toDoubleOrNull()?.takeIf { v -> v > 0 } }
-                                .minOrNull()
+                            val items = marketItems
                             if (items.isEmpty())
                                 item {
                                     Box(
@@ -244,10 +246,10 @@ fun GoldMarketList(
                                 itemsIndexed(items) { index, itemState ->
                                     GoldPriceItem(
                                         itemState,
-                                        isBestSell = bestSell != null &&
-                                                itemState.finalSellPrice.toDoubleOrNull() == bestSell,
-                                        isBestBuy = bestBuy != null &&
-                                                itemState.finalBuyPrice.toDoubleOrNull() == bestBuy,
+                                        isBestSell = bestPrices.sellPrice != null &&
+                                                itemState.finalSellPrice.toDoubleOrNull() == bestPrices.sellPrice,
+                                        isBestBuy = bestPrices.buyPrice != null &&
+                                                itemState.finalBuyPrice.toDoubleOrNull() == bestPrices.buyPrice,
 //                                modifier = Modifier.background(if (index % 2 == 0) Gray0 else Color.White)
                                     )
                                 }

@@ -18,7 +18,7 @@ class GetSarafPriceUseCase constructor(
         return marketRepository.getSaraf().map { response ->
             when (response) {
                 is ApiCallResult.Success -> {
-                    val asset = response.result.price.items[base]
+                    val asset = response.result.price?.items[base]
 
                     ApiCallResult.Success(
                         MarketPrice(

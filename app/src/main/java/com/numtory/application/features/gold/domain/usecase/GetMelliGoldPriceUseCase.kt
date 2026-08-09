@@ -25,8 +25,8 @@ class GetMelliGoldPriceUseCase constructor(
                     ApiCallResult.Success(
                         GoldMarketPrice(
                             symbol = GOLD,
-                            buyPrice = (response.result.data?.buy).toString(),
-                            sellPrice = (response.result.data?.sell).toString(),
+                            buyPrice = (response.result.data?.buy ?:"0").toString(),
+                            sellPrice = (response.result.data?.sell ?:"0").toString(),
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == GoldExchanges.melligold }
                                 ?: GoldExchangeInfo(
                                     exchange = GoldExchanges.melligold,

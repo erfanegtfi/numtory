@@ -28,8 +28,8 @@ class GetEcoGoldPriceUseCase constructor(
                     ApiCallResult.Success(
                         GoldMarketPrice(
                             symbol = symbol,
-                            buyPrice = (asset?.buyPrice).toString(),
-                            sellPrice = (asset?.sellPrice).toString(),
+                            buyPrice = (asset?.buyPrice?:"0").toString(),
+                            sellPrice = (asset?.sellPrice?:"0").toString(),
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == GoldExchanges.ecogold }
                                 ?: GoldExchangeInfo(
                                     exchange = GoldExchanges.ecogold,

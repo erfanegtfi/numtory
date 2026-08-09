@@ -3,7 +3,7 @@ package com.numtory.application.features.gold.domain.usecase
 import com.numtory.application.features.gold.data.local.GoldExchangesLocalDataSource
 import com.numtory.application.features.gold.domain.entities.GoldExchangeInfo
 
-class GetActiveGoldExchangesInfoUseCase constructor(
+class GetSelectableGoldExchangesUseCase constructor(
     private val exchangesLocalDataSource: GoldExchangesLocalDataSource,
 ) {
 

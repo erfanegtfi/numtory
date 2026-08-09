@@ -94,7 +94,7 @@ fun GoldMarketList(
         ShowBottomSheet(onDismiss = { showSheet = false }) { modalBottomSheetState, hide ->
             GoldAssetOptionsBottomSheetScreen(
                 viewModel.getUserExchanges(),
-                viewModel.getActiveExchangesInfo(),
+                viewModel.getSelectableExchanges(),
                 viewModel.getAddFee(),
                 hide
             ) { exchanges, addFee ->

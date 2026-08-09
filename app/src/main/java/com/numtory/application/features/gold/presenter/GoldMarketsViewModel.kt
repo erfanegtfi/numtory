@@ -12,11 +12,11 @@ import com.numtory.application.features.gold.data.local.GoldExchangesLocalDataSo
 import com.numtory.application.features.gold.domain.entities.GoldExchangeInfo
 import com.numtory.application.features.gold.domain.entities.GoldMarketPrice
 import com.numtory.application.features.gold.domain.enums.GoldExchanges
-import com.numtory.application.features.gold.domain.usecase.GetActiveGoldExchangesInfoUseCase
-import com.numtory.application.features.gold.domain.usecase.GetAppGoldExchangesUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldBestPriceUseCase
+import com.numtory.application.features.gold.domain.usecase.GetGoldExchangeCatalogUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldMarketAvgUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldPriceFlowsUseCase
+import com.numtory.application.features.gold.domain.usecase.GetSelectableGoldExchangesUseCase
 import com.numtory.application.features.gold.domain.usecase.GetUserGoldExchangesUseCase
 import com.numtory.application.features.gold.domain.usecase.MergeGoldPriceParams
 import com.numtory.application.features.gold.domain.usecase.MergeGoldPriceUseCase
@@ -38,6 +38,26 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 
+/**
+ * Drives the gold / silver price list.
+ *
+ * ### Three different "exchange" lists — do not mix them up
+ * | What | Where it comes from | Used for |
+ * |---|---|---|
+ * | **catalog** ([exchangeCatalog]) | backend, cached locally | which exchanges to *poll* |
+ * | **selectable** ([getSelectableExchanges]) | catalog filtered to `active && display` | rows in the settings sheet |
+ * | **user** ([getUserExchanges]) | the user's own ticks | which exchanges to *show* |
+ *
+ * ### Three different market lists
+ * Each incoming price walks through them in order:
+ *  1. [allMarkets] — one entry per exchange, raw, latest price wins.
+ *  2. [validMarkets] — [allMarkets] minus prices too far from the market average.
+ *  3. [displayedMarkets] — [validMarkets] narrowed to the user's exchanges, then sorted.
+ *     This is what [priceState] carries, and what the average / best-price helpers read.
+ *
+ * Steps 1–2 only change when a price arrives; step 3 also re-runs when the user changes
+ * a setting, which is why it always rebuilds from [validMarkets] rather than from itself.
+ */
 @ExperimentalCoroutinesApi
 @SuppressLint("CheckResult")
 class GoldMarketsViewModel
@@ -48,9 +68,9 @@ constructor(
     private val getMarketAvgUseCase: GetGoldMarketAvgUseCase,
     private val getBestPriceUseCase: GetGoldBestPriceUseCase,
     private val getUserExchangesUseCase: GetUserGoldExchangesUseCase,
-    private val getActiveExchangesInfoUseCase: GetActiveGoldExchangesInfoUseCase,
+    private val getSelectableExchangesUseCase: GetSelectableGoldExchangesUseCase,
     private val exchangesLocalDataSource: GoldExchangesLocalDataSource,
-    private val getAppExchangesUseCase: GetAppGoldExchangesUseCase,
+    private val getExchangeCatalogUseCase: GetGoldExchangeCatalogUseCase,
 ) : ViewModel() {
 
     // region State
@@ -67,18 +87,25 @@ constructor(
     var sortParams: SortGoldParams = SortGoldParams()
         private set
 
+    /** Latest price per exchange, exactly as received. */
     private var allMarkets: List<GoldMarketPrice> = emptyList()
 
+    /** [allMarkets] with outliers dropped — the honest picture of the whole market. */
     private var validMarkets: List<GoldMarketPrice> = emptyList()
 
-    private var appExchangesInfo: List<GoldExchangeInfo>? = null
+    /** [validMarkets] narrowed to the user's exchanges and sorted — what the screen renders. */
+    private var displayedMarkets: List<GoldMarketPrice> = emptyList()
+
+    /** Every exchange the backend knows about; `null` until the first fetch lands. */
+    private var exchangeCatalog: List<GoldExchangeInfo>? = null
+
+    /** The metal currently on screen: [GOLD] or `SILVER`. */
     private var symbol: String = GOLD
 
     private var priceJob: Job? = null
     private var timerJob: Job? = null
 
     init {
-        getExchanges()
         getPrices()
         startTimer()
     }
@@ -87,23 +114,26 @@ constructor(
         _selectedToken.value = token
     }
 
+    /**
+     * Fetches one round of prices: every exchange that quotes [symbol] is asked in
+     * parallel and rows appear as each answers. Called on init, on every timer tick,
+     * and when the user switches metal.
+     */
     fun getPrices(symbol: String = this.symbol) {
-        if (this.symbol != symbol) {
-            allMarkets = emptyList()
-            validMarkets = emptyList()
-            priceJob?.cancel()
-        }
-        this.symbol = symbol
+        if (symbol != this.symbol) startOver(symbol)
 
-        getExchanges()
+        refreshExchangeCatalog()
         _timer.intValue = REFRESH_TIMER
 
         if (_priceState.value is ViewState.Init)
             _priceState.value = ViewState.Loading
 
+        // Read once, so every price in this round is filtered against the same choice.
         val userExchanges = getUserExchanges()
+
+        // Each source emits a single price and completes, so this job ends by itself.
         priceJob = viewModelScope.launch {
-            getPriceFlowsUseCase.action(symbol, appExchangesInfo).merge().collect { response ->
+            getPriceFlowsUseCase.action(symbol, exchangeCatalog).merge().collect { response ->
                 if (response is ApiCallResult.Success)
                     onPriceReceived(response.result, symbol, userExchanges)
                 // Failures are ignored on purpose: a single exchange going down
@@ -112,38 +142,45 @@ constructor(
         }
     }
 
+    /** Switching metal invalidates every price we hold — drop them and stop the old round. */
+    private fun startOver(newSymbol: String) {
+        priceJob?.cancel()
+        allMarkets = emptyList()
+        validMarkets = emptyList()
+        displayedMarkets = emptyList()
+        symbol = newSymbol
+    }
+
     fun sort(sortField: SortField, sortOrder: SortOrder) {
         sortParams.sortField = sortField
         sortParams.sortOrder = sortOrder
-        emitData()
-    }
-
-    private fun filter() {
-        emitData()
+        rebuildDisplayedMarkets()
     }
 
     fun getMarketAverage(): Pair<Double, Double> =
-        getMarketAvgUseCase.action(validMarkets, getUserExchanges())
+        getMarketAvgUseCase.action(displayedMarkets, getUserExchanges())
 
     /** Best buy and best sell over the rendered list, each with the exchange offering it. */
     fun getBestPrices(): BestPrices =
-        getBestPriceUseCase.action(validMarkets)
+        getBestPriceUseCase.action(displayedMarkets)
 
     fun saveAddFee(addFee: Boolean) {
         exchangesLocalDataSource.saveAddFee(addFee)
-        filter()
+        rebuildDisplayedMarkets()
     }
 
     fun getAddFee(): Boolean = exchangesLocalDataSource.addFee()
 
     fun saveDisplayExchanges(exchanges: List<GoldExchanges>) {
         exchangesLocalDataSource.saveUserGoldExchanges(exchanges)
-        filter()
+        rebuildDisplayedMarkets()
     }
 
+    /** The exchanges the user ticked; all of them when they have never chosen. */
     fun getUserExchanges(): List<GoldExchanges> = getUserExchangesUseCase.action()
 
-    fun getActiveExchangesInfo(): List<GoldExchangeInfo> = getActiveExchangesInfoUseCase.action()
+    /** The exchanges worth offering in the settings sheet — see the class doc. */
+    fun getSelectableExchanges(): List<GoldExchangeInfo> = getSelectableExchangesUseCase.action()
 
     fun startTimer() {
         if (timerJob != null) return
@@ -161,10 +198,16 @@ constructor(
         timerJob = null
     }
 
-    private fun getExchanges() {
+    /**
+     * Refreshes [exchangeCatalog] in the background: the cached copy arrives first, the
+     * network copy a moment later. The round of prices started alongside this call still
+     * uses the previous catalog — deliberately, so a slow catalog request never delays
+     * prices. A `null` catalog simply means "poll every exchange".
+     */
+    private fun refreshExchangeCatalog() {
         viewModelScope.launch {
-            getAppExchangesUseCase.action().collect { response ->
-                if (response is ApiCallResult.Success) appExchangesInfo = response.result
+            getExchangeCatalogUseCase.action().collect { response ->
+                if (response is ApiCallResult.Success) exchangeCatalog = response.result
             }
         }
     }
@@ -173,6 +216,7 @@ constructor(
 
     // region Pipeline
 
+    /** Folds one exchange's price into [allMarkets] / [validMarkets], then repaints. */
     private fun onPriceReceived(
         price: GoldMarketPrice,
         symbol: String,
@@ -188,22 +232,23 @@ constructor(
         )
         allMarkets = snapshot.allMarkets
         validMarkets = snapshot.validMarkets
-        emitData()
+        rebuildDisplayedMarkets()
     }
 
-    private fun emitData() {
-        validMarkets = prepareMarketListUseCase.action(
+    /** Re-derives [displayedMarkets] from [validMarkets] and publishes it to the screen. */
+    private fun rebuildDisplayedMarkets() {
+        displayedMarkets = prepareMarketListUseCase.action(
             PrepareGoldMarketListParams(
                 markets = validMarkets,
                 userExchanges = getUserExchanges(),
-                exchangesInfo = appExchangesInfo,
+                exchangesInfo = exchangeCatalog,
                 addFee = exchangesLocalDataSource.addFee(),
                 sortField = sortParams.sortField,
                 sortOrder = sortParams.sortOrder,
             )
         )
 
-        _priceState.value = ViewState.Success(validMarkets)
+        _priceState.value = ViewState.Success(displayedMarkets)
     }
 
     // endregion

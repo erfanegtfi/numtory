@@ -22,8 +22,8 @@ class GetDaricPriceUseCase constructor(
                     ApiCallResult.Success(
                         GoldMarketPrice(
                             symbol = symbol,
-                            buyPrice = (response.result.bestBuy?.price).toString(),
-                            sellPrice = (response.result.bestBuy?.price).toString(),
+                            buyPrice = (response.result.bestBuy?.price?:"0").toString(),
+                            sellPrice = (response.result.bestBuy?.price?:"0").toString(),
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == GoldExchanges.daric }
                                 ?: GoldExchangeInfo(
                                     exchange = GoldExchanges.daric,

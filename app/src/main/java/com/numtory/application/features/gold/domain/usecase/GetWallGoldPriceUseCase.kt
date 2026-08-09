@@ -25,8 +25,8 @@ class GetWallGoldPriceUseCase constructor(
                     ApiCallResult.Success(
                         GoldMarketPrice(
                             symbol = GOLD,
-                            buyPrice = (response.result.result?.price).toString(),
-                            sellPrice = (response.result.result?.price).toString(),
+                            buyPrice = (response.result.result?.price?:"0").toString(),
+                            sellPrice = (response.result.result?.price?:"0").toString(),
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == GoldExchanges.wallgold }
                                 ?: GoldExchangeInfo(
                                     exchange = GoldExchanges.wallgold,

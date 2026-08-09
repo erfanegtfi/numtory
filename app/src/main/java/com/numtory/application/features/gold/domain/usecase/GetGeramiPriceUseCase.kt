@@ -24,8 +24,8 @@ class GetGeramiPriceUseCase constructor(
                     ApiCallResult.Success(
                         GoldMarketPrice(
                             symbol = symbol,
-                            buyPrice = (pair?.buyPrice).toString(),
-                            sellPrice = (pair?.sellPrice).toString(),
+                            buyPrice = (pair?.buyPrice ?: "0"),
+                            sellPrice = (pair?.sellPrice ?: "0"),
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == GoldExchanges.gerami }
                                 ?: GoldExchangeInfo(
                                     exchange = GoldExchanges.gerami,

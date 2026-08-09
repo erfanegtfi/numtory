@@ -3,9 +3,9 @@ package com.numtory.application.features.gold.presenter.di
 import com.numtory.application.features.gold.data.local.GoldExchangesLocalDataSourceImpl
 import com.numtory.application.features.gold.data.repositories.GoldMarketRepository
 import com.numtory.application.features.gold.domain.usecase.FilterGoldMarketUseCase
-import com.numtory.application.features.gold.domain.usecase.GetActiveGoldExchangesInfoUseCase
-import com.numtory.application.features.gold.domain.usecase.GetAppGoldExchangesUseCase
+import com.numtory.application.features.gold.domain.usecase.GetGoldExchangeCatalogUseCase
 import com.numtory.application.features.gold.domain.usecase.GetGoldPriceFlowsUseCase
+import com.numtory.application.features.gold.domain.usecase.GetSelectableGoldExchangesUseCase
 import com.numtory.application.features.gold.domain.usecase.GetUserGoldExchangesUseCase
 import com.numtory.application.features.gold.domain.usecase.MergeGoldPriceUseCase
 import com.numtory.application.features.gold.domain.usecase.PrepareGoldMarketListUseCase
@@ -52,7 +52,7 @@ val goldMarketPresenterModule = module {
     factory { GetZarafzaPriceUseCase(get<GoldMarketRepository>()) }
     factory { SortGoldMarketUseCase() }
     factory { FilterGoldMarketUseCase() }
-    factory { GetAppGoldExchangesUseCase(get()) }
+    factory { GetGoldExchangeCatalogUseCase(get()) }
     factory { RemoveOutOfRangeGoldExchangeUseCase() }
     factory { GetGoldMarketAvgUseCase() }
     factory { GetGoldBestPriceUseCase() }
@@ -60,7 +60,7 @@ val goldMarketPresenterModule = module {
     factory { GetAppExchangesUseCase(get()) }
     factory { RemoveInvalidGoldExchangeUseCase() }
     factory { GetUserGoldExchangesUseCase(get()) }
-    factory { GetActiveGoldExchangesInfoUseCase(get()) }
+    factory { GetSelectableGoldExchangesUseCase(get()) }
     factory { MergeGoldPriceUseCase(get(), get(), get()) }
     factory { PrepareGoldMarketListUseCase(get(), get()) }
     factory {

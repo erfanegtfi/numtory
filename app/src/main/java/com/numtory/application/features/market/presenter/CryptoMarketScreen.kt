@@ -54,8 +54,11 @@ import com.numtory.application.composeUI.ObserveMarketLifecycle
 import com.numtory.application.features.market.presenter.components.appbar.TopBarAction
 import com.numtory.application.ui.theme.ThemeManager
 import com.numtory.application.common.exchangeScannerScreenOpened
-import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootGraph
+import com.numtory.application.composeUI.ErrorMessage
+import com.numtory.application.composeUI.ItemNotFound
+import com.numtory.application.features.market.domain.entities.BestPrices
+import com.numtory.application.features.market.domain.enums.SortField
+import com.numtory.application.features.market.domain.enums.SortOrder
 import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination
 import com.ramcosta.composedestinations.generated.destinations.NetworkScanScreenDestination
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -87,7 +90,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
         onResume = viewModel::startTimer,
         onPause = viewModel::stopTimer
     )
-    
+
 
     if (showSheet)
         ShowBottomSheet(onDismiss = { showSheet = false }) { modalBottomSheetState, hide ->
@@ -120,43 +123,22 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
 
     Scaffold(
         topBar = {
-            MarketTopBar(
-                selectedToken = viewModel.selectedToken.value,
-                actions = {
-                    IconButton(onClick = {
-                        exchangeScannerScreenOpened()
-                        navigator.navigate(NetworkScanScreenDestination)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.ManageSearch,
-                            contentDescription = "Network Scanner"
-                        )
-                    }
-
-                    IconButton(onClick = { themeManager.toggle() }) {
-                        Icon(
-                            imageVector = if (themeManager.isDarkTheme)
-                                Icons.Filled.LightMode else Icons.Filled.DarkMode,
-                            contentDescription = "Toggle theme"
-                        )
-                    }
-
-                    TopBarAction(
-                        icon = R.drawable.ic_about,
-                        contentDescription = "About",
-                        onClick = {
-                            navigator.navigate(AboutScreenDestination)
-                        }
-                    )
-
-                    TopBarAction(
-                        icon = R.drawable.ic_setting,
-                        contentDescription = "Settings",
-                        onClick = {
-                            showSheet = true
-                        }
-                    )
-                }
+            GetAppbar(
+                viewModel,
+                isDarkTheme = themeManager.isDarkTheme,
+                onScannerClick = {
+                    exchangeScannerScreenOpened()
+                    navigator.navigate(NetworkScanScreenDestination)
+                },
+                toggleTheme = {
+                    themeManager.toggle()
+                },
+                onAboutClick = {
+                    navigator.navigate(AboutScreenDestination)
+                },
+                onSettingsClick = {
+                    showSheet = true
+                },
             )
         },
         modifier = Modifier.fillMaxSize()
@@ -182,36 +164,28 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                 LazyColumn {
 
                     stickyHeader {
+                        val (avgBuy, avgSell) = viewModel.getMarketAverage()
                         Column {
-                            if (priceList is ViewState.Success<List<MarketPrice>>) {
-
-                                val (avgBuy, avgSell) = viewModel.getMarketAverage()
-                                Box(modifier = Modifier.height(2.dp))
-                                TimerProgressBar(viewModel.timer)
-                                GetMarketAverage(
-                                    cryptoMap[selectedToken.value] ?: "",
-                                    selectedToken.value,
-                                    selectedToken.value,
-                                    onChartClicked = {
-                                        navigator.navigate(
-                                            AppChartWebViewDestination(
-                                                CHART_SCRIPT.replace(
-                                                    "{symbol_hear}",
-                                                    "nobitex_spot:${selectedToken.value}IRT"
-                                                ).trimIndent(),
-                                            )
+                            GetStickyHeader(
+                                priceList = priceList,
+                                timer = viewModel.timer.value,
+                                selectedToken = selectedToken.value,
+                                averageBuyPrice = avgBuy,
+                                averageSellPrice = avgSell,
+                                bestPrices = bestPrices,
+                                onTokenClick = { showTokenList = true },
+                                onChartClicked = {
+                                    navigator.navigate(
+                                        AppChartWebViewDestination(
+                                            CHART_SCRIPT.replace(
+                                                "{symbol_hear}",
+                                                "nobitex_spot:${selectedToken}IRT"
+                                            ).trimIndent(),
                                         )
-                                    },
-                                    onTokenClicked = {
-                                        showTokenList = true
-                                    })
+                                    )
+                                },
+                            )
 
-                                MarketStatsRow(
-                                    averageBuyPrice = avgBuy,
-                                    averageSellPrice = avgSell,
-                                    bestPrices = bestPrices,
-                                )
-                            }
                             MarketPriceHeader(
                                 sortField = viewModel.sortParams.sortField,
                                 sortOrder = viewModel.sortParams.sortOrder,
@@ -219,7 +193,6 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                                 viewModel.sort(sortField, sortOrder)
                             }
                         }
-
                     }
 
                     when (priceList) {
@@ -229,9 +202,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .height(100.dp)
-                                ) {
-                                    Text("")
-                                }
+                                )
                             }
 
                         }
@@ -253,16 +224,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                             val items = marketItems
                             if (items.isEmpty())
                                 item {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .height(300.dp)
-                                    ) {
-                                        Text(
-                                            "موردی پیدا نشد",
-                                            modifier = Modifier.align(alignment = Alignment.Center)
-                                        )
-                                    }
+                                    ItemNotFound()
                                 }
                             else
                                 itemsIndexed(items) { index, itemState ->
@@ -278,7 +240,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
 
                         is ViewState.Failure -> {
                             item {
-                                Text("خطایی رخ داد!")
+                                ErrorMessage()
                             }
                         }
 
@@ -288,6 +250,86 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
 
 
         }
+
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+@Composable
+fun GetAppbar(
+    viewModel: MarketsViewModel,
+    isDarkTheme: Boolean,
+    onScannerClick: () -> Unit,
+    toggleTheme: () -> Unit,
+    onAboutClick: () -> Unit,
+    onSettingsClick: () -> Unit
+) {
+    return MarketTopBar(
+        selectedToken = viewModel.selectedToken.value,
+        actions = {
+            IconButton(onClick = onScannerClick) {
+                Icon(
+                    imageVector = Icons.Filled.ManageSearch,
+                    contentDescription = "Network Scanner"
+                )
+            }
+
+            IconButton(onClick = toggleTheme) {
+                Icon(
+                    imageVector = if (isDarkTheme)
+                        Icons.Filled.LightMode else Icons.Filled.DarkMode,
+                    contentDescription = "Toggle theme"
+                )
+            }
+
+            TopBarAction(
+                icon = R.drawable.ic_about,
+                contentDescription = "About",
+                onClick = onAboutClick
+            )
+
+            TopBarAction(
+                icon = R.drawable.ic_setting,
+                contentDescription = "Settings",
+                onClick = onSettingsClick
+            )
+        }
+    )
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+@Composable
+fun GetStickyHeader(
+    priceList: ViewState<List<MarketPrice>>,
+    timer: Int,
+    averageBuyPrice: Double, averageSellPrice: Double,
+    selectedToken: String,
+    bestPrices: BestPrices,
+    onTokenClick: () -> Unit,
+    onChartClicked: () -> Unit,
+) {
+    return Column {
+        Box(modifier = Modifier.height(2.dp))
+        TimerProgressBar(timer)
+        if (priceList is ViewState.Success<List<MarketPrice>>) {
+
+
+            GetMarketAverage(
+                cryptoMap[selectedToken] ?: "",
+                selectedToken,
+                selectedToken,
+                onChartClicked = onChartClicked,
+                onTokenClicked = onTokenClick
+
+            )
+
+            MarketStatsRow(
+                averageBuyPrice = averageBuyPrice,
+                averageSellPrice = averageSellPrice,
+                bestPrices = bestPrices,
+            )
+        }
+
 
     }
 }

@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.numtory.application.BuildConfig
 import com.numtory.application.common.priceFormatter
+import com.numtory.application.composeUI.ItemNotFound
 import com.numtory.application.composeUI.MyImageLoader
 import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.cryptoMarket.domain.entities.CryptoMarketPrice
@@ -197,7 +198,7 @@ fun CryptoListScreen(
                             modifier = Modifier
                                 .height(2.dp)
                         )
-                        TimerProgressBar(viewModel.timer)
+                        TimerProgressBar(viewModel.timer.value)
                     }
 
                 }
@@ -233,16 +234,7 @@ fun CryptoListScreen(
                         val items = (priceList as ViewState.Success<List<CryptoMarketPrice>>).data
                         if (items.isEmpty())
                             item {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .height(300.dp)
-                                ) {
-                                    Text(
-                                        "موردی پیدا نشد",
-                                        modifier = Modifier.align(alignment = Alignment.Center)
-                                    )
-                                }
+                                ItemNotFound()
                             }
                         else
                             itemsIndexed(items) { index, itemState ->

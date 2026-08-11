@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.ManageSearch
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.numtory.application.R
+import com.numtory.application.composeUI.ErrorMessage
+import com.numtory.application.composeUI.ItemNotFound
 import com.numtory.application.composeUI.ObserveMarketLifecycle
 import com.numtory.application.composeUI.ShowBottomSheet
 import com.numtory.application.features.base.ViewState
@@ -44,7 +50,11 @@ import com.numtory.application.features.cryptoMarket.domain.entities.metalMap
 import com.numtory.application.features.gold.domain.entities.GoldMarketPrice
 import com.numtory.application.features.gold.presenter.components.GoldAssetOptionsBottomSheetScreen
 import com.numtory.application.features.gold.presenter.components.GoldPriceItem
+import com.numtory.application.features.market.domain.entities.BestPrices
+import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.features.market.domain.enums.topMetalSymbols
+import com.numtory.application.features.market.presenter.GetStickyHeader
+import com.numtory.application.features.market.presenter.MarketsViewModel
 import com.numtory.application.features.market.presenter.TokenListBottomSheetScreen
 import com.numtory.application.features.market.presenter.components.GetMarketAverage
 import com.numtory.application.features.market.presenter.components.MarketStatsRow
@@ -121,21 +131,10 @@ fun GoldMarketList(
 
     Scaffold(
         topBar = {
-            MarketTopBar(
-                selectedToken = viewModel.selectedToken.value,
-                actions = {
-                    TopBarAction(
-                        icon = R.drawable.ic_setting,
-                        contentDescription = "Settings",
-                        onClick = {
-                            showSheet = true
-                        }
-                    )
-                }
-            )
-
+            GetAppbar(selectedToken = viewModel.selectedToken.value) {
+                showSheet = true
+            }
         },
-//        modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
 
         Column(
@@ -158,38 +157,28 @@ fun GoldMarketList(
                 LazyColumn {
 
                     stickyHeader {
+                        val (avgBuy, avgSell) = viewModel.getMarketAverage()
                         Column {
-                            if (priceList is ViewState.Success<List<GoldMarketPrice>>) {
-
-                                val (avgBuy, avgSell) = viewModel.getMarketAverage()
-                                Box(modifier = Modifier.height(2.dp))
-                                TimerProgressBar(viewModel.timer)
-
-                                GetMarketAverage(
-                                    metalMap[selectedToken.value] ?: "",
-                                    selectedToken.value,
-                                    selectedToken.value,
-                                    onTokenClicked = {
-                                        showTokenList = true
-                                    },
-                                    onChartClicked = {
-                                        navigator.navigate(
-                                            AppChartWebViewDestination(
-                                                CHART_SCRIPT.replace(
-                                                    "{symbol_hear}",
-                                                    "brs:GOLD18IRT"
-                                                ).trimIndent(),
-                                            )
+                            GetStickyHeader(
+                                priceList = priceList,
+                                timer = viewModel.timer.value,
+                                selectedToken = selectedToken.value,
+                                averageBuyPrice = avgBuy,
+                                averageSellPrice = avgSell,
+                                bestPrices = bestPrices,
+                                onTokenClick = { showTokenList = true },
+                                onChartClicked = {
+                                    navigator.navigate(
+                                        AppChartWebViewDestination(
+                                            CHART_SCRIPT.replace(
+                                                "{symbol_hear}",
+                                                "brs:GOLD18IRT"
+                                            ).trimIndent(),
                                         )
-                                    }
-                                )
+                                    )
+                                },
+                            )
 
-                                MarketStatsRow(
-                                    averageBuyPrice = avgBuy,
-                                    averageSellPrice = avgSell,
-                                    bestPrices = bestPrices,
-                                )
-                            }
                             MarketPriceHeader(
                                 sortField = viewModel.sortParams.sortField,
                                 sortOrder = viewModel.sortParams.sortOrder,
@@ -207,9 +196,7 @@ fun GoldMarketList(
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .height(100.dp)
-                                ) {
-                                    Text("")
-                                }
+                                )
                             }
 
                         }
@@ -231,16 +218,7 @@ fun GoldMarketList(
                             val items = marketItems
                             if (items.isEmpty())
                                 item {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .height(300.dp)
-                                    ) {
-                                        Text(
-                                            "موردی پیدا نشد",
-                                            modifier = Modifier.align(alignment = Alignment.Center)
-                                        )
-                                    }
+                                    ItemNotFound()
                                 }
                             else
                                 itemsIndexed(items) { index, itemState ->
@@ -250,23 +228,75 @@ fun GoldMarketList(
                                                 itemState.finalSellPrice.toDoubleOrNull() == bestPrices.sellPrice,
                                         isBestBuy = bestPrices.buyPrice != null &&
                                                 itemState.finalBuyPrice.toDoubleOrNull() == bestPrices.buyPrice,
-//                                modifier = Modifier.background(if (index % 2 == 0) Gray0 else Color.White)
                                     )
                                 }
                         }
 
                         is ViewState.Failure -> {
                             item {
-                                Text("خطایی رخ داد!")
-//                                Text("Error: ${(priceList as ViewState.Failure).error.message}")
+                                ErrorMessage()
                             }
                         }
 
                     }
                 }
             }
+        }
+    }
+}
 
+@OptIn(ExperimentalCoroutinesApi::class)
+@Composable
+fun GetAppbar(
+    selectedToken: String,
 
+    onSettingsClick: () -> Unit
+) {
+    return MarketTopBar(
+        selectedToken = selectedToken,
+        actions = {
+            TopBarAction(
+                icon = R.drawable.ic_setting,
+                contentDescription = "Settings",
+                onClick = onSettingsClick
+            )
+        }
+    )
+
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+@Composable
+fun GetStickyHeader(
+    priceList: ViewState<List<GoldMarketPrice>>,
+    timer: Int,
+    averageBuyPrice: Double,
+    averageSellPrice: Double,
+    selectedToken: String,
+    bestPrices: BestPrices,
+    onTokenClick: () -> Unit,
+    onChartClicked: () -> Unit,
+) {
+    return Column {
+
+        Box(modifier = Modifier.height(2.dp))
+        TimerProgressBar(timer)
+
+        if (priceList is ViewState.Success<List<GoldMarketPrice>>) {
+
+            GetMarketAverage(
+                metalMap[selectedToken] ?: "",
+                selectedToken,
+                selectedToken,
+                onTokenClicked = onTokenClick,
+                onChartClicked = onChartClicked
+            )
+
+            MarketStatsRow(
+                averageBuyPrice = averageBuyPrice,
+                averageSellPrice = averageSellPrice,
+                bestPrices = bestPrices,
+            )
         }
 
     }

@@ -51,6 +51,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.numtory.application.BuildConfig
 import com.numtory.application.common.formatDuration
 import com.numtory.application.common.priceFormatter
+import com.numtory.application.composeUI.ErrorMessage
+import com.numtory.application.composeUI.ItemNotFound
 import com.numtory.application.composeUI.MyImageLoader
 import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.cryptoMarket.domain.entities.CryptoMarketPrice
@@ -128,9 +130,7 @@ fun SekePriceScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .height(100.dp)
-                            ) {
-                                Text("")
-                            }
+                            )
                         }
 
                     }
@@ -152,15 +152,7 @@ fun SekePriceScreen(
                         val items = (priceList as ViewState.Success<List<SekePrice>>).data
                         if (items.isEmpty())
                             item {
-                                Box(
-                                    modifier = Modifier.fillParentMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        "موردی پیدا نشد",
-                                        modifier = Modifier.align(alignment = Alignment.Center)
-                                    )
-                                }
+                                ItemNotFound()
                             }
                         else
                             itemsIndexed(items) { index, itemState ->
@@ -172,12 +164,7 @@ fun SekePriceScreen(
 
                     is ViewState.Failure -> {
                         item {
-                            Box(
-                                modifier = Modifier.fillParentMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text("خطایی رخ داد!")
-                            }
+                            ErrorMessage()
                         }
                     }
                 }
@@ -214,12 +201,12 @@ fun CryptoListItem(seke: SekePrice) {
             MyImageLoader(
                 BuildConfig.SEKE_ICON_URL.replace(
                     "{icon}",
-                    seke.symbol?.uppercase()?:""
+                    seke.symbol?.uppercase() ?: ""
                 )
             )
 
             // Name and Symbol
-            Column(  modifier = Modifier.weight(1f),) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = (seke.title
                         ?: "").replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() },

@@ -210,9 +210,7 @@ fun CryptoListScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .height(100.dp)
-                            ) {
-                                Text("")
-                            }
+                            )
                         }
 
                     }

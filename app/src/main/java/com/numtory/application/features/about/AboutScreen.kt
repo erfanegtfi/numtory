@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,26 +61,9 @@ fun AboutScreen(navigator: DestinationsNavigator) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "اطلاعات تماس",
-                        style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        navigator.popBackStack()
-                    }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(// Use 'surface' instead of 'primary' for the app bar background
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-            )
+          GetAppbar { {
+              navigator.popBackStack()
+          } }
         }
     ) { innerPadding ->
         Column(
@@ -90,34 +74,7 @@ fun AboutScreen(navigator: DestinationsNavigator) {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Profile Header
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                shape = MaterialTheme.shapes.medium,
-                color = MaterialTheme.colorScheme.primary
-            ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.launcher_white),
-                        contentDescription = "My Image Description",
-                        modifier = Modifier
-                            .size(80.dp)  // Fixed size
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        "توکن چند",
-                        style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
-                    )
-//                    Text(
-//                        "Android Developer",
-//                        color = MaterialTheme.colorScheme.onSurfaceVariant
-//                    )
-                }
-            }
-
+            GetHeader()
             // Contact Items with Copy Functionality
             CopyableContactItem(
                 icon = "📧",
@@ -139,19 +96,58 @@ fun AboutScreen(navigator: DestinationsNavigator) {
 
             // Description
             DescriptionWithEditOption(
-                description = """
--  اپلیکیشن توکن چند قیمت ارزهای دیجیتال در صرافی های ایرانی را مقایسه می کند.
--  نمایش نام صرافی و پلتفرم ها به معنای تایید آن ها نیست و تحقیق در مورد اعتبار سایت ها بر عهده کاربر است.
--  قیمت تمامی رمز ارزها و طلا در اپلیکیشن به طور مستقیم از سایت صرافی ها دریافت و نمایش داده می شود.
--  اپلیکیشن توکن چند هیچ گونه تغییری در قیمت های نمایش داده شده انجام نمی دهد.
--  اپلیکیشن توکن چند به طور مستقل هیچ گونه قیمتی را نمایش نمی دهد و مسئولیتی در قبال هیچ یک از قیمت های نمایش داده شده در اپلیکیشن ندارد.
--  کارمزد نمایش داده شده برای هر پلتفرم کارمز حداکثری است و ممکن است بر اساس سطوح کاربری تغییر کند. بهتر است کارمزد دقیق تر را در سایت پلتفرم مورد نظر بررسی کنید.
-                """.trimIndent()
+                description = stringResource(R.string.about_description).trimIndent()
             )
         }
     }
 }
-
+@Composable
+fun GetHeader(){
+    return  Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.medium,
+        color = MaterialTheme.colorScheme.primary
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.launcher_white),
+                contentDescription = "My Image Description",
+                modifier = Modifier
+                    .size(80.dp)  // Fixed size
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                "توکن چند",
+                style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
+            )
+        }
+    }
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GetAppbar(onBackClick:() ->Unit){
+    return   TopAppBar(
+        title = {
+            Text(
+                "اطلاعات تماس",
+                style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.onPrimary)
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back", tint = Color.White)
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(// Use 'surface' instead of 'primary' for the app bar background
+            containerColor = MaterialTheme.colorScheme.primary,
+            titleContentColor = MaterialTheme.colorScheme.onPrimary,
+            actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+        ),
+    )
+}
 @Composable
 fun CopyableContactItem(
     icon: String,

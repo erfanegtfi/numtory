@@ -13,9 +13,9 @@ import com.numtory.application.ui.theme.REFRESH_TIMER
 import com.numtory.application.ui.theme.White
 
 @Composable
-fun TimerProgressBar(progress: Int) {
+fun TimerProgressBar(progress: State<Int>) {
     LinearProgressIndicator(
-        progress = { (progress / REFRESH_TIMER.toFloat()) },
+        progress = { (progress.value / REFRESH_TIMER.toFloat()) },
         modifier = Modifier
             .fillMaxWidth()
             .height(4.dp),

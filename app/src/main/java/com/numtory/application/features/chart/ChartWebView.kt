@@ -44,13 +44,6 @@ fun AppChartWebView(
                 ),
                 title = {
                     Box(modifier = Modifier.fillMaxSize()) {
-//                        Text(
-//                            text = "USDT",
-//                            modifier = Modifier
-//                                .align(Alignment.CenterEnd)
-//                                .padding(end = 18.dp),
-//                            style = MaterialTheme.typography.titleLarge
-//                        )
                         Text(
                             text = "توکن چند",
                             modifier = Modifier.align(Alignment.CenterStart),

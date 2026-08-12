@@ -11,19 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DarkMode
-import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.ManageSearch
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -33,7 +23,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -41,29 +30,25 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.numtory.application.R
 import com.numtory.application.composeUI.ErrorMessage
+import androidx.compose.runtime.State
 import com.numtory.application.composeUI.ItemNotFound
 import com.numtory.application.composeUI.ObserveMarketLifecycle
 import com.numtory.application.composeUI.ShowBottomSheet
 import com.numtory.application.features.base.ViewState
-import com.numtory.application.features.cryptoMarket.domain.entities.cryptoMap
 import com.numtory.application.features.cryptoMarket.domain.entities.metalMap
 import com.numtory.application.features.gold.domain.entities.GoldMarketPrice
 import com.numtory.application.features.gold.presenter.components.GoldAssetOptionsBottomSheetScreen
 import com.numtory.application.features.gold.presenter.components.GoldPriceItem
 import com.numtory.application.features.market.domain.entities.BestPrices
-import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.features.market.domain.enums.topMetalSymbols
-import com.numtory.application.features.market.presenter.GetStickyHeader
-import com.numtory.application.features.market.presenter.MarketsViewModel
 import com.numtory.application.features.market.presenter.TokenListBottomSheetScreen
 import com.numtory.application.features.market.presenter.components.GetMarketAverage
 import com.numtory.application.features.market.presenter.components.MarketStatsRow
-import com.numtory.application.features.market.presenter.components.table.MarketPriceHeader
 import com.numtory.application.features.market.presenter.components.TimerProgressBar
 import com.numtory.application.features.market.presenter.components.appbar.MarketTopBar
 import com.numtory.application.features.market.presenter.components.appbar.TopBarAction
+import com.numtory.application.features.market.presenter.components.table.MarketPriceHeader
 import com.numtory.application.ui.theme.CHART_SCRIPT
-import com.ramcosta.composedestinations.generated.destinations.AboutScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -83,7 +68,6 @@ fun GoldMarketList(
     val pullToRefreshState = rememberPullToRefreshState()
     var showSheet by remember { mutableStateOf(false) }
     var showTokenList by remember { mutableStateOf(false) }
-    val selectedToken = viewModel.selectedToken
 
     // Read here, in the composable body, so that a new price list recomposes the whole
     // screen and the best-price lookup below is re-evaluated along with it.
@@ -131,7 +115,7 @@ fun GoldMarketList(
 
     Scaffold(
         topBar = {
-            GetAppbar(selectedToken = viewModel.selectedToken.value) {
+            GetAppbar(selectedToken = viewModel.selectedToken) {
                 showSheet = true
             }
         },
@@ -161,8 +145,8 @@ fun GoldMarketList(
                         Column {
                             GetStickyHeader(
                                 priceList = priceList,
-                                timer = viewModel.timer.value,
-                                selectedToken = selectedToken.value,
+                                timer = viewModel.timer,
+                                selectedToken = viewModel.selectedToken,
                                 averageBuyPrice = avgBuy,
                                 averageSellPrice = avgSell,
                                 bestPrices = bestPrices,
@@ -248,12 +232,11 @@ fun GoldMarketList(
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun GetAppbar(
-    selectedToken: String,
-
+    selectedToken: State<String>,
     onSettingsClick: () -> Unit
 ) {
     return MarketTopBar(
-        selectedToken = selectedToken,
+        selectedToken = selectedToken.value,
         actions = {
             TopBarAction(
                 icon = R.drawable.ic_setting,
@@ -269,10 +252,10 @@ fun GetAppbar(
 @Composable
 fun GetStickyHeader(
     priceList: ViewState<List<GoldMarketPrice>>,
-    timer: Int,
+    timer:State<Int>,
     averageBuyPrice: Double,
     averageSellPrice: Double,
-    selectedToken: String,
+    selectedToken:  State<String>,
     bestPrices: BestPrices,
     onTokenClick: () -> Unit,
     onChartClicked: () -> Unit,
@@ -285,7 +268,7 @@ fun GetStickyHeader(
         if (priceList is ViewState.Success<List<GoldMarketPrice>>) {
 
             GetMarketAverage(
-                metalMap[selectedToken] ?: "",
+                metalMap[selectedToken.value] ?: "",
                 selectedToken,
                 selectedToken,
                 onTokenClicked = onTokenClick,

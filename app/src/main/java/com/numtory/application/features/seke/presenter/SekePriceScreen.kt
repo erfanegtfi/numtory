@@ -58,6 +58,7 @@ import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.cryptoMarket.domain.entities.CryptoMarketPrice
 import com.numtory.application.features.market.presenter.components.TimerProgressBar
 import com.numtory.application.features.seke.domain.entities.SekePrice
+import com.numtory.application.features.seke.presenter.components.CryptoListItem
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
@@ -156,9 +157,7 @@ fun SekePriceScreen(
                             }
                         else
                             itemsIndexed(items) { index, itemState ->
-                                CryptoListItem(
-                                    itemState
-                                )
+                                CryptoListItem(itemState)
                             }
                     }
 
@@ -173,59 +172,3 @@ fun SekePriceScreen(
     }
 }
 
-@Composable
-fun CryptoListItem(seke: SekePrice) {
-
-    val totalSeconds =
-        (System.currentTimeMillis() - (seke.lastUpdateSec
-            ?: System.currentTimeMillis())) / 1000
-
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-
-
-        ) {
-        // Left section: Image, Name & Symbol
-        Row(
-
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-
-            ) {
-
-            MyImageLoader(
-                BuildConfig.SEKE_ICON_URL.replace(
-                    "{icon}",
-                    seke.symbol?.uppercase() ?: ""
-                )
-            )
-
-            // Name and Symbol
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = (seke.title
-                        ?: "").replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() },
-                    fontSize = 14.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = "${formatDuration(totalSeconds)} قبل",
-                    fontSize = 12.sp,
-                    color = Color.Gray
-                )
-            }
-
-            Text(
-                text = priceFormatter(seke.sell ?: "0"),
-                fontSize = 14.sp,
-            )
-        }
-    }
-
-}

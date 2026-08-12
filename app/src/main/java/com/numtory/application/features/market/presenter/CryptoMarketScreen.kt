@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -77,7 +78,6 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
     val pullToRefreshState = rememberPullToRefreshState()
     var showSheet by remember { mutableStateOf(false) }
     var showTokenList by remember { mutableStateOf(false) }
-    val selectedToken = viewModel.selectedToken
 
     // Read here, in the composable body, so that a new price list recomposes the whole
     // screen and the best-price lookup below is re-evaluated along with it.
@@ -124,7 +124,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
     Scaffold(
         topBar = {
             GetAppbar(
-                viewModel,
+                viewModel.selectedToken,
                 isDarkTheme = themeManager.isDarkTheme,
                 onScannerClick = {
                     exchangeScannerScreenOpened()
@@ -168,8 +168,8 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                         Column {
                             GetStickyHeader(
                                 priceList = priceList,
-                                timer = viewModel.timer.value,
-                                selectedToken = selectedToken.value,
+                                timer = viewModel.timer,
+                                selectedToken = viewModel.selectedToken,
                                 averageBuyPrice = avgBuy,
                                 averageSellPrice = avgSell,
                                 bestPrices = bestPrices,
@@ -179,7 +179,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
                                         AppChartWebViewDestination(
                                             CHART_SCRIPT.replace(
                                                 "{symbol_hear}",
-                                                "nobitex_spot:${selectedToken}IRT"
+                                                "nobitex_spot:${viewModel.selectedToken.value}IRT"
                                             ).trimIndent(),
                                         )
                                     )
@@ -257,7 +257,7 @@ fun MarketList(navigator: DestinationsNavigator, viewModel: MarketsViewModel = k
 @OptIn(ExperimentalCoroutinesApi::class)
 @Composable
 fun GetAppbar(
-    viewModel: MarketsViewModel,
+    selectedToken: State<String>,
     isDarkTheme: Boolean,
     onScannerClick: () -> Unit,
     toggleTheme: () -> Unit,
@@ -265,7 +265,7 @@ fun GetAppbar(
     onSettingsClick: () -> Unit
 ) {
     return MarketTopBar(
-        selectedToken = viewModel.selectedToken.value,
+        selectedToken = selectedToken,
         actions = {
             IconButton(onClick = onScannerClick) {
                 Icon(
@@ -301,9 +301,9 @@ fun GetAppbar(
 @Composable
 fun GetStickyHeader(
     priceList: ViewState<List<MarketPrice>>,
-    timer: Int,
+    timer: State<Int>,
     averageBuyPrice: Double, averageSellPrice: Double,
-    selectedToken: String,
+    selectedToken: State<String>,
     bestPrices: BestPrices,
     onTokenClick: () -> Unit,
     onChartClicked: () -> Unit,
@@ -315,7 +315,7 @@ fun GetStickyHeader(
 
 
             GetMarketAverage(
-                cryptoMap[selectedToken] ?: "",
+                cryptoMap[selectedToken.value] ?: "",
                 selectedToken,
                 selectedToken,
                 onChartClicked = onChartClicked,

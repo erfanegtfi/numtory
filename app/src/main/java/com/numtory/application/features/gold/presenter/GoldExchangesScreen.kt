@@ -236,7 +236,7 @@ fun GetAppbar(
     onSettingsClick: () -> Unit
 ) {
     return MarketTopBar(
-        selectedToken = selectedToken.value,
+        selectedToken = selectedToken,
         actions = {
             TopBarAction(
                 icon = R.drawable.ic_setting,

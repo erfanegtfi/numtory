@@ -57,7 +57,7 @@ fun GetMarketAverage(
         MyImageLoader(
             BuildConfig.CRYPTO_ICON_URL.replace(
                 "{icon}",
-                symbol.lowercase()
+                symbol.value.lowercase()
             ), modifier = Modifier.clickable() {
                 onTokenClicked()
             }
@@ -75,7 +75,7 @@ fun GetMarketAverage(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                subtitle,
+                subtitle.value,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

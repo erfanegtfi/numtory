@@ -198,7 +198,7 @@ fun CryptoListScreen(
                             modifier = Modifier
                                 .height(2.dp)
                         )
-                        TimerProgressBar(viewModel.timer.value)
+                        TimerProgressBar(viewModel.timer)
                     }
 
                 }
@@ -309,7 +309,7 @@ fun CryptoListItem(crypto: CryptoMarketPrice) {
         // Right section: Price and Change
         Column(horizontalAlignment = Alignment.End) {
             Text(
-                text = priceFormatter(crypto.price?:"0"),
+                text = priceFormatter(crypto.price ?: "0"),
                 fontSize = 14.sp,
             )
 

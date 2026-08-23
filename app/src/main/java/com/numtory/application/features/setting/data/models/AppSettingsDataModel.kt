@@ -5,13 +5,13 @@ import com.numtory.application.features.setting.domain.entities.AppSettings
 
 data class AppSettingsDataModel(
     @SerializedName("version")
-    val version: Int,
+    val version: Int?,
     @SerializedName("force")
-    val force: Boolean,
+    val force: Boolean?,
     @SerializedName("version_name")
-    val versionName: String,
+    val versionName: String?,
     @SerializedName("block")
-    val block: Boolean
+    val block: Boolean?
 ) {
     fun toEntity(): AppSettings =
         AppSettings(version, versionName, force, block)

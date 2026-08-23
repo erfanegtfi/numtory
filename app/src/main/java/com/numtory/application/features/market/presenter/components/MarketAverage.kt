@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.numtory.application.common.priceFormatter
 import com.numtory.application.features.market.domain.entities.BestPrices
 import com.numtory.application.ui.theme.BestPrice
+import com.numtory.application.ui.theme.appColors
 
 /** The buy and sell sides keep the same green/red they have in the average card above. */
 private val BuyColor = BestPrice
@@ -29,7 +30,7 @@ private val SellColor = Color(0xFFEF4444)
  * exchange offering it — and the market average on each side.
  */
 @Composable
-fun MarketStatsRow(
+fun MarketAverrage(
     averageBuyPrice: Double,
     averageSellPrice: Double,
     bestPrices: BestPrices,
@@ -38,7 +39,7 @@ fun MarketStatsRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color.White)
+            .background(MaterialTheme.appColors.surface)
             .padding(horizontal = 8.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         verticalAlignment = Alignment.Top,

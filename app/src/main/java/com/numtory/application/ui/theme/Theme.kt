@@ -1,17 +1,31 @@
 package com.numtory.application.ui.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import com.eterex.designsystem.theme.darkTypography
 import com.eterex.designsystem.theme.lightTypography
+
+@Immutable
+data class AppColors(
+
+    val surface: Color
+)
+
+val LightAppColors = AppColors(
+    surface = Color(0xFFFFFFFF),
+)
+
+val DarkAppColors = AppColors(
+    surface = Color(0xFF333333),
+)
 
 private val DarkColorScheme = darkColorScheme(
     primary = DarkPrimary,
@@ -39,7 +53,7 @@ private val LightColorScheme = lightColorScheme(
     onSurface = textBlack,
     surfaceVariant = Secondary,
     onSurfaceVariant = textGray,
-    background = Color(0xFFF8F8FF),
+    background = LightBackground,
     onBackground = textBlack,
 )
 
@@ -59,10 +73,28 @@ fun MyApplicationTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+    val appColors = if (darkTheme) {
+        DarkAppColors
+    } else {
+        LightAppColors
+    }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = if (darkTheme) darkTypography else lightTypography,
-        content = content
-    )
+    CompositionLocalProvider(
+        LocalAppColors provides appColors
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = if (darkTheme) darkTypography else lightTypography,
+            content = content
+        )
+    }
 }
+
+val LocalAppColors = staticCompositionLocalOf {
+    LightAppColors
+}
+
+val MaterialTheme.appColors: AppColors
+    @Composable
+    @ReadOnlyComposable
+    get() = LocalAppColors.current

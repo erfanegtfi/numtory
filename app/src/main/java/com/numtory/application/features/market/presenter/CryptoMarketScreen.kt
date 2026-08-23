@@ -20,7 +20,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
@@ -45,8 +44,8 @@ import com.numtory.application.features.cryptoMarket.domain.entities.cryptoMap
 import com.numtory.application.features.market.domain.entities.MarketPrice
 import com.numtory.application.features.market.domain.enums.topCryptoSymbols
 import com.numtory.application.features.market.presenter.components.table.CryptoPriceItem
-import com.numtory.application.features.market.presenter.components.GetMarketAverage
-import com.numtory.application.features.market.presenter.components.MarketStatsRow
+import com.numtory.application.features.market.presenter.components.SelectedMarketToken
+import com.numtory.application.features.market.presenter.components.MarketAverrage
 import com.numtory.application.features.market.presenter.components.table.MarketPriceHeader
 import com.numtory.application.features.market.presenter.components.TimerProgressBar
 import com.numtory.application.features.market.presenter.components.appbar.MarketTopBar
@@ -58,8 +57,6 @@ import com.numtory.application.common.exchangeScannerScreenOpened
 import com.numtory.application.composeUI.ErrorMessage
 import com.numtory.application.composeUI.ItemNotFound
 import com.numtory.application.features.market.domain.entities.BestPrices
-import com.numtory.application.features.market.domain.enums.SortField
-import com.numtory.application.features.market.domain.enums.SortOrder
 import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination
 import com.ramcosta.composedestinations.generated.destinations.NetworkScanScreenDestination
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -314,7 +311,7 @@ fun GetStickyHeader(
         if (priceList is ViewState.Success<List<MarketPrice>>) {
 
 
-            GetMarketAverage(
+            SelectedMarketToken(
                 cryptoMap[selectedToken.value] ?: "",
                 selectedToken,
                 selectedToken,
@@ -323,7 +320,7 @@ fun GetStickyHeader(
 
             )
 
-            MarketStatsRow(
+            MarketAverrage(
                 averageBuyPrice = averageBuyPrice,
                 averageSellPrice = averageSellPrice,
                 bestPrices = bestPrices,

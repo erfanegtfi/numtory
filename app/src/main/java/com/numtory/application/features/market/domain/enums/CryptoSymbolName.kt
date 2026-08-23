@@ -27,7 +27,7 @@ val topCryptoSymbols = listOf(
     "HYPE",
     "XLM",
     "LINK",
-    "MATIC",
+    "POL",
     "LTC",
     "XMR",
     "ZEC",

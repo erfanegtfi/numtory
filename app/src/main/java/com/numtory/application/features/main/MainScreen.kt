@@ -72,7 +72,7 @@ sealed class Screen(
 ) {
 
     object CryptoExchanges :
-        Screen("crypto", "مقایسه قیمت", Icons.Outlined.BarChart, Icons.Filled.Home)
+        Screen("crypto", "مقایسه رمزارزها", Icons.Outlined.BarChart, Icons.Filled.Home)
 
 //    object Seke :
 //        Screen("seke", "ارز و سکه", Icons.Outlined.AttachMoney, Icons.Filled.AttachMoney)
@@ -89,39 +89,12 @@ sealed class Screen(
         )
 
     companion object {
-        /**
-         * Resolves a `route` push-payload value to a tab. Matching is case-sensitive on purpose:
-         * CryptoExchanges ("crypto") and GlobalCryptoMarket ("Crypto") differ only by case, so a
-         * lenient match would silently send every payload to whichever is listed first.
-         */
         fun fromRoute(route: String): Screen? =
             listOf(CryptoExchanges, GoldExchanges, GlobalCryptoMarket)
                 .firstOrNull { it.route == route }
     }
 }
 
-@Composable
-fun SuccessDialog(
-    message: String,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("Success") },
-        text = { Text(message) },
-        confirmButton = {
-            Button(onClick = onDismiss) {
-                Text("OK")
-            }
-        },
-        icon = {
-            Icon(
-                Icons.Default.CheckCircle,
-                contentDescription = null,
-            )
-        }
-    )
-}
 
 @Destination<RootGraph>(start = true)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)

@@ -18,8 +18,9 @@ val textGray = Color(0xFF6b7280)
 val BestPrice = Color(0xFF10B981)
 
 // Dark theme palette
-val DarkPrimary = Color(0xFF7A83F3)        // brighter indigo, reads well on dark
-val DarkBackground = Color(0xFF121218)
+val DarkPrimary = Color(0xFF4A4F98)
+val DarkBackground = Color(0xFF222222)
+val LightBackground = Color(0xFFF8F8FF)
 val DarkSurface = Color(0xFF1E1E2A)
 val DarkSurfaceVariant = Color(0xFF2A2A3A)
 val textWhite = Color(0xFFF2F2F5)

@@ -31,6 +31,7 @@ import android.net.Uri
 import androidx.compose.ui.platform.LocalContext
 import com.eterex.composeui.ButtonComponent
 import com.numtory.application.common.getAppVersion
+import com.numtory.application.common.getAppVersionName
 import com.numtory.application.common.openDownloadUrl
 import com.numtory.application.ui.theme.Primary
 import com.numtory.application.ui.theme.Secondary
@@ -79,7 +80,7 @@ fun UpdateAppScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
             UpdateAvailableScreen(
-                currentVersion = getAppVersion(context).toString(),
+                currentVersion = getAppVersionName(context),
                 latestVersion = latestVersion,
                 onDownloadClick = {
                     openDownloadUrl(context, "market://search?q=pub:com.numtory")

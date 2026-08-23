@@ -42,8 +42,8 @@ import com.numtory.application.features.gold.presenter.components.GoldPriceItem
 import com.numtory.application.features.market.domain.entities.BestPrices
 import com.numtory.application.features.market.domain.enums.topMetalSymbols
 import com.numtory.application.features.market.presenter.TokenListBottomSheetScreen
-import com.numtory.application.features.market.presenter.components.GetMarketAverage
-import com.numtory.application.features.market.presenter.components.MarketStatsRow
+import com.numtory.application.features.market.presenter.components.SelectedMarketToken
+import com.numtory.application.features.market.presenter.components.MarketAverrage
 import com.numtory.application.features.market.presenter.components.TimerProgressBar
 import com.numtory.application.features.market.presenter.components.appbar.MarketTopBar
 import com.numtory.application.features.market.presenter.components.appbar.TopBarAction
@@ -267,7 +267,7 @@ fun GetStickyHeader(
 
         if (priceList is ViewState.Success<List<GoldMarketPrice>>) {
 
-            GetMarketAverage(
+            SelectedMarketToken(
                 metalMap[selectedToken.value] ?: "",
                 selectedToken,
                 selectedToken,
@@ -275,7 +275,7 @@ fun GetStickyHeader(
                 onChartClicked = onChartClicked
             )
 
-            MarketStatsRow(
+            MarketAverrage(
                 averageBuyPrice = averageBuyPrice,
                 averageSellPrice = averageSellPrice,
                 bestPrices = bestPrices,

@@ -65,6 +65,16 @@ fun getAppVersion(context: Context): Int {
     }
 }
 
+fun getAppVersionName(context: Context): String {
+    return try {
+        val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+        packageInfo.versionName ?: "unknown"  // Handle possible null
+    } catch (e: PackageManager.NameNotFoundException) {
+        e.printStackTrace()
+        "unknown"  // Return String instead of Int
+    }
+}
+
 fun openDownloadUrl(context: Context, url: String) {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
     context.startActivity(intent)

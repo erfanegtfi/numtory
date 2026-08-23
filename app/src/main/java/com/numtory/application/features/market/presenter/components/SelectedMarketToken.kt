@@ -7,11 +7,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,11 +26,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.numtory.application.BuildConfig
 import com.numtory.application.R
-import com.numtory.application.common.priceFormatter
 import com.numtory.application.composeUI.MyImageLoader
 
 @Composable
-fun GetMarketAverage(
+fun SelectedMarketToken(
     title: String,
     subtitle: State<String>,
     symbol: State<String>,
@@ -42,6 +40,7 @@ fun GetMarketAverage(
     Row(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.surface)
+            .fillMaxWidth()
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -63,11 +62,12 @@ fun GetMarketAverage(
             }
         )
 
-        Column(
+        Row(
             Modifier
                 .weight(1f)
                 .clickable { onTokenClicked() },
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
                 title,
@@ -81,24 +81,7 @@ fun GetMarketAverage(
             )
         }
 
-        Column(
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            // Buy Price
-//            PriceChip(
-//                label = "میانگین خرید",
-//                value = priceFormatter(averageBuyPrice.toLong().toString()),
-//                color = Color(0xFF10B981) // Green
-//            )
-//
-//            // Sell Price
-//            PriceChip(
-//                label = "میانگین فروش",
-//                value = priceFormatter(averageSellPrice.toLong().toString()),
-//                color = Color(0xFFEF4444) // Red
-//            )
-        }
+
     }
 }
 

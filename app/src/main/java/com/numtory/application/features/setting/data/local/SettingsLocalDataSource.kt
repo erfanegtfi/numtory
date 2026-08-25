@@ -3,10 +3,7 @@ package com.numtory.application.features.setting.data.local
 import com.google.gson.Gson
 import com.numtory.application.data.local.preferences.PreferencesConstants
 import com.numtory.application.data.local.preferences.Session
-import com.numtory.application.features.gold.domain.enums.GoldExchanges
 import com.numtory.application.features.setting.data.models.AppSettingsDataModel
-import com.numtory.application.features.setting.domain.entities.AppSettings
-import kotlinx.serialization.json.Json
 
 interface SettingsLocalDataSource {
 

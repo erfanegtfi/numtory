@@ -15,13 +15,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CurrencyBitcoin
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.CurrencyBitcoin
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -48,12 +45,10 @@ import androidx.navigation.compose.rememberNavController
 import com.numtory.application.common.cryptoExchangesScreenOpened
 import com.numtory.application.common.globalCryptoMarketExchangesScreenOpened
 import com.numtory.application.common.goldExchangesScreenOpened
-import com.numtory.application.features.base.ViewState
-import com.numtory.application.features.cryptoMarket.presenter.CryptoListScreen
-import com.numtory.application.features.gold.presenter.GoldMarketList
-import com.numtory.application.features.market.presenter.MarketList
+import com.numtory.application.features.cryptoMarket.presenter.CryptoMarketPriceListScreen
+import com.numtory.application.features.goldExchange.presenter.GoldExchangeList
+import com.numtory.application.features.cryptoExchange.presenter.CryptoExchangeList
 import com.numtory.application.features.notification.data.DeepLinkRouter
-import com.numtory.application.features.setting.domain.entities.AppSettings
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.MainScreenDestination
@@ -151,10 +146,10 @@ fun MainScreen(
                     // NO bottom padding!
                 )
         ) {
-            composable(Screen.CryptoExchanges.route) { MarketList(navigator) }
+            composable(Screen.CryptoExchanges.route) { CryptoExchangeList(navigator) }
 //            composable(Screen.Seke.route) { SekePriceScreen(navigator) }
-            composable(Screen.GoldExchanges.route) { GoldMarketList(navigator) }
-            composable(Screen.GlobalCryptoMarket.route) { CryptoListScreen(navigator) }
+            composable(Screen.GoldExchanges.route) { GoldExchangeList(navigator) }
+            composable(Screen.GlobalCryptoMarket.route) { CryptoMarketPriceListScreen(navigator) }
         }
     }
 }

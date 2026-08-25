@@ -1,11 +1,5 @@
 package com.numtory.application.features.setting.data.di
 
-import com.numtory.application.features.market.data.dataSource.MarketRemoteDataSource
-import com.numtory.application.features.market.data.dataSource.MarketRemoteDataSourceImpl
-import com.numtory.application.features.market.data.local.ExchangesLocalDataSource
-import com.numtory.application.features.market.data.local.ExchangesLocalDataSourceImpl
-import com.numtory.application.features.market.data.repositories.MarketRepository
-import com.numtory.application.features.market.data.repositories.MarketRepositoryImpl
 import com.numtory.application.features.setting.data.dataSource.SettingsRemoteDataSource
 import com.numtory.application.features.setting.data.dataSource.SettingsRemoteDataSourceImpl
 import com.numtory.application.features.setting.data.local.SettingsLocalDataSource

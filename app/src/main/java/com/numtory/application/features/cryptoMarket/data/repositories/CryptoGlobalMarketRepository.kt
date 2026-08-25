@@ -5,9 +5,6 @@ import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.cryptoMarket.data.dataSource.CryptoGlobalMarketRemoteDataSource
 import com.numtory.application.features.cryptoMarket.data.local.CryptoGlobalExchangesLocalDataSource
 import com.numtory.application.features.cryptoMarket.domain.entities.CryptoMarketPrice
-import com.numtory.application.features.gold.data.dataSource.GoldMarketRemoteDataSource
-import com.numtory.application.features.gold.data.local.GoldExchangesLocalDataSource
-import com.numtory.application.features.gold.domain.entities.GoldExchangeInfo
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

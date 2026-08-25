@@ -4,11 +4,11 @@ import android.app.Application
 import com.numtory.application.data.di.dataModule
 import com.numtory.application.features.cryptoMarket.data.di.cryptoGlobalMarketDataModule
 import com.numtory.application.features.cryptoMarket.presenter.di.cryptoGlobalMarketPresenterModule
-import com.numtory.application.features.gold.data.di.goldMarketDataModule
-import com.numtory.application.features.gold.presenter.di.goldMarketPresenterModule
+import com.numtory.application.features.goldExchange.data.di.goldMarketDataModule
+import com.numtory.application.features.goldExchange.presenter.di.goldExchangePresenterModule
 import com.numtory.application.features.main.di.settingsPresenterModule
-import com.numtory.application.features.market.data.di.marketDataModule
-import com.numtory.application.features.market.presenter.di.marketPresenterModule
+import com.numtory.application.features.cryptoExchange.data.di.marketDataModule
+import com.numtory.application.features.cryptoExchange.presenter.di.cryptoExchangePresenterModule
 import com.numtory.application.features.notification.data.NotificationPresenter
 import com.numtory.application.features.notification.di.notificationModule
 import com.numtory.application.features.scan2.data.di.scanDataModule
@@ -43,8 +43,8 @@ class App : Application() {
                 dataModule,
                 marketDataModule,
                 goldMarketDataModule,
-                marketPresenterModule,
-                goldMarketPresenterModule,
+                cryptoExchangePresenterModule,
+                goldExchangePresenterModule,
                 settingsDataModule,
                 settingsPresenterModule,
                 cryptoGlobalMarketDataModule,

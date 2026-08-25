@@ -1,0 +1,53 @@
+package com.numtory.application.features.goldExchange.domain.usecase
+
+import com.numtory.application.data.utils.ApiCallResult
+import com.numtory.application.data.utils.GeneralError
+import com.numtory.application.data.utils.withErrorMessage
+import com.numtory.application.features.goldExchange.data.repositories.GoldMarketRepository
+import com.numtory.application.features.goldExchange.domain.entities.GoldExchangeInfo
+import com.numtory.application.features.goldExchange.domain.entities.GoldMarketPrice
+import com.numtory.application.features.goldExchange.domain.enums.GoldExchanges
+import com.numtory.application.ui.theme.GOLD
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+
+class GetTlynPriceUseCase constructor(
+    private val marketRepository: GoldMarketRepository,
+) {
+
+    fun action(): Flow<ApiCallResult<GoldMarketPrice>> {
+        val exchangesInfo = marketRepository.getSavedExchangesInfo()
+
+        return marketRepository.getTlynPrice().map { response ->
+            when (response) {
+                is ApiCallResult.Success -> {
+                    if (response.result.prices?.isNotEmpty() == true && response.result.prices.first()
+                            ?.isNotEmpty() == true
+                    )
+                        ApiCallResult.Success(
+                            GoldMarketPrice(
+                                symbol = GOLD,
+                                buyPrice = ((response.result.prices.first()?.first()?.price?.buy
+                                    ?: 0) / 10).toString(),
+                                sellPrice = ((response.result.prices.first()?.first()?.price?.sell
+                                    ?: 0) / 10).toString(),
+                                exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == GoldExchanges.taline }
+                                    ?: GoldExchangeInfo(
+                                        exchange = GoldExchanges.taline,
+                                        active = true,
+                                        display = true
+                                    ),
+                                lastRefresh = System.currentTimeMillis()
+                            )
+                        )
+                    else ApiCallResult.Failure(GeneralError().withErrorMessage())
+                }
+
+                is ApiCallResult.Failure -> {
+                    ApiCallResult.Failure(response.error)
+                }
+            }
+        }
+    }
+}
+

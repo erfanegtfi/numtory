@@ -6,14 +6,14 @@ import com.google.gson.annotations.SerializedName
 
 
 data class PoolenoDataModel constructor(
-    @SerializedName("rate")
-    var rate: String?,
-//    @SerializedName("payload")
-//    var payload: PoolenoPayloadDataModel?,
+//    @SerializedName("rate")
+//    var rate: String?,
+    @SerializedName("payload")
+    var payload: PoolenoPayloadDataModel?,
 ) {
 
     fun toEntity(): Pooleno =
-        Pooleno(rate)
+        Pooleno(payload?.toEntity())
 }
 
 data class PoolenoPayloadDataModel constructor(

@@ -1,8 +1,8 @@
 package com.numtory.application.features.market.domain.entities
 
 data class Pooleno constructor(
-    var rate: String?,
-//    var payload: PoolenoPayload?,
+//    var rate: String?,
+    var payload: PoolenoPayload?,
 ) {
 
 }

@@ -7,6 +7,7 @@ import com.numtory.application.features.cryptoExchange.domain.entities.MarketPri
 import com.numtory.application.features.cryptoExchange.domain.enums.Exchanges
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.transform
 import kotlin.text.toDouble
 

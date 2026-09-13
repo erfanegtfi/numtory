@@ -110,8 +110,6 @@ constructor(
         val open: () -> Flow<ApiCallResult<MarketPrice>>,
     )
 
-    // region State
-
     private val _priceState = MutableStateFlow<ViewState<List<MarketPrice>>>(ViewState.Init)
     val priceState: StateFlow<ViewState<List<MarketPrice>>> get() = _priceState.asStateFlow()
 
@@ -135,15 +133,11 @@ constructor(
     private var priceJob: Job? = null
     private var timerJob: Job? = null
 
-    // endregion
-
     init {
         getExchanges()
         getPrices(symbol)
         startTimer()
     }
-
-    // region Public API
 
     fun selectToken(token: String) {
         _selectedToken.value = token
@@ -226,10 +220,6 @@ constructor(
         timerJob = null
     }
 
-    // endregion
-
-    // region Price sources
-
     private fun getExchanges() {
         viewModelScope.launch {
             getAppExchangesUseCase.action().collect { response ->
@@ -278,9 +268,6 @@ constructor(
             .map { it.open() }
     }
 
-    // endregion
-
-    // region Pipeline
 
     private fun onPriceReceived(
         price: MarketPrice,

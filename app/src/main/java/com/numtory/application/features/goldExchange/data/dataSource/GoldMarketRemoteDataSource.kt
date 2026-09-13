@@ -29,7 +29,7 @@ interface GoldMarketRemoteDataSource {
     suspend fun getGoldExchanges(): List<GoldExchangeInfoDataModel>
     suspend fun getDigikalaPrice(): DigikalaDataModel
     suspend fun getGoldikaPrice(): GoldikaDataModel
-    suspend fun getHamrahGoldPrice(): HamrahGoldDataModel
+    suspend fun getHamrahGoldPrice(isBuy: Boolean): HamrahGoldDataModel
     suspend fun getTlynPrice(): TlynDataModel
     suspend fun getMelliGoldPrice(): MelliGoldDataModel
     suspend fun getTalaseaPrice(): TalaSeaDataModel
@@ -69,8 +69,10 @@ class GoldMarketRemoteDataSourceImpl constructor(
         return gson.fromJson(json, GoldikaDataModel::class.java)
     }
 
-    override suspend fun getHamrahGoldPrice(): HamrahGoldDataModel {
-        val response = httpClient.get(BuildConfig.HAMRAH_GOLD_URL)
+    override suspend fun getHamrahGoldPrice(isBuy: Boolean): HamrahGoldDataModel {
+        val response = httpClient.get(BuildConfig.HAMRAH_GOLD_URL){
+            parameter("type", if(isBuy) "buy" else "sell")
+        }
         val json = response.bodyAsText()
         return gson.fromJson(json, HamrahGoldDataModel::class.java)
     }

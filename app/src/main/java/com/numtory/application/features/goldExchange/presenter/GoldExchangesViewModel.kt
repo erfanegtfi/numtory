@@ -54,8 +54,6 @@ constructor(
     private val getExchangeCatalogUseCase: GetGoldExchangeCatalogUseCase,
 ) : ViewModel() {
 
-    // region State
-
     private val _priceState = MutableStateFlow<ViewState<List<GoldMarketPrice>>>(ViewState.Init)
     val priceState: StateFlow<ViewState<List<GoldMarketPrice>>> get() = _priceState.asStateFlow()
 
@@ -174,10 +172,6 @@ constructor(
         }
     }
 
-    // endregion
-
-    // region Pipeline
-
     private fun onPriceReceived(
         price: GoldMarketPrice,
         symbol: String,
@@ -210,8 +204,6 @@ constructor(
 
         _priceState.value = ViewState.Success(displayedMarkets)
     }
-
-    // endregion
 
     override fun onCleared() {
         super.onCleared()

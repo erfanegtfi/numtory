@@ -33,7 +33,7 @@ class GetRamzinexPriceUseCase constructor(
                         assetBase =
                             response.result?.data?.currencies?.firstOrNull { it.symbol?.lowercase() == base.lowercase() }
                         assetQuote =
-                            response.result?.data?.currencies?.firstOrNull { it.symbol?.lowercase() == quote?.lowercase() }
+                            response.result?.data?.currencies?.firstOrNull { it.symbol?.lowercase() == quote.lowercase() }
                         if (assetBase?.id != null && assetQuote != null) {
                             emitAll(
                                 getOtcPrice(

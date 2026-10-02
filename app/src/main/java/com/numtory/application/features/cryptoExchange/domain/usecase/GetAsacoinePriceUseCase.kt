@@ -19,7 +19,7 @@ class GetAsacoinePriceUseCase constructor(
             when (response) {
                 is ApiCallResult.Success -> {
                     // Only the Toman side is of interest; the same coin is also listed against USDT.
-                    val pair = response.result?.pairs
+                    val pair = response.result.pairs
                         ?.firstOrNull { it.name.equals("$symbol-$quote", ignoreCase = true) }
 
                     ApiCallResult.Success(

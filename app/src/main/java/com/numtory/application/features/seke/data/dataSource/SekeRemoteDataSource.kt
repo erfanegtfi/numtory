@@ -6,7 +6,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import com.numtory.application.BuildConfig
-import com.numtory.application.features.cryptoMarket.data.models.CryptoMarketItemDataModel
 import com.numtory.application.features.seke.data.models.SekeDataModel
 
 interface SekeRemoteDataSource {

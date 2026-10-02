@@ -22,7 +22,7 @@ class GetBitPinPriceUseCase constructor(
                 is ApiCallResult.Success -> {
 
                     val asset =
-                        response.result.firstOrNull { item -> item.code?.lowercase() == "${base}_$quote".lowercase() }
+                        response.result.firstOrNull { item -> item.code.equals("${base}_$quote", ignoreCase = true) }
 
 
                     if (asset != null) {

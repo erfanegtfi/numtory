@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,9 +37,11 @@ import com.numtory.application.components.TimerProgressBar
 import com.numtory.application.composeUI.ItemNotFound
 import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.cryptoMarket.domain.entities.CryptoMarketPrice
+import com.numtory.application.features.cryptoMarket.domain.entities.LabelType
 import com.numtory.application.features.cryptoMarket.presenter.components.CryptoMarketAppBar
 import com.numtory.application.features.cryptoMarket.presenter.components.CryptoMarketSearchAppBar
 import com.numtory.application.features.cryptoMarket.presenter.components.CryptoPriceListItem
+import com.numtory.application.features.cryptoMarket.presenter.components.SelectableLabelList
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
@@ -52,6 +56,7 @@ fun CryptoMarketPriceListScreen(
 
     val priceList by viewModel.priceState.collectAsStateWithLifecycle()
     val pullToRefreshState = rememberPullToRefreshState()
+    var selectedLabel by rememberSaveable { mutableStateOf<LabelType?>(null) }
 
     Scaffold(
         topBar = {
@@ -89,6 +94,17 @@ fun CryptoMarketPriceListScreen(
             ) {
 
                 stickyHeader {
+                    SelectableLabelList(
+                        labels = LabelType.entries,
+                        selectedLabel = selectedLabel,
+                        modifier = Modifier.padding(top = 8.dp),
+                        onLabelSelected = { label ->
+                            selectedLabel = label
+                            viewModel.filter(label = label)
+                        }
+                    )
+                }
+                stickyHeader {
                     Column {
                         Box(
                             modifier = Modifier
@@ -96,13 +112,16 @@ fun CryptoMarketPriceListScreen(
                         )
                         TimerProgressBar(viewModel.timer)
                     }
-
                 }
 
                 when (priceList) {
                     is ViewState.Init -> {
                         item {
-                            Box(modifier = Modifier.fillMaxSize().height(100.dp))
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .height(100.dp)
+                            )
                         }
                     }
 

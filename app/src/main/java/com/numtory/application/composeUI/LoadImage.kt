@@ -13,6 +13,7 @@ import coil3.ImageLoader
 
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
+import coil3.svg.SvgDecoder
 import com.numtory.application.R
 import org.koin.compose.koinInject
 
@@ -22,7 +23,7 @@ fun MyImageLoader(url: String, width: Int = 28, height: Int = 28, modifier: Modi
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
             .data(url)
-//            .decoderFactory(SvgDecoder.Factory()) // This is the key step
+            .decoderFactory(SvgDecoder.Factory()) // This is the key step
 //            .size(100, 100)  // Request specific size
             .build(),
         contentScale = ContentScale.Fit,

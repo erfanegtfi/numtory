@@ -20,7 +20,6 @@ import com.numtory.application.features.cryptoExchange.domain.entities.BitPinOTC
 import com.numtory.application.features.cryptoExchange.domain.entities.Bitbarg
 import com.numtory.application.features.cryptoExchange.domain.entities.Coinkade
 import com.numtory.application.features.cryptoExchange.domain.entities.EterexAssetsPrice
-import com.numtory.application.features.cryptoExchange.domain.entities.EterexGroups
 import com.numtory.application.features.cryptoExchange.domain.entities.ExonyxItem
 import com.numtory.application.features.cryptoExchange.domain.entities.Morbit
 import com.numtory.application.features.cryptoExchange.domain.entities.Nobitex
@@ -75,7 +74,6 @@ interface MarketRepository {
         isBuy: Boolean
     ): Flow<ApiCallResult<Pooleno>>
 
-    fun getEterexPrice(): Flow<ApiCallResult<List<EterexGroups>?>>
     fun getEterexAssetsPrice(): Flow<ApiCallResult<List<EterexAssetsPrice>?>>
 
     fun getSarmayex(market: String): Flow<ApiCallResult<SarmayexSwap?>>
@@ -297,16 +295,6 @@ class MarketRepositoryImpl(
     ): Flow<ApiCallResult<Pooleno>> = flow {
         val response = getResult {
             marketRemoteDataSource.getPoolenoPrice(baseCurrency, quoteCurrency, isBuy)
-        }
-        if (response is ApiCallResult.Success) {
-            emit(ApiCallResult.Success(response.result.toEntity()))
-        } else if (response is ApiCallResult.Failure)
-            emit(ApiCallResult.Failure(response.error))
-    }
-
-    override fun getEterexPrice(): Flow<ApiCallResult<List<EterexGroups>?>> = flow {
-        val response = getResult {
-            marketRemoteDataSource.getEterexPrice()
         }
         if (response is ApiCallResult.Success) {
             emit(ApiCallResult.Success(response.result.toEntity()))

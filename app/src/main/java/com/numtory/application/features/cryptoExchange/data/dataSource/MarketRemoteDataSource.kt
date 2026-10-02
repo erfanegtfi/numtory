@@ -7,7 +7,6 @@ import com.numtory.application.features.cryptoExchange.data.models.Bit24MarketLi
 import com.numtory.application.features.cryptoExchange.data.models.Bit24SwapDataModel
 import com.numtory.application.features.cryptoExchange.data.models.BitPinDataModel
 import com.numtory.application.features.cryptoExchange.data.models.CoinkadeDataModel
-import com.numtory.application.features.cryptoExchange.data.models.EterexPriceGroupsDataModel
 import com.numtory.application.features.cryptoExchange.data.models.NobitexMarketListDataModel
 import com.numtory.application.features.cryptoExchange.data.models.NobitexSwapDataModel
 import com.numtory.application.features.cryptoExchange.data.models.PingiDataModel
@@ -75,7 +74,6 @@ interface MarketRemoteDataSource {
         isBuy: Boolean,
     ): PoolenoDataModel
 
-    suspend fun getEterexPrice(): EterexPriceGroupsDataModel
     suspend fun getEterexAssetsPrice(): List<EterexAssetsPriceDataModel>
 
     suspend fun getSarmayexMarketPrice(): SarmayexMarketListDataModel
@@ -277,14 +275,6 @@ class MarketRemoteDataSourceImpl constructor(
         return gson.fromJson(json, PoolenoDataModel::class.java)
     }
 
-    override suspend fun getEterexPrice(): EterexPriceGroupsDataModel {
-        val response =
-            httpClient.get(
-                BuildConfig.ETEREX_URL
-            )
-        val json = response.bodyAsText()
-        return gson.fromJson(json, EterexPriceGroupsDataModel::class.java)
-    }
 
     override suspend fun getEterexAssetsPrice(): List<EterexAssetsPriceDataModel> {
         val response =

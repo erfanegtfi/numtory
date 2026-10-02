@@ -1,48 +1,40 @@
 package com.numtory.application.features.cryptoExchange.data.models
 
-import com.numtory.application.features.cryptoExchange.domain.entities.EterexGroups
-import com.numtory.application.features.cryptoExchange.domain.entities.EterexPrice
 import com.google.gson.annotations.SerializedName
 import com.numtory.application.features.cryptoExchange.domain.entities.EterexAssetsPrice
 
-data class EterexPriceGroupsDataModel(
-    @SerializedName("priceGroups")
-    val results: List<EterexGroupsDataModel>?
-) {
-    fun toEntity(): List<EterexGroups>? =
-        results?.map { it.toEntity() }
-}
-
-data class EterexGroupsDataModel constructor(
-    @SerializedName("name")
-    var name: String?,
-    @SerializedName("prices")
-    var price: EterexPriceDataModel?,
-    @SerializedName("coins")
-    var coins: List<String>
-) {
-
-    fun toEntity(): EterexGroups =
-        EterexGroups(name, price?.toEntity(), coins)
-}
-
-data class EterexPriceDataModel constructor(
-    @SerializedName("usdtIrt")
-    var usdtIrt: String?,
-    @SerializedName("irtUsdt")
-    var irtUsdt: String?,
-) {
-
-    fun toEntity(): EterexPrice =
-        EterexPrice(usdtIrt, irtUsdt)
-}
 
 ///////////////
 data class EterexAssetsPriceDataModel(
     @SerializedName("symbol")
     val symbol: String?,
-    @SerializedName("price")
-    val price: String?
+    @SerializedName("name")
+    val name: String?,
+    @SerializedName("baseAsset")
+    val baseAsset: String?,
+    @SerializedName("quoteAsset")
+    val quoteAsset: String?,
+    @SerializedName("bestBuyPrice")
+    val bestBuyPrice: Double?,
+    @SerializedName("bestSellPrice")
+    val bestSellPrice: Double?,
+    @SerializedName("price_change_usdt")
+    val priceChange: Double?,
+    @SerializedName("price_change_usdt_percentage")
+    val priceChangePercentage: Double?,
+    @SerializedName("quote_volume")
+    val volume: Double?,
 ) {
-    fun toEntity(): EterexAssetsPrice = EterexAssetsPrice(symbol, price)
+    fun toEntity(): EterexAssetsPrice =
+        EterexAssetsPrice(
+            symbol,
+            name,
+            baseAsset,
+            quoteAsset,
+            bestBuyPrice,
+            bestSellPrice,
+            priceChange,
+            priceChangePercentage,
+            volume,
+        )
 }

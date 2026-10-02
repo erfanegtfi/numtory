@@ -1,29 +1,15 @@
 package com.numtory.application.features.cryptoExchange.domain.entities
 
-import com.numtory.application.features.cryptoExchange.data.models.Bit24DataModel
 
-data class EterexPriceGroups(
-    val results: List<Bit24DataModel>
-) {
-}
-
-data class EterexGroups constructor(
-    var name: String?,
-    var price: EterexPrice?,
-    var coins: List<String>
-) {
-
-}
-
-data class EterexPrice constructor(
-    var usdtIrt: String?,
-    var irtUsdt: String?,
-) {
-
-}
-/////
 data class EterexAssetsPrice(
     val symbol: String?,
-    val price: String?
+    val name: String?,
+    val baseAsset: String?,
+    val quoteAsset: String?,
+    val bestBuyPrice: Double?,
+    val bestSellPrice: Double?,
+    val priceChange: Double?,
+    val priceChangePercentage: Double?,
+    val volume: Double?,
 ) {
 }

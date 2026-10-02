@@ -15,7 +15,6 @@ val cryptoGlobalMarketDataModule = module {
     single<CryptoGlobalMarketRepository> {
         CryptoGlobalMarketRepositoryImpl(
             get(),
-            get(),
             get(qualifier = named("IO"))
         )
     }

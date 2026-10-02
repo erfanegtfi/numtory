@@ -238,7 +238,7 @@ constructor(
         PriceSource(Exchanges.twox) { getTwoxPriceUseCase.action(IRT, symbol) },
         PriceSource(Exchanges.coinkade) { getCoinkadePriceUseCase.action(symbol) },
         PriceSource(Exchanges.pooleno) { getPoolenoPriceUseCase.action(symbol, TMN) },
-        PriceSource(Exchanges.eterex) { getEterexPriceUseCase.action(symbol) },
+        PriceSource(Exchanges.eterex) { getEterexPriceUseCase.action(symbol, IRT) },
         PriceSource(Exchanges.pingi) { getPingiPriceUseCase.action(symbol, IRT) },
         PriceSource(Exchanges.wallex) { getWallexPriceUseCase.action(symbol, TMN) },
         PriceSource(Exchanges.abantether) { getAbanTetherPriceUseCase.action(symbol) },

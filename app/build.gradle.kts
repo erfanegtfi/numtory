@@ -47,7 +47,6 @@ android {
         buildConfigField("String", "TABDEAL_URL", getLocalProperty("TABDEAL_URL"))
         buildConfigField("String", "TABDEAL_MARKET_URL", getLocalProperty("TABDEAL_MARKET_URL"))
         buildConfigField("String", "UBITEX_URL", getLocalProperty("UBITEX_URL"))
-        buildConfigField("String", "ETEREX_URL", getLocalProperty("ETEREX_URL"))
         buildConfigField("String", "ETEREX_PRICE_URL", getLocalProperty("ETEREX_PRICE_URL"))
         buildConfigField("String", "TETHERLAND_URL", getLocalProperty("TETHERLAND_URL"))
         buildConfigField("String", "ARZPLUS_URL", getLocalProperty("ARZPLUS_URL"))
@@ -161,5 +160,5 @@ dependencies {
     implementation(libs.play.services.ads.identifier)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-//    implementation(libs.coil.svg)
+    implementation(libs.coil.svg)
 }

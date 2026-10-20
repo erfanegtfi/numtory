@@ -12,7 +12,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 //    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.20" apply false
-//    id(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.serialization)
 //    id("kotlin-kapt")
     id("com.google.devtools.ksp") version ("2.2.20-2.0.3")
 //    id(libs.plugins.devtools.ksp)
@@ -27,8 +27,8 @@ android {
         applicationId = "com.numtory"
         minSdk = 23
         targetSdk = 36
-        versionCode = 14
-        versionName = "1.6.2"
+        versionCode = 15
+        versionName = "1.6.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -89,6 +89,7 @@ android {
         buildConfigField("String", "ZARAFZA_URL", getLocalProperty("ZARAFZA_URL"))
         buildConfigField("String", "MORBIT_URL", getLocalProperty("MORBIT_URL"))
         buildConfigField("String", "ASACOINE_URL", getLocalProperty("ASACOINE_URL"))
+        buildConfigField("String", "CAR_URL", getLocalProperty("CAR_URL"))
 
     }
 

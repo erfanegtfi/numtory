@@ -2,6 +2,8 @@ package com.numtory.application
 
 import android.app.Application
 import com.numtory.application.data.di.dataModule
+import com.numtory.application.features.car.data.di.carDataModule
+import com.numtory.application.features.car.presenter.di.carPresenterModule
 import com.numtory.application.features.cryptoMarket.data.di.cryptoGlobalMarketDataModule
 import com.numtory.application.features.cryptoMarket.presenter.di.cryptoGlobalMarketPresenterModule
 import com.numtory.application.features.goldExchange.data.di.goldMarketDataModule
@@ -53,7 +55,9 @@ class App : Application() {
                 sekePresenterModule,
                 scanDataModule,
                 scanPresenterModule,
-                notificationModule
+                notificationModule,
+                carDataModule,
+                carPresenterModule
             )
         }
 

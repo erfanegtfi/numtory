@@ -55,18 +55,11 @@ constructor(
             getCryptoGlobalMarketPricesUseCase.action().collect { response ->
                 when (response) {
                     is ApiCallResult.Success -> {
-//                        cryptoPrices =  response.result.filter { it.symbolUSDT?.contains("_USDT") == true }
                         cryptoPrices.clear()
                         cryptoPrices.addAll(
                             response.result //.filter { it.symbolUSDT?.contains("_USDT") == true }
                         )
-
-//                        val l =
-//                            cryptoPrices.filter { it.symbol?.uppercase() == "PAXG" || it.symbol?.uppercase() == "XAUT" || it.symbol?.uppercase() == "CL" || it.symbol?.uppercase() == "AUXT" || it.symbol?.uppercase() == "COPPER" }
-//                        cryptoPrices.removeAll { it.symbol?.uppercase() == "PAXG" || it.symbol?.uppercase() == "XAUT" || it.symbol?.uppercase() == "CL" || it.symbol?.uppercase() == "AUXT" || it.symbol?.uppercase() == "COPPER" || it.symbol?.uppercase() == "USDT" }
-//                        cryptoPrices.addAll(1, l)
                         emitData()
-//                        _priceState.value = ViewState.Success(cryptoPrices)
                     }
 
                     is ApiCallResult.Failure -> {

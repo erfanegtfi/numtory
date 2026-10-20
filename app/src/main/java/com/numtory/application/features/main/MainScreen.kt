@@ -16,9 +16,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CurrencyBitcoin
+import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.CurrencyBitcoin
+import androidx.compose.material.icons.outlined.DirectionsCar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -45,6 +47,7 @@ import androidx.navigation.compose.rememberNavController
 import com.numtory.application.common.cryptoExchangesScreenOpened
 import com.numtory.application.common.globalCryptoMarketExchangesScreenOpened
 import com.numtory.application.common.goldExchangesScreenOpened
+import com.numtory.application.features.car.presenter.CarPriceScreen
 import com.numtory.application.features.cryptoMarket.presenter.CryptoMarketPriceListScreen
 import com.numtory.application.features.goldExchange.presenter.GoldExchangeList
 import com.numtory.application.features.cryptoExchange.presenter.CryptoExchangeList
@@ -75,6 +78,10 @@ sealed class Screen(
     object GoldExchanges :
         Screen("gold", "مقایسه طلا", Icons.Outlined.BarChart, Icons.Filled.BarChart)
 
+    object CarExchanges :
+        Screen("car", "خودرو", Icons.Outlined.DirectionsCar, Icons.Filled.DirectionsCar)
+
+
     object GlobalCryptoMarket :
         Screen(
             "Crypto",
@@ -85,7 +92,7 @@ sealed class Screen(
 
     companion object {
         fun fromRoute(route: String): Screen? =
-            listOf(CryptoExchanges, GoldExchanges, GlobalCryptoMarket)
+            listOf(CarExchanges,CryptoExchanges, GoldExchanges, GlobalCryptoMarket)
                 .firstOrNull { it.route == route }
     }
 }
@@ -149,6 +156,7 @@ fun MainScreen(
             composable(Screen.CryptoExchanges.route) { CryptoExchangeList(navigator) }
 //            composable(Screen.Seke.route) { SekePriceScreen(navigator) }
             composable(Screen.GoldExchanges.route) { GoldExchangeList(navigator) }
+            composable(Screen.CarExchanges.route) { CarPriceScreen() }
             composable(Screen.GlobalCryptoMarket.route) { CryptoMarketPriceListScreen(navigator) }
         }
     }
@@ -224,6 +232,21 @@ fun BottomNavigationBar(navController: NavHostController) {
                 onClick = {
                     goldExchangesScreenOpened()
                     navController.navigate(Screen.GoldExchanges.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+            )
+            Material2NavigationBarItem(
+                icon = Screen.CarExchanges.icon,
+                label = Screen.CarExchanges.title,
+                selected = currentRoute == Screen.CarExchanges.route,
+                onClick = {
+                    goldExchangesScreenOpened()
+                    navController.navigate(Screen.CarExchanges.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }

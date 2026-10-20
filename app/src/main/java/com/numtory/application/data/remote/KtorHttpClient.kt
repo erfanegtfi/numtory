@@ -53,7 +53,10 @@ class KtorHttpClient(
             install(ContentNegotiation) {
                 json(Json {
                     //ignores json keys we have not included in our data class
-                    ignoreUnknownKeys = true
+                    ignoreUnknownKeys = true      // tolerate extra fields
+                    coerceInputValues = true      // null -> default value for non-nullable
+                    isLenient = true
+                    explicitNulls = false
                 })
 //                gson()
             }

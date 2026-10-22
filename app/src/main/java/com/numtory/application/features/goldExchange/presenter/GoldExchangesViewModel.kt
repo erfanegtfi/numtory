@@ -26,7 +26,7 @@ import com.numtory.application.features.goldExchange.domain.usecase.SortGoldPara
 import com.numtory.application.features.cryptoExchange.domain.entities.BestPrices
 import com.numtory.application.features.cryptoExchange.domain.enums.SortField
 import com.numtory.application.features.cryptoExchange.domain.enums.SortOrder
-import com.numtory.application.ui.theme.GOLD
+import com.numtory.application.features.cryptoMarket.domain.entities.GOLD
 import com.numtory.application.ui.theme.REFRESH_TIMER
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -37,6 +37,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 
 @ExperimentalCoroutinesApi
@@ -152,8 +153,8 @@ constructor(
         if (timerJob != null) return
         timerJob = viewModelScope.launch {
             while (true) {
-                _timer.intValue = _timer.intValue - 1
-                delay(1000)
+                _timer.intValue -= 1
+                delay(1000.milliseconds)
                 if (_timer.intValue == 0) getPrices()
             }
         }

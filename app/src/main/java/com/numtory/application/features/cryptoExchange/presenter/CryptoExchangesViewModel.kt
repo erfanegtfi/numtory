@@ -278,7 +278,7 @@ constructor(
             .filterNot { it.exchangeInfo.exchange == price.exchangeInfo.exchange }
             .toMutableList()
 
-        if (price.symbol?.lowercase() == symbol.lowercase())
+        if (price.symbol.equals(symbol, ignoreCase = true))
             allMarkets.add(price)
 
         allMarkets = removeInvalidExchangeUseCase

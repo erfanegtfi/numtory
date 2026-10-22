@@ -8,6 +8,7 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,14 +37,13 @@ fun AppChartWebView(
     Scaffold(
         topBar = {
             TopAppBar(
-                modifier = Modifier.height(90.dp).background(Primary),
-                colors = TopAppBarDefaults.topAppBarColors(// Use 'surface' instead of 'primary' for the app bar background
+                colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     actionIconContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
                 title = {
-                    Box(modifier = Modifier.fillMaxSize()) {
+                    Box(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = "توکن چند",
                             modifier = Modifier.align(Alignment.CenterStart),
@@ -51,10 +51,6 @@ fun AppChartWebView(
                         )
                     }
                 },
-                actions = {
-
-
-                }
             )
         },
     ) { innerPadding ->

@@ -1,6 +1,9 @@
 package com.numtory.application.features.goldExchange.domain.usecase
 
 import com.numtory.application.data.utils.ApiCallResult
+import com.numtory.application.features.cryptoMarket.domain.entities.COPPER
+import com.numtory.application.features.cryptoMarket.domain.entities.GOLD
+import com.numtory.application.features.cryptoMarket.domain.entities.SILVER
 import com.numtory.application.features.goldExchange.data.repositories.GoldMarketRepository
 import com.numtory.application.features.goldExchange.domain.entities.GoldExchangeInfo
 import com.numtory.application.features.goldExchange.domain.entities.GoldMarketPrice
@@ -23,7 +26,10 @@ class GetGeramiPriceUseCase constructor(
 
                     ApiCallResult.Success(
                         GoldMarketPrice(
-                            symbol = symbol,
+                            symbol =  when(symbol){
+                                "XCU9999g" -> COPPER
+                                else -> symbol
+                            },
                             buyPrice = (pair?.buyPrice ?: "0"),
                             sellPrice = (pair?.sellPrice ?: "0"),
                             exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == GoldExchanges.gerami }

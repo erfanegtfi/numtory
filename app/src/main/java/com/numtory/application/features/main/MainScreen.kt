@@ -9,18 +9,23 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.CurrencyBitcoin
 import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.StackedLineChart
+import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.BarChart
 import androidx.compose.material.icons.outlined.CurrencyBitcoin
 import androidx.compose.material.icons.outlined.DirectionsCar
+import androidx.compose.material.icons.outlined.StackedLineChart
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -47,11 +52,14 @@ import androidx.navigation.compose.rememberNavController
 import com.numtory.application.common.cryptoExchangesScreenOpened
 import com.numtory.application.common.globalCryptoMarketExchangesScreenOpened
 import com.numtory.application.common.goldExchangesScreenOpened
+import com.numtory.application.common.sekeScreenOpened
 import com.numtory.application.features.car.presenter.CarPriceScreen
 import com.numtory.application.features.cryptoMarket.presenter.CryptoMarketPriceListScreen
 import com.numtory.application.features.goldExchange.presenter.GoldExchangeList
 import com.numtory.application.features.cryptoExchange.presenter.CryptoExchangeList
+import com.numtory.application.features.menu.MenuScreen
 import com.numtory.application.features.notification.data.DeepLinkRouter
+import com.numtory.application.features.seke.presenter.SekePriceScreen
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.MainScreenDestination
@@ -75,11 +83,14 @@ sealed class Screen(
 //    object Seke :
 //        Screen("seke", "ارز و سکه", Icons.Outlined.AttachMoney, Icons.Filled.AttachMoney)
 
+    object Menu :
+        Screen("menu", "بازارها", Icons.Outlined.StackedLineChart, Icons.Filled.StackedLineChart)
+
     object GoldExchanges :
         Screen("gold", "مقایسه طلا", Icons.Outlined.BarChart, Icons.Filled.BarChart)
 
-    object CarExchanges :
-        Screen("car", "خودرو", Icons.Outlined.DirectionsCar, Icons.Filled.DirectionsCar)
+//    object CarExchanges :
+//        Screen("car", "خودرو", Icons.Outlined.DirectionsCar, Icons.Filled.DirectionsCar)
 
 
     object GlobalCryptoMarket :
@@ -92,7 +103,7 @@ sealed class Screen(
 
     companion object {
         fun fromRoute(route: String): Screen? =
-            listOf(CarExchanges,CryptoExchanges, GoldExchanges, GlobalCryptoMarket)
+            listOf(Menu, CryptoExchanges, GoldExchanges, GlobalCryptoMarket)
                 .firstOrNull { it.route == route }
     }
 }
@@ -107,7 +118,6 @@ fun MainScreen(
 ) {
     val navController = rememberNavController()
 
-    val settings by viewModel.settingsState.collectAsStateWithLifecycle()
     val dialogMessage by viewModel.showSuccessDialog.collectAsStateWithLifecycle()
 
     val deepLinkRouter = koinInject<DeepLinkRouter>()
@@ -154,10 +164,11 @@ fun MainScreen(
                 )
         ) {
             composable(Screen.CryptoExchanges.route) { CryptoExchangeList(navigator) }
-//            composable(Screen.Seke.route) { SekePriceScreen(navigator) }
             composable(Screen.GoldExchanges.route) { GoldExchangeList(navigator) }
-            composable(Screen.CarExchanges.route) { CarPriceScreen() }
+//            composable(Screen.Seke.route) { SekePriceScreen(navigator) }
+//            composable(Screen.CarExchanges.route) { CarPriceScreen() }
             composable(Screen.GlobalCryptoMarket.route) { CryptoMarketPriceListScreen(navigator) }
+            composable(Screen.Menu.route) { MenuScreen (navigator) }
         }
     }
 }
@@ -225,6 +236,7 @@ fun BottomNavigationBar(navController: NavHostController) {
 //                    }
 //                },
 //            )
+
             Material2NavigationBarItem(
                 icon = Screen.GoldExchanges.icon,
                 label = Screen.GoldExchanges.title,
@@ -241,12 +253,12 @@ fun BottomNavigationBar(navController: NavHostController) {
                 },
             )
             Material2NavigationBarItem(
-                icon = Screen.CarExchanges.icon,
-                label = Screen.CarExchanges.title,
-                selected = currentRoute == Screen.CarExchanges.route,
+                icon = Screen.Menu.icon,
+                label = Screen.Menu.title,
+                selected = currentRoute == Screen.Menu.route,
                 onClick = {
-                    goldExchangesScreenOpened()
-                    navController.navigate(Screen.CarExchanges.route) {
+                    sekeScreenOpened()
+                    navController.navigate(Screen.Menu.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
                         }
@@ -255,6 +267,21 @@ fun BottomNavigationBar(navController: NavHostController) {
                     }
                 },
             )
+//            Material2NavigationBarItem(
+//                icon = Screen.CarExchanges.icon,
+//                label = Screen.CarExchanges.title,
+//                selected = currentRoute == Screen.CarExchanges.route,
+//                onClick = {
+//                    goldExchangesScreenOpened()
+//                    navController.navigate(Screen.CarExchanges.route) {
+//                        popUpTo(navController.graph.findStartDestination().id) {
+//                            saveState = true
+//                        }
+//                        launchSingleTop = true
+//                        restoreState = true
+//                    }
+//                },
+//            )
         }
     }
 }

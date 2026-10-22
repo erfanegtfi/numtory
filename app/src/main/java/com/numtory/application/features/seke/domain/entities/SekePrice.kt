@@ -13,5 +13,7 @@ data class SekePrice constructor(
     val lastUpdateSec: Long?
         get() = stringToMillisSimple(lastUpdate)
 
+    val totalSec =
+        (System.currentTimeMillis() - (lastUpdateSec ?: System.currentTimeMillis())) / 1000
 
 }

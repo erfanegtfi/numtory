@@ -42,6 +42,7 @@ import com.numtory.application.features.scan.domain.entities.ScanNetwork
 import com.numtory.application.features.scan.domain.entities.explorerUrlFor
 import com.numtory.application.features.scan.presenter.components.ExplorerWebView
 import com.numtory.application.features.scan.presenter.components.NetworkSelector
+import com.numtory.application.features.scan.presenter.components.ScannerAppBar
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -87,25 +88,7 @@ fun NetworkScanScreen(navigator: DestinationsNavigator) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        "اسکنر شبکه",
-                        style = MaterialTheme.typography.titleMedium
-                            .copy(color = MaterialTheme.colorScheme.onPrimary)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = { navigator.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                )
-            )
+            ScannerAppBar { navigator.popBackStack() }
         }
     ) { innerPadding ->
         Column(

@@ -28,19 +28,22 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.numtory.application.R
 import com.numtory.application.composeUI.ErrorMessage
 import com.numtory.application.composeUI.ItemNotFound
 import com.numtory.application.composeUI.ObserveMarketLifecycle
 import com.numtory.application.composeUI.ShowBottomSheet
 import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.goldExchange.domain.entities.GoldMarketPrice
-import com.numtory.application.features.goldExchange.presenter.components.GoldExchangesAppbar
 import com.numtory.application.features.goldExchange.presenter.components.GoldMarketStickyHeader
 import com.numtory.application.features.goldExchange.presenter.marketOptions.GoldAssetOptionsBottomSheetScreen
 import com.numtory.application.features.goldExchange.presenter.components.GoldPriceItem
 import com.numtory.application.features.cryptoExchange.domain.enums.topMetalSymbols
 import com.numtory.application.features.cryptoExchange.presenter.TokenListBottomSheetScreen
+import com.numtory.application.features.cryptoExchange.presenter.components.appbar.MarketTopBar
+import com.numtory.application.features.cryptoExchange.presenter.components.appbar.TopBarAction
 import com.numtory.application.features.cryptoExchange.presenter.components.table.MarketPriceHeader
+import com.numtory.application.features.cryptoMarket.domain.entities.metalChartMap
 import com.numtory.application.ui.theme.CHART_SCRIPT
 import com.ramcosta.composedestinations.generated.destinations.AppChartWebViewDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -108,9 +111,18 @@ fun GoldExchangeList(
 
     Scaffold(
         topBar = {
-            GoldExchangesAppbar(selectedToken = viewModel.selectedToken) {
-                showSheet = true
-            }
+            MarketTopBar(
+                selectedToken = viewModel.selectedToken,
+                actions = {
+                    TopBarAction(
+                        icon = R.drawable.ic_setting,
+                        contentDescription = "Settings",
+                        onClick = {
+                            showSheet = true
+                        }
+                    )
+                }
+            )
         },
     ) { innerPadding ->
 
@@ -149,7 +161,7 @@ fun GoldExchangeList(
                                         AppChartWebViewDestination(
                                             CHART_SCRIPT.replace(
                                                 "{symbol_hear}",
-                                                "brs:GOLD18IRT"
+                                                metalChartMap[viewModel.selectedToken.value]?:""
                                             ).trimIndent(),
                                         )
                                     )

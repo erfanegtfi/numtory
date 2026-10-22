@@ -28,10 +28,13 @@ import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.seke.domain.entities.SekePrice
 import com.numtory.application.features.seke.presenter.components.CryptoListItem
 import com.numtory.application.features.seke.presenter.components.SekeAppBar
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.androidx.compose.koinViewModel
 
+@Destination<RootGraph>
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
 fun SekePriceScreen(
@@ -44,7 +47,7 @@ fun SekePriceScreen(
 
     Scaffold(
         topBar = {
-            SekeAppBar()
+            SekeAppBar{navigator.popBackStack()}
         }
     ) { innerPadding ->
         PullToRefreshBox(

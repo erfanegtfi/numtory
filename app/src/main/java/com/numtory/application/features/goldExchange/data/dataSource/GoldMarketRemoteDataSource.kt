@@ -31,7 +31,7 @@ interface GoldMarketRemoteDataSource {
     suspend fun getGoldikaPrice(): GoldikaDataModel
     suspend fun getHamrahGoldPrice(isBuy: Boolean): HamrahGoldDataModel
     suspend fun getTlynPrice(): TlynDataModel
-    suspend fun getMelliGoldPrice(): MelliGoldDataModel
+    suspend fun getMelliGoldPrice(symbol: String): MelliGoldDataModel
     suspend fun getTalaseaPrice(): TalaSeaDataModel
     suspend fun getWallGoldPrice(): WallGoldDataModel
     suspend fun getMilliPrice(): MilliDataModel
@@ -83,9 +83,9 @@ class GoldMarketRemoteDataSourceImpl constructor(
         return gson.fromJson(json, TlynDataModel::class.java)
     }
 
-    override suspend fun getMelliGoldPrice(): MelliGoldDataModel {
+    override suspend fun getMelliGoldPrice(symbol: String): MelliGoldDataModel {
         val response = httpClient.get(BuildConfig.MELLIGOLD_URL){
-            parameter("symbol", "XAU18")
+            parameter("symbol", symbol)
             parameter("format", "json")
         }
         val json = response.bodyAsText()

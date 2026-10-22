@@ -6,13 +6,13 @@ import com.numtory.application.features.seke.domain.entities.SekePrice
 
 
 data class SekeDataModel constructor(
-    @SerializedName("title")
+    @SerializedName("representation_name")
     var title: String?,
     @SerializedName("symbol")
     var symbol: String?,
-    @SerializedName("sell")
+    @SerializedName("price_in_irt")
     var sell: String?,
-    @SerializedName("last_update")
+    @SerializedName("last_updated_at")
     var lastUpdate: String?,
 ) {
 

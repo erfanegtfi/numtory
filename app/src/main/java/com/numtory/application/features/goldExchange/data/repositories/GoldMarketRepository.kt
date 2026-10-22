@@ -33,7 +33,7 @@ interface GoldMarketRepository {
     fun getGoldikaPrice(): Flow<ApiCallResult<Goldika>>
     fun getHamrahGoldPrice(isBuy: Boolean): Flow<ApiCallResult<HamrahGold>>
     fun getTlynPrice(): Flow<ApiCallResult<Tlyn>>
-    fun getMelliGoldPrice(): Flow<ApiCallResult<MelliGold>>
+    fun getMelliGoldPrice(symbol: String): Flow<ApiCallResult<MelliGold>>
     fun getTalaseaPrice(): Flow<ApiCallResult<TalaSea>>
     fun getWallGoldPrice(): Flow<ApiCallResult<WallGold>>
     fun getMilliPrice(): Flow<ApiCallResult<Milli>>
@@ -107,9 +107,9 @@ class GoldMarketRepositoryImpl(
             emit(ApiCallResult.Failure(response.error))
     }.flowOn(dispatcher)
 
-    override fun getMelliGoldPrice(): Flow<ApiCallResult<MelliGold>> = flow {
+    override fun getMelliGoldPrice(symbol: String): Flow<ApiCallResult<MelliGold>> = flow {
         val response = getResult {
-            marketRemoteDataSource.getMelliGoldPrice()
+            marketRemoteDataSource.getMelliGoldPrice(symbol)
         }
         if (response is ApiCallResult.Success) {
             emit(ApiCallResult.Success(response.result.toEntity()))

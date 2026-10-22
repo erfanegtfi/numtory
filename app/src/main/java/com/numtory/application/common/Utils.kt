@@ -1,9 +1,11 @@
 package com.numtory.application.common
 
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.widget.Toast
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -15,6 +17,8 @@ import kotlin.ranges.coerceAtLeast
 import kotlin.text.format
 import kotlin.text.lowercase
 import kotlin.text.toDouble
+import java.time.OffsetDateTime
+import java.time.format.DateTimeParseException
 
 val Double.formatHumanReadable: String
     get() = log10(coerceAtLeast(1.0)).toInt().div(3).let {
@@ -51,7 +55,7 @@ fun formatDuration(totalSeconds: Long?): String {
 
 fun stringToMillisSimple(dateTimeString: String?): Long {
     if(dateTimeString==null) return 0L
-    val format = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+    val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
     return format.parse(dateTimeString)?.time ?: 0L
 }
 
@@ -78,4 +82,11 @@ fun getAppVersionName(context: Context): String {
 fun openDownloadUrl(context: Context, url: String) {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
     context.startActivity(intent)
+}
+
+fun copyToClipboard(context: Context, text: String) {
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    val clip = android.content.ClipData.newPlainText("Contact Info", text)
+    clipboard.setPrimaryClip(clip)
+    Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
 }

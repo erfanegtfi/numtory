@@ -1,7 +1,9 @@
 package com.numtory.application.features.cryptoExchange.domain.enums
 
-import com.numtory.application.ui.theme.GOLD
-import com.numtory.application.ui.theme.SILVER
+import com.numtory.application.features.cryptoMarket.domain.entities.COPPER
+import com.numtory.application.features.cryptoMarket.domain.entities.GOLD
+import com.numtory.application.features.cryptoMarket.domain.entities.SILVER
+
 
 val topCryptoSymbols = listOf(
     "USDT",
@@ -42,4 +44,5 @@ val topCryptoSymbols = listOf(
 val topMetalSymbols = listOf(
     GOLD,
     SILVER,
+    COPPER,
 )

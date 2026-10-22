@@ -1,11 +1,12 @@
 package com.numtory.application.features.goldExchange.domain.usecase
 
 import com.numtory.application.data.utils.ApiCallResult
+import com.numtory.application.features.cryptoMarket.domain.entities.COPPER
+import com.numtory.application.features.cryptoMarket.domain.entities.GOLD
+import com.numtory.application.features.cryptoMarket.domain.entities.SILVER
 import com.numtory.application.features.goldExchange.domain.entities.GoldExchangeInfo
 import com.numtory.application.features.goldExchange.domain.entities.GoldMarketPrice
 import com.numtory.application.features.goldExchange.domain.enums.GoldExchanges
-import com.numtory.application.ui.theme.GOLD
-import com.numtory.application.ui.theme.SILVER
 import kotlinx.coroutines.flow.Flow
 
 /** The symbols each exchange spells its own way. */
@@ -13,6 +14,8 @@ private const val DARIC_GOLD = "GOLD18TMN"
 private const val DARIC_SILVER = "SILVERTMN"
 private const val ECOGOLD_GOLD = "GOLD18-IRT"
 private const val ECOGOLD_SILVER = "SILVER999-IRT"
+private const val GRAMI_SILVER = "SILVER"
+private const val GRAMI_COPPER = "COPPER"
 
 /**
  * Knows which exchanges quote which metal, and which of them are worth asking right now.
@@ -58,7 +61,7 @@ class GetGoldPriceFlowsUseCase constructor(
             PriceSource(GoldExchanges.goldika) { getGoldikaPriceUseCase.action() },
             PriceSource(GoldExchanges.taline) { getTlynPriceUseCase.action() },
             PriceSource(GoldExchanges.hamrahgold) { getHamrahGoldPriceUseCase.action() },
-            PriceSource(GoldExchanges.melligold) { getMelliGoldPriceUseCase.action() },
+            PriceSource(GoldExchanges.melligold) { getMelliGoldPriceUseCase.action("XAU18") },
             PriceSource(GoldExchanges.talasea) { getTalaseaPriceUseCase.action() },
             PriceSource(GoldExchanges.wallgold) { getWallGoldPriceUseCase.action() },
             PriceSource(GoldExchanges.milli) { getMilliPriceUseCase.action() },
@@ -73,10 +76,15 @@ class GetGoldPriceFlowsUseCase constructor(
         SILVER -> listOf(
             PriceSource(GoldExchanges.daric) { getDaricPriceUseCase.action(DARIC_SILVER) },
             PriceSource(GoldExchanges.ecogold) { getEcoGoldPriceUseCase.action(ECOGOLD_SILVER) },
+            PriceSource(GoldExchanges.ecogold) {  getMelliGoldPriceUseCase.action("XAG") },
             PriceSource(GoldExchanges.noghresea) { getNoghreseaPriceUseCase.action() },
-            PriceSource(GoldExchanges.gerami) { getGeramiPriceUseCase.action(SILVER) },
+            PriceSource(GoldExchanges.gerami) { getGeramiPriceUseCase.action(GRAMI_SILVER) },
         )
+        COPPER -> listOf(
+            PriceSource(GoldExchanges.gerami) { getGeramiPriceUseCase.action(GRAMI_COPPER) },
+            PriceSource(GoldExchanges.melligold) {  getMelliGoldPriceUseCase.action("XCU") },
 
+        )
         else -> emptyList()
     }
 }

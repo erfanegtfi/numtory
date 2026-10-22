@@ -1,11 +1,8 @@
 package com.numtory.application.features.about
 
-import android.content.ClipboardManager
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -44,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.numtory.application.R
 import com.numtory.application.common.aboutScreenOpened
+import com.numtory.application.common.copyToClipboard
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -61,16 +59,15 @@ fun AboutScreen(navigator: DestinationsNavigator) {
 
     Scaffold(
         topBar = {
-          GetAppbar { {
-              navigator.popBackStack()
-          } }
+            GetAppbar {
+                navigator.popBackStack()
+            }
         }
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -98,12 +95,14 @@ fun AboutScreen(navigator: DestinationsNavigator) {
             DescriptionWithEditOption(
                 description = stringResource(R.string.about_description).trimIndent()
             )
+            Box(modifier = Modifier.height(16.dp)) { }
         }
     }
 }
+
 @Composable
-fun GetHeader(){
-    return  Surface(
+fun GetHeader() {
+    return Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.primary
@@ -126,10 +125,11 @@ fun GetHeader(){
         }
     }
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GetAppbar(onBackClick:() ->Unit){
-    return   TopAppBar(
+fun GetAppbar(onBackClick: () -> Unit) {
+    return TopAppBar(
         title = {
             Text(
                 "اطلاعات تماس",
@@ -148,6 +148,7 @@ fun GetAppbar(onBackClick:() ->Unit){
         ),
     )
 }
+
 @Composable
 fun CopyableContactItem(
     icon: String,
@@ -225,10 +226,3 @@ fun DescriptionWithEditOption(description: String) {
     }
 }
 
-// Helper function to copy to clipboard
-private fun copyToClipboard(context: Context, text: String) {
-    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-    val clip = android.content.ClipData.newPlainText("Contact Info", text)
-    clipboard.setPrimaryClip(clip)
-    Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
-}

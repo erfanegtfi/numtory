@@ -26,12 +26,12 @@ fun CryptoMarketAppbar(
     return MarketTopBar(
         selectedToken = selectedToken,
         actions = {
-            IconButton(onClick = onScannerClick) {
-                Icon(
-                    imageVector = Icons.Filled.ManageSearch,
-                    contentDescription = "Network Scanner"
-                )
-            }
+//            IconButton(onClick = onScannerClick) {
+//                Icon(
+//                    imageVector = Icons.Filled.ManageSearch,
+//                    contentDescription = "Network Scanner"
+//                )
+//            }
 
             IconButton(onClick = toggleTheme) {
                 Icon(
@@ -41,11 +41,11 @@ fun CryptoMarketAppbar(
                 )
             }
 
-            TopBarAction(
-                icon = R.drawable.ic_about,
-                contentDescription = "About",
-                onClick = onAboutClick
-            )
+//            TopBarAction(
+//                icon = R.drawable.ic_about,
+//                contentDescription = "About",
+//                onClick = onAboutClick
+//            )
 
             TopBarAction(
                 icon = R.drawable.ic_setting,

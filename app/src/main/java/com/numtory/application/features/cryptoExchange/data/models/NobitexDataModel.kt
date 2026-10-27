@@ -27,19 +27,21 @@ data class NobitexMarketItemDataModel constructor(
 }
 
 
+
 data class NobitexSwapDataModel(
-    @SerializedName("result")
-    var result: NobitexDataModel?,
+    @SerializedName("stats")
+    val stats: Map<String, NobitexDataModel>
 ) {
-    fun toEntity(): NobitexResult =
-        NobitexResult(result?.toEntity())
+    fun toEntity(): Map<String, Nobitex> =
+        stats.mapValues { (_, item) ->
+            item.toEntity()
+        }
 }
 
-
 data class NobitexDataModel constructor(
-    @SerializedName("baseToQuotePriceBuy")
+    @SerializedName("bestBuy")
     var baseToQuotePriceBuy: String?,
-    @SerializedName("baseToQuotePriceSell")
+    @SerializedName("bestSell")
     var baseToQuotePriceSell: String?
 ) {
 

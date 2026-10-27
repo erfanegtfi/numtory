@@ -30,6 +30,7 @@ import com.numtory.application.features.cryptoExchange.domain.usecase.GetEterexP
 import com.numtory.application.features.cryptoExchange.domain.usecase.GetExonyxPriceUseCase
 import com.numtory.application.features.cryptoExchange.domain.usecase.GetAsacoinePriceUseCase
 import com.numtory.application.features.cryptoExchange.domain.usecase.GetBestPriceUseCase
+import com.numtory.application.features.cryptoExchange.domain.usecase.GetBitWanaPriceUseCase
 import com.numtory.application.features.cryptoExchange.domain.usecase.GetMorbitPriceUseCase
 import com.numtory.application.features.cryptoExchange.domain.usecase.GetMarketAvgUseCase
 import com.numtory.application.features.cryptoExchange.domain.usecase.GetNobitexPriceUseCase
@@ -94,6 +95,7 @@ constructor(
     private val getArzinjaPriceUseCase: GetArzinjaPriceUseCase,
     private val getExonyxPriceUseCase: GetExonyxPriceUseCase,
     private val getMorbitPriceUseCase: GetMorbitPriceUseCase,
+    private val getBitWanaPriceUseCase: GetBitWanaPriceUseCase,
     private val getAsacoinePriceUseCase: GetAsacoinePriceUseCase,
     private val sortMarketUseCase: SortMarketUseCase,
     private val filterMarketUseCase: FilterMarketUseCase,
@@ -252,6 +254,7 @@ constructor(
         PriceSource(Exchanges.exonyx) { getExonyxPriceUseCase.action(symbol) },
         PriceSource(Exchanges.morbit) { getMorbitPriceUseCase.action(symbol, IRT) },
         PriceSource(Exchanges.asacoine) { getAsacoinePriceUseCase.action(symbol, TMN) },
+        PriceSource(Exchanges.bitwana) { getBitWanaPriceUseCase.action(symbol, IRT) },
     )
 
     /**

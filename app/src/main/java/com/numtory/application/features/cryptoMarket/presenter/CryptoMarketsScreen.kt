@@ -114,7 +114,7 @@ fun CryptoMarketPriceListScreen(
                     }
                 }
 
-                when (priceList) {
+                when (val state = priceList) {
                     is ViewState.Init -> {
                         item {
                             Box(
@@ -139,13 +139,12 @@ fun CryptoMarketPriceListScreen(
                     }
 
                     is ViewState.Success -> {
-                        val items = (priceList as ViewState.Success<List<CryptoMarketPrice>>).data
-                        if (items.isEmpty())
+                        if (state.data.isEmpty())
                             item {
                                 ItemNotFound()
                             }
                         else
-                            itemsIndexed(items) { index, itemState ->
+                            itemsIndexed(state.data) { index, itemState ->
                                 CryptoPriceListItem(
                                     itemState
 //                                modifier = Modifier.background(if (index % 2 == 0) Gray0 else Color.White)

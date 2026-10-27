@@ -34,6 +34,7 @@ enum class Exchanges(val title: String, val logo: Int) {
     bitbarg("بیت برگ (سریع)", R.drawable.bitbarg),
     exonyx("اکس اونیکس (سریع)", R.drawable.exonyx),
     morbit("موربیت (سریع)", R.drawable.morbit),
+    bitwana("بیت وانا", R.drawable.bitwana),
     asacoine("آساکوین (سریع)", R.drawable.asacoin);
 
 

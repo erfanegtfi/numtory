@@ -49,7 +49,7 @@ class GetBit24PriceUseCase constructor(
                 is ApiCallResult.Success -> {
 
                     val asset =
-                        marketResponse.result.firstOrNull { it.symbol?.lowercase() == base.lowercase() }
+                        marketResponse.result.firstOrNull { it.symbol.equals(base, ignoreCase = true) }
 
 
                     val marketPrice = MarketPrice(

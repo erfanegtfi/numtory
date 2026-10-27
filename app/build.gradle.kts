@@ -27,8 +27,8 @@ android {
         applicationId = "com.numtory"
         minSdk = 23
         targetSdk = 36
-        versionCode = 15
-        versionName = "1.6.3"
+        versionCode = 16
+        versionName = "1.7.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -62,6 +62,7 @@ android {
         buildConfigField("String", "COINKADE_URL", getLocalProperty("COINKADE_URL"))
         buildConfigField("String", "RAMZINEX_URL", getLocalProperty("RAMZINEX_URL"))
         buildConfigField("String", "BITBARG_URL", getLocalProperty("BITBARG_URL"))
+        buildConfigField("String", "BITWANA_URL", getLocalProperty("BITWANA_URL"))
         buildConfigField("String", "RAMZINEX_CURRENCIES_URL", getLocalProperty("RAMZINEX_CURRENCIES_URL"))
         buildConfigField("String", "ARZINJA_URL", getLocalProperty("ARZINJA_URL"))
         buildConfigField("String", "EXONYX_URL", getLocalProperty("EXONYX_URL"))

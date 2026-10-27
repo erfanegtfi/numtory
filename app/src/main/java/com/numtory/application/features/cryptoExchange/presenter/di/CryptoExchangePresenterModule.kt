@@ -12,6 +12,7 @@ import com.numtory.application.features.cryptoExchange.domain.usecase.GetAsacoin
 import com.numtory.application.features.cryptoExchange.domain.usecase.GetBestPriceUseCase
 import com.numtory.application.features.cryptoExchange.domain.usecase.GetBit24PriceUseCase
 import com.numtory.application.features.cryptoExchange.domain.usecase.GetBitPinPriceUseCase
+import com.numtory.application.features.cryptoExchange.domain.usecase.GetBitWanaPriceUseCase
 import com.numtory.application.features.cryptoExchange.domain.usecase.GetBitbargPriceUseCase
 import com.numtory.application.features.cryptoExchange.domain.usecase.GetCoinkadePriceUseCase
 import com.numtory.application.features.cryptoExchange.domain.usecase.GetEterexPriceUseCase
@@ -61,6 +62,7 @@ val cryptoExchangePresenterModule = module {
     factory { GetBitbargPriceUseCase(get<MarketRepository>()) }
     factory { GetMorbitPriceUseCase(get<MarketRepository>()) }
     factory { GetAsacoinePriceUseCase(get<MarketRepository>()) }
+    factory { GetBitWanaPriceUseCase(get<MarketRepository>()) }
     factory { SortMarketUseCase() }
     factory { FilterMarketUseCase() }
     factory { RemoveOutOfRangeExchangeUseCase() }
@@ -72,6 +74,7 @@ val cryptoExchangePresenterModule = module {
 //    viewModel<MarketsViewModel>{ MarketsViewModel(get<GetBitPinPriceUseCase>()) }
     viewModel {
         CryptoExchangeViewModel(
+            get(),
             get(),
             get(),
             get(),

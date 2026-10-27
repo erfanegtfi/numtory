@@ -103,7 +103,7 @@ fun AboutScreen(navigator: DestinationsNavigator) {
 @Composable
 fun GetHeader() {
     return Surface(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(top = 12.dp, end = 12.dp, start = 12.dp),
         shape = MaterialTheme.shapes.medium,
         color = MaterialTheme.colorScheme.primary
     ) {

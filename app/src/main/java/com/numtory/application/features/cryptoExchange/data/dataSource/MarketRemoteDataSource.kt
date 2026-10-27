@@ -39,6 +39,7 @@ import com.numtory.application.features.cryptoExchange.data.models.BitbargDataMo
 import com.numtory.application.features.cryptoExchange.data.models.EterexAssetsPriceDataModel
 import com.numtory.application.features.cryptoExchange.data.models.ExonyxDataModel
 import com.numtory.application.features.cryptoExchange.data.models.AsacoineDataModel
+import com.numtory.application.features.cryptoExchange.data.models.BitWanaDataModel
 import com.numtory.application.features.cryptoExchange.data.models.MorbitDataModel
 import com.numtory.application.features.cryptoExchange.data.models.RamzinexCurrenciesDataModel
 import com.numtory.application.features.cryptoExchange.data.models.RamzinexDataModel
@@ -108,6 +109,10 @@ interface MarketRemoteDataSource {
         symbol: String,
     ): BitbargDataModel
 
+    suspend fun getBitWanaPrice(
+        symbol: String,
+    ): BitWanaDataModel
+
     suspend fun getMorbitPrice(symbol: String): MorbitDataModel
 
     suspend fun getAsacoinePrice(): AsacoineDataModel
@@ -154,7 +159,7 @@ class MarketRemoteDataSourceImpl constructor(
 
     override suspend fun getNobitexSwapPrice(market: String): NobitexSwapDataModel {
         val response = httpClient.get(BuildConfig.NUBITEX_URL) {
-            parameter("market", market)
+            parameter("srcCurrency", market)
         }
         val json = response.bodyAsText()
         return gson.fromJson(json, NobitexSwapDataModel::class.java)
@@ -428,6 +433,18 @@ class MarketRemoteDataSourceImpl constructor(
 
         val json = response.bodyAsText()
         return gson.fromJson(json, BitbargDataModel::class.java)
+    }
+
+    override suspend fun getBitWanaPrice(
+        symbol: String
+    ): BitWanaDataModel {
+        val response =
+            httpClient.get("${BuildConfig.BITWANA_URL}/$symbol") {
+                parameter("with_price", true)
+            }
+
+        val json = response.bodyAsText()
+        return gson.fromJson(json, BitWanaDataModel::class.java)
     }
 
     override suspend fun getMorbitPrice(symbol: String): MorbitDataModel {

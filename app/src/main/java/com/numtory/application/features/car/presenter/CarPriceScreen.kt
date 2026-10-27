@@ -22,9 +22,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.numtory.application.R
 import com.numtory.application.features.base.ViewState
 import com.numtory.application.features.car.domain.entities.CarCategory
 import com.numtory.application.features.car.presenter.components.CarRow
@@ -134,8 +136,9 @@ private fun CarPriceList(categories: List<CarCategory>, viewModel: CarPriceViewM
                 .fillMaxSize(),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
+
             item {
-                Text("این قیمت ها صرفا اعلامی فروشندگان است و لزوما قیمت معامله نیست",
+                Text(stringResource(R.string.car_price_notice).trimIndent(),
                 modifier = Modifier.padding(6.dp))
             }
             categories.forEach { category ->

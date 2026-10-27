@@ -17,7 +17,7 @@ class GetNobitexPriceUseCase constructor(
     fun action(base: String, quote: String, marketQuote:String): Flow<ApiCallResult<MarketPrice>> {
         val exchangesInfo = marketRepository.getSavedExchangesInfo()
 
-        val flow1 = marketRepository.getNobitex("$base$quote".uppercase())
+        val flow1 = marketRepository.getNobitex(base.lowercase())
         val flow2 = marketRepository.getNobitexMarket()
 
         return combine(flow1, flow2) { swap, market ->
@@ -25,6 +25,9 @@ class GetNobitexPriceUseCase constructor(
         }.transform { (swapResponse, marketResponse) ->
             when (swapResponse) {
                 is ApiCallResult.Success -> {
+
+                    val asset = swapResponse.result?.get("$base-$marketQuote".lowercase())
+
                     val swapPrice = MarketPrice(
                         symbol = base,
                         exchangeInfo = exchangesInfo?.firstOrNull { it.exchange == Exchanges.nobitex } ?: ExchangeInfo(
@@ -34,8 +37,8 @@ class GetNobitexPriceUseCase constructor(
                             hasMarket = true,
                             isMarket = false,
                         ),
-                        buyPrice = ((swapResponse.result?.buy ?: "0").toDouble() / 10).toString(),
-                        sellPrice = ((swapResponse.result?.sell ?: "0").toDouble() / 10).toString(),
+                        buyPrice = ((asset?.buy ?: "0").toDouble() / 10).toString(),
+                        sellPrice = ((asset?.sell ?: "0").toDouble() / 10).toString(),
                         lastRefresh = System.currentTimeMillis()
                     )
                     emit(ApiCallResult.Success(swapPrice))

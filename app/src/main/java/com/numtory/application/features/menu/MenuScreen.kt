@@ -1,7 +1,9 @@
 package com.numtory.application.features.menu
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +11,8 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.CurrencyExchange
@@ -25,47 +29,38 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavDestination
+import com.numtory.application.data.utils.ApiCallResult
+import com.numtory.application.features.base.ViewState
+import com.numtory.application.features.main.SettingsViewModel
 import com.ramcosta.composedestinations.generated.destinations.AboutScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.CarPriceScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.NetworkScanScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.SekePriceScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.koin.androidx.compose.koinViewModel
 
-private data class MenuItem(
-    val title: String,
-    val icon: ImageVector,
-)
 
-private val menuItems = listOf(
-    MenuItem(
-        title = "نرخ ارز",
-        icon = Icons.Default.CurrencyExchange,
-    ),
-    MenuItem(
-        title = "قیمت خودرو",
-        icon = Icons.Default.DirectionsCar,
-    ),
-    MenuItem(
-        title = "اسکنر ارز دیجیتال",
-        icon = Icons.Default.QrCodeScanner,
-    ),
-    MenuItem(
-        title = "درباره اپلیکیشن",
-        icon = Icons.Default.Info,
-    ),
-)
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalCoroutinesApi::class)
 @Composable
-fun MenuScreen(
-    navigator: DestinationsNavigator,
-) {
+fun MenuScreen(navigator: DestinationsNavigator, viewModel: MenuViewModel = koinViewModel()) {
+    val settingsState by viewModel.settingsState.collectAsStateWithLifecycle()
+
+
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         topBar = {
             TopAppBar(
                 title = {
@@ -87,26 +82,26 @@ fun MenuScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-
-            verticalArrangement = Arrangement.spacedBy(18.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            items(menuItems.size) { index ->
-                MenuItemCard(
-                    item = menuItems[index],
-                    onClick = {
-                        when (index) {
-                            0 -> navigator.navigate(SekePriceScreenDestination)
-                            1 -> navigator.navigate(CarPriceScreenDestination)
-                            2 -> navigator.navigate(NetworkScanScreenDestination)
-                            3 -> navigator.navigate(AboutScreenDestination)
-                        }
-                    },
-                )
+
+            when(val state = settingsState){
+                is ViewState.Success -> {
+                    items(state.data, key = { it.title }) { item ->
+                        MenuItemCard(
+                            item = item,
+                            onClick = { navigator.navigate(item.destination) },
+                        )
+                    }
+                }
+
+                else -> {}
             }
+
         }
     }
 }
-
 
 @Composable
 private fun MenuItemCard(
@@ -114,35 +109,43 @@ private fun MenuItemCard(
     onClick: () -> Unit,
 ) {
     Card(
+        onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(2.dp)
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 70.dp)
-                .clickable(onClick = onClick)
-                .padding(vertical = 6.dp, horizontal = 12.dp),
-
+                .heightIn(min = 64.dp)
+                .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(24.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Icon(
                 imageVector = item.icon,
-                contentDescription = item.title,
+                contentDescription = null,
                 modifier = Modifier.size(26.dp),
+                tint = MaterialTheme.colorScheme.primary,
             )
 
             Text(
                 text = item.title,
                 modifier = Modifier.weight(1f),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface,
             )
 
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
-                tint = Color(0xFF687395),
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.outline,
             )
         }
     }

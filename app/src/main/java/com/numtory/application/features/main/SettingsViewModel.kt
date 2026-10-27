@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 class SettingsViewModel
 constructor(
     private val getSettingsUseCase: GetSettingsUseCase,
-    private val context: Context,
+    private val appVersion: Int,
 ) : ViewModel() {
 
 
@@ -42,7 +42,7 @@ constructor(
                 when (response) {
                     is ApiCallResult.Success -> {
                         _settingsState.value = ViewState.Success(response.result)
-                        if ((getAppVersion(context) < (response.result?.version
+                        if ((appVersion < (response.result?.version
                                 ?: 0) && response.result?.force == true) || response.result?.block == true
                         )
                             _showSuccessDialog.value =

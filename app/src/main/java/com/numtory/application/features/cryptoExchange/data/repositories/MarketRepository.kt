@@ -4,6 +4,7 @@ import com.numtory.application.data.remote.getResult
 import com.numtory.application.data.utils.ApiCallResult
 import com.numtory.application.features.cryptoExchange.data.dataSource.MarketRemoteDataSource
 import com.numtory.application.features.cryptoExchange.data.local.ExchangesLocalDataSource
+import com.numtory.application.features.cryptoExchange.data.models.BitWanaDataModel
 import com.numtory.application.features.cryptoExchange.data.models.RamzinexCurrenciesDataModel
 import com.numtory.application.features.cryptoExchange.domain.entities.AbanTether
 import com.numtory.application.features.cryptoExchange.domain.entities.Arz3CoinItem
@@ -17,6 +18,7 @@ import com.numtory.application.features.cryptoExchange.domain.entities.Bit24
 import com.numtory.application.features.cryptoExchange.domain.entities.Bit24Swap
 import com.numtory.application.features.cryptoExchange.domain.entities.BitPin
 import com.numtory.application.features.cryptoExchange.domain.entities.BitPinOTC
+import com.numtory.application.features.cryptoExchange.domain.entities.BitWana
 import com.numtory.application.features.cryptoExchange.domain.entities.Bitbarg
 import com.numtory.application.features.cryptoExchange.domain.entities.Coinkade
 import com.numtory.application.features.cryptoExchange.domain.entities.EterexAssetsPrice
@@ -50,7 +52,7 @@ interface MarketRepository {
     fun getTetherLand(): Flow<ApiCallResult<List<TetherLand>>>
     fun getAbanTether(): Flow<ApiCallResult<List<AbanTether>>>
 
-    fun getNobitex(market: String): Flow<ApiCallResult<Nobitex?>>
+    fun getNobitex(market: String): Flow<ApiCallResult<Map<String, Nobitex>?>>
     fun getNobitexMarket(): Flow<ApiCallResult<Map<String, NobitexMarket>>>
 
     fun getTabdeal(fromCurrency: String, toCurrency: String): Flow<ApiCallResult<TabdealSwap>>
@@ -105,6 +107,7 @@ interface MarketRepository {
     fun getExonyxSwapPrice(): Flow<ApiCallResult<List<ExonyxItem>?>>
 
     fun getMorbitPrice(symbol: String): Flow<ApiCallResult<Morbit>>
+    fun getBitWanaPrice(symbol: String): Flow<ApiCallResult<BitWana>>
 
     fun getAsacoinePrice(): Flow<ApiCallResult<Asacoine>>
 
@@ -138,6 +141,16 @@ class MarketRepositoryImpl(
     override fun getBitPin(marketId: Int): Flow<ApiCallResult<BitPinOTC>> = flow {
         val response = getResult {
             marketRemoteDataSource.getBitPinPrice(marketId)
+        }
+        if (response is ApiCallResult.Success) {
+            emit(ApiCallResult.Success(response.result.toEntity()))
+        } else if (response is ApiCallResult.Failure)
+            emit(ApiCallResult.Failure(response.error))
+    }.flowOn(dispatcher)
+
+    override fun getBitWanaPrice(symbol: String): Flow<ApiCallResult<BitWana>> = flow {
+        val response = getResult {
+            marketRemoteDataSource.getBitWanaPrice(symbol)
         }
         if (response is ApiCallResult.Success) {
             emit(ApiCallResult.Success(response.result.toEntity()))
@@ -185,12 +198,12 @@ class MarketRepositoryImpl(
             emit(ApiCallResult.Failure(response.error))
     }.flowOn(dispatcher)
 
-    override fun getNobitex(market: String): Flow<ApiCallResult<Nobitex?>> = flow {
+    override fun getNobitex(market: String): Flow<ApiCallResult<Map<String, Nobitex>?>> = flow {
         val response = getResult {
             marketRemoteDataSource.getNobitexSwapPrice(market)
         }
         if (response is ApiCallResult.Success) {
-            emit(ApiCallResult.Success(response.result.result?.toEntity()))
+            emit(ApiCallResult.Success(response.result.toEntity()))
         } else if (response is ApiCallResult.Failure)
             emit(ApiCallResult.Failure(response.error))
     }.flowOn(dispatcher)
